@@ -1,4 +1,4 @@
-package com.lyy.guohe2;
+package com.lyy.guohe2.activity;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.githang.statusbar.StatusBarCompat;
+import com.lyy.guohe2.R;
 import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.utils.NavigateUtil;
 import com.lyy.guohe2.utils.ProgressGenerator;
@@ -72,8 +73,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     //传递用户名和密码
                     progressGenerator.setStu_id(mEtLoginAccount.getText().toString());
                     progressGenerator.setStu_pass(mEtLoginPass.getText().toString());
+                    mBtnSignIn.setProgress(50);
                     //开始登录加载动画
-                    progressGenerator.start(mBtnSignIn);
+                    progressGenerator.start();
                     //设置登录按钮和两个登陆框不可用
                     mBtnSignIn.setEnabled(false);
                     mEtLoginAccount.setEnabled(false);
@@ -109,11 +111,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             SpUtils.putString(getApplicationContext(), SpConstant.STU_NAME, name);
             SpUtils.putString(getApplicationContext(), SpConstant.STU_MAJOR, major);
 
+            Log.d(TAG, "onComplete: " + stu_id + " " + name);
+
             SpUtils.putBoolean(getApplicationContext(), SpConstant.IS_LOGIN, true);
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    mBtnSignIn.setProgress(100);
                     Toasty.success(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -131,6 +136,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                mBtnSignIn.setProgress(0);
                 mBtnSignIn.setEnabled(true);
                 mEtLoginAccount.setEnabled(true);
                 mEtLoginPass.setEnabled(true);

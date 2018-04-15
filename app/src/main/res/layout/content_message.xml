@@ -41,6 +41,7 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:lineSpacingExtra="3dp"
+            android:text="@string/default_msg"
             android:visibility="visible" />
 
     </LinearLayout>

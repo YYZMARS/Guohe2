@@ -1,8 +1,9 @@
-package com.lyy.guohe2;
+package com.lyy.guohe2.activity;
 
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.lyy.guohe2.R;
+import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.fragment.TodayFragment;
+import com.lyy.guohe2.utils.SpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity
     private List<Fragment> fragments;
     private List<TextView> listTextViews;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +53,12 @@ public class MainActivity extends AppCompatActivity
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_main);
+
+        initView();
+        initData();
+    }
+
+    private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,7 +74,10 @@ public class MainActivity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.vp_view);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        initData();
+//        TextView tvName=findViewById(R.id.tvName);
+//        TextView tvStyuId=findViewById(R.id.tvStuId);
+//        tvName.setText("姓名："+"12");
+//        tvStyuId.setText("学号："+"123");
     }
 
     private void initData() {
@@ -72,8 +86,8 @@ public class MainActivity extends AppCompatActivity
         listTextViews = new ArrayList<>();
 
         listTitles.add("今日");
-        listTitles.add("课表");
-        listTitles.add("资讯");
+        listTitles.add("本周课表");
+        listTitles.add("校园资讯");
 
         for (int i = 0; i < listTitles.size(); i++) {
             TodayFragment fragment = TodayFragment.newInstance(listTitles.get(i));
@@ -142,7 +156,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 

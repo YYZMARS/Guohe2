@@ -53,9 +53,7 @@ public class ProgressGenerator {
         this.stu_pass = stu_pass;
     }
 
-    public void start(final ProcessButton button) {
-
-        button.setProgress(mProgress);
+    public void start() {
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("username", stu_id)
@@ -65,8 +63,6 @@ public class ProgressGenerator {
         HttpUtil.post(UrlConstant.STU_INFO, requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mProgress = 0;
-                button.setProgress(mProgress);
                 mListener.onFailure("服务器异常,请稍后重试");
             }
 
@@ -78,20 +74,14 @@ public class ProgressGenerator {
                     assert res != null;
                     if (res.getCode() == 200) {
                         try {
-                            mProgress = 100;
-                            button.setProgress(mProgress);
                             mListener.onComplete(res.getInfo());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else {
-                        mProgress = 0;
-                        button.setProgress(mProgress);
                         mListener.onFailure(res.getMsg());
                     }
                 } else {
-                    mProgress = 0;
-                    button.setProgress(mProgress);
                     mListener.onFailure("服务器异常,请稍后重试");
                 }
             }

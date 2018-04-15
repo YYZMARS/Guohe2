@@ -7,7 +7,7 @@
     android:background="#FAFAFA"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".LoginActivity">
+    tools:context=".activity.LoginActivity">
 
     <ImageView
         android:id="@+id/iv_loginHeader"
