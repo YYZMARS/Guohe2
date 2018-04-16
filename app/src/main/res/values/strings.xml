@@ -22,4 +22,14 @@
     <string name="action_change_week">更改周次</string>
     <string name="action_current_week">更改当前周</string>
     <string name="action_change_background">更换背景</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="share_app">分享此应用</string>
+    <string name="contact_me">联系开发者</string>
+    <string name="about_us">关于我们</string>
+    <string name="setting">设置</string>
+    <string name="checkUpdate">检测升级</string>
+    <string name="updateInfo">更新说明</string>
+    <string name="changeAccount">切换账号</string>
 </resources>

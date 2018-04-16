@@ -5,19 +5,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
+    <!--
+        app:tabMode="fixed"表示tab均分一行（一般用于tab选项较少时）
+        app:tabMode="scrollable"表示tab可以滑动（一般用于tab选项较多时）
+    -->
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/material_white_1000"
         app:tabIndicatorColor="@color/material_blue_500"
-        app:tabMode="fixed"
+        app:tabMode="scrollable"
         app:tabSelectedTextColor="@color/material_black_1000"
         app:tabTextColor="@color/material_blue_grey_300">
 
     </android.support.design.widget.TabLayout>
-
 
     <!--可滑动的布局内容-->
     <android.support.v4.view.ViewPager

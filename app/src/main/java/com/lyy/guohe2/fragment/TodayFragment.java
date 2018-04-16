@@ -1,5 +1,8 @@
 package com.lyy.guohe2.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.lyy.guohe2.activity.BrowserActivity;
 import com.lyy.guohe2.activity.KbActivity;
 import com.lyy.guohe2.R;
 import com.lyy.guohe2.adapter.CourseAdapter;
@@ -39,7 +43,7 @@ import okhttp3.Response;
 
 import static android.support.constraint.Constraints.TAG;
 
-public class TodayFragment extends Fragment {
+public class TodayFragment extends Fragment implements View.OnClickListener {
     //该Fragment的
     private View view;
     private static final String KEY = "title";
@@ -69,19 +73,22 @@ public class TodayFragment extends Fragment {
         });
         tvKbShow.setText("无课，不欺");
 
-
-        LinearLayout nav_kb = view.findViewById(R.id.nav_kb);
-        nav_kb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigateUtil.navigateTo(getActivity(), KbActivity.class);
-            }
-        });
-
-//        String string = getArguments().getString(KEY);
-//        tvContent.setText(string);
-//        tvContent.setTextColor(Color.BLUE);
-//        tvContent.setTextSize(30);
+        LinearLayout navKb = view.findViewById(R.id.nav_kb);
+        navKb.setOnClickListener(this);
+        LinearLayout navGrade = view.findViewById(R.id.nav_grade);
+        navGrade.setOnClickListener(this);
+        LinearLayout navLibrary = view.findViewById(R.id.nav_library);
+        navLibrary.setOnClickListener(this);
+        LinearLayout navBus = view.findViewById(R.id.nav_bus);
+        navBus.setOnClickListener(this);
+        LinearLayout navClassroom = view.findViewById(R.id.nav_classroom);
+        navClassroom.setOnClickListener(this);
+        LinearLayout navSystem = view.findViewById(R.id.nav_system);
+        navSystem.setOnClickListener(this);
+        LinearLayout navCet = view.findViewById(R.id.nav_cet);
+        navCet.setOnClickListener(this);
+        LinearLayout navPE = view.findViewById(R.id.nav_pe);
+        navPE.setOnClickListener(this);
 
         initMess();
         initTodayKb();
@@ -178,17 +185,79 @@ public class TodayFragment extends Fragment {
         });
     }
 
-    /**
-     * fragment静态传值
-     */
-    public static TodayFragment newInstance(String str) {
-        TodayFragment fragment = new TodayFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(KEY, str);
-        fragment.setArguments(bundle);
+//    /**
+//     * fragment静态传值
+//     */
+//    public static TodayFragment newInstance(String str) {
+//        TodayFragment fragment = new TodayFragment();
+//        Bundle bundle = new Bundle();
+//        bundle.putString(KEY, str);
+//        fragment.setArguments(bundle);
+//
+//        return fragment;
+//    }
 
-        return fragment;
+    //选择进入哪一个系统
+    private void showSystemDialog() {
+        final String[] items = {"教务系统", "奥兰系统", "实验系统", "师生服务中心"};
+        AlertDialog.Builder listDialog =
+                new AlertDialog.Builder(getActivity());
+        listDialog.setTitle("选择要进入的系统");
+        listDialog.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // which 下标从0开始
+
+                Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                switch (which) {
+                    case 0:
+                        intent.putExtra("url", UrlConstant.JIAOWU_URL);
+                        intent.putExtra("title", "强智教务");
+                        startActivity(intent);
+                        break;
+                    case 1:
+                        intent.putExtra("url", UrlConstant.AOLAN_URL);
+                        intent.putExtra("title", "奥兰系统");
+                        startActivity(intent);
+                        break;
+                    case 2:
+                        intent.putExtra("url", UrlConstant.LAB_URL);
+                        intent.putExtra("title", "实验系统");
+                        startActivity(intent);
+                        break;
+                    case 3:
+                        intent.putExtra("url", UrlConstant.FUWU_URL);
+                        intent.putExtra("title", "师生服务中心");
+                        startActivity(intent);
+                        break;
+                }
+            }
+        });
+        listDialog.show();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.nav_kb:
+                NavigateUtil.navigateTo(getActivity(), KbActivity.class);
+                break;
+            case R.id.nav_grade:
+                break;
+            case R.id.nav_library:
+                break;
+            case R.id.nav_bus:
+                break;
+            case R.id.nav_cet:
+                break;
+            case R.id.nav_classroom:
+                break;
+            case R.id.nav_pe:
+                break;
+            case R.id.nav_system:
+                showSystemDialog();
+                break;
 
+        }
+    }
 }

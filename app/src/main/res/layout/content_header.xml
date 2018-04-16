@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_kb" />
 
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_grade" />
 
@@ -71,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_library" />
 
@@ -85,7 +85,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_school_bus"
+            android:id="@+id/nav_bus"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -96,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_school_bus" />
 
@@ -121,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_classroom" />
 
@@ -133,7 +133,6 @@
                 android:text="空教室" />
 
         </LinearLayout>
-
 
     </LinearLayout>
 
@@ -153,7 +152,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_system" />
 
@@ -178,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_cet" />
 
@@ -203,7 +202,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_club" />
 
@@ -227,7 +226,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop" />
 
             <TextView
@@ -249,7 +248,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="25dp"
+                android:padding="@dimen/dp_25"
                 android:scaleType="centerCrop" />
 
             <TextView

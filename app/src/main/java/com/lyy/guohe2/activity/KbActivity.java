@@ -56,6 +56,7 @@ import org.litepal.crud.DataSupport;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -72,7 +73,6 @@ public class KbActivity extends AppCompatActivity {
 
     private Context mContext;
 
-    public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
 
     private static final String TAG = "KbActivity";
@@ -80,8 +80,6 @@ public class KbActivity extends AppCompatActivity {
     private CourseTableView courseTableView;
 
     private ProgressDialog mProgressDialog;
-
-    private Uri imageUri;
 
     private ImageView iv_course_table;
 
@@ -183,13 +181,27 @@ public class KbActivity extends AppCompatActivity {
         if (server_week != null) {
             tv_course_table_toolbar.setText("第" + server_week + "周");
 
-            //判断是否第一次导入课表，默认false，没有导入课表
-            boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
-            if (first_open_course) {
-                getXiaoLi();
-                SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+            Calendar calendar = Calendar.getInstance();
+            int weekday = calendar.get(Calendar.DAY_OF_WEEK);
+            //判断今天是不是周一
+            if (weekday == 2) {
+                //判断是否第一次导入课表，默认false，没有导入课表
+                boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
+                if (first_open_course) {
+                    getXiaoLi();
+                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+                } else {
+                    showKb(server_week);
+                }
             } else {
-                showKb(server_week);
+                //判断是否第一次导入课表，默认false，没有导入课表
+                boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
+                if (first_open_course) {
+                    getXiaoLi();
+                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+                } else {
+                    showKb(server_week);
+                }
             }
 
             List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
@@ -680,19 +692,6 @@ public class KbActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case TAKE_PHOTO:
-                if (resultCode == RESULT_OK) {
-                    try {
-                        // 将拍摄的照片显示出来
-                        Intent cropIntent = new Intent(KbActivity.this, CropViewActivity.class);
-                        cropIntent.putExtra("uri", imageUri.toString());
-                        cropIntent.putExtra("flag", "course");
-                        startActivity(cropIntent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
             case CHOOSE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     // 判断手机系统版本号

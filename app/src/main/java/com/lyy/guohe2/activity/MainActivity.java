@@ -21,9 +21,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.lyy.guohe2.R;
-import com.lyy.guohe2.constant.SpConstant;
+import com.lyy.guohe2.fragment.NewsFragment;
+import com.lyy.guohe2.fragment.PlayFragment;
 import com.lyy.guohe2.fragment.TodayFragment;
-import com.lyy.guohe2.utils.SpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         initView();
-        initData();
+        initFragment();
     }
 
     private void initView() {
@@ -80,19 +80,24 @@ public class MainActivity extends AppCompatActivity
 //        tvStyuId.setText("学号："+"123");
     }
 
-    private void initData() {
+    private void initFragment() {
         listTitles = new ArrayList<>();
         fragments = new ArrayList<>();
         listTextViews = new ArrayList<>();
 
         listTitles.add("今日");
-        listTitles.add("本周课表");
-        listTitles.add("校园资讯");
+        listTitles.add("资讯");
+        listTitles.add("操场");
 
-        for (int i = 0; i < listTitles.size(); i++) {
-            TodayFragment fragment = TodayFragment.newInstance(listTitles.get(i));
-            fragments.add(fragment);
-        }
+
+//        TodayFragment fragment1 = TodayFragment.newInstance(listTitles.get(i));
+        TodayFragment fragment1 = new TodayFragment();
+        fragments.add(fragment1);
+        NewsFragment fragment2 = new NewsFragment();
+        fragments.add(fragment2);
+        PlayFragment fragment3 = new PlayFragment();
+        fragments.add(fragment3);
+
         //mTabLayout.setTabMode(TabLayout.SCROLL_AXIS_HORIZONTAL);//设置tab模式，当前为系统默认模式
         for (int i = 0; i < listTitles.size(); i++) {
             mTabLayout.addTab(mTabLayout.newTab().setText(listTitles.get(i)));//添加tab选项
@@ -159,20 +164,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
