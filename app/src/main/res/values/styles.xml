@@ -29,7 +29,7 @@
         <!-- 设置Toolbar菜单文字的大小  -->
         <item name="actionMenuTextColor">@color/material_black_1000</item> <!--颜色-->
         <item name="colorControlNormal">#030405</item>
-        <!--<item name="android:textSize">@dimen/toolbar_action_menu_text</item> &lt;!&ndash;字体大小&ndash;&gt;-->
+        <item name="android:textSize">@dimen/sp_16</item> <!--字体大小-->
     </style>
 
     <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">

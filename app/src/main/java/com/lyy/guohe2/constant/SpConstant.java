@@ -35,4 +35,7 @@ public class SpConstant {
     //记录校历信息
     public static final String XIAO_LI = "xiao_li";
 
+    //记录体育课密码
+    public static final String PE_PASS = "pe_pass";
+
 }

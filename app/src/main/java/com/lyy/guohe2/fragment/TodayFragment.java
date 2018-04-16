@@ -1,5 +1,6 @@
 package com.lyy.guohe2.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.lyy.guohe2.activity.BrowserActivity;
 import com.lyy.guohe2.activity.KbActivity;
 import com.lyy.guohe2.R;
+import com.lyy.guohe2.activity.UsActivity;
 import com.lyy.guohe2.adapter.CourseAdapter;
 import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.constant.UrlConstant;
@@ -32,8 +34,10 @@ import com.lyy.guohe2.utils.SpUtils;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -185,19 +189,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-//    /**
-//     * fragment静态传值
-//     */
-//    public static TodayFragment newInstance(String str) {
-//        TodayFragment fragment = new TodayFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putString(KEY, str);
-//        fragment.setArguments(bundle);
-//
-//        return fragment;
-//    }
-
-    //选择进入哪一个系统
+    //选择进入哪一个校园系统
     private void showSystemDialog() {
         final String[] items = {"教务系统", "奥兰系统", "实验系统", "师生服务中心"};
         AlertDialog.Builder listDialog =
@@ -236,10 +228,146 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         listDialog.show();
     }
 
+    //显示校车对话框
+    private void showBusDialog(String mess) {
+        final AlertDialog.Builder normalDialog = new AlertDialog.Builder(getActivity());
+        normalDialog.setMessage("即将到来的车次是：\n" + mess);
+        normalDialog.setPositiveButton("显示全部车次",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                        intent.putExtra("title", "校车时刻表");
+                        intent.putExtra("url", UrlConstant.SCHOOL_BUS);
+                        startActivity(intent);
+                    }
+                });
+        normalDialog.setNegativeButton("关闭",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        dialog.dismiss();
+                    }
+                });
+        // 显示
+        normalDialog.show();
+    }
+
+    //判断当前时刻有没有校车
+    private String hasSchoolBus() {
+        Calendar calendar = Calendar.getInstance();
+        //星期天从0开始
+        int week = calendar.get(Calendar.DAY_OF_WEEK);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat f = new SimpleDateFormat("HH:mm");
+        Date c = new Date(System.currentTimeMillis());
+        String checi = "";
+        try {
+            String str1 = f.format(c);
+            //当前时间,格式为HH：mm
+            Date d1 = f.parse(str1);
+            if (f.parse("21:55").compareTo(d1) == -1) {
+                //没有车了
+                checi = "目前没有车了";
+            } else if (f.parse("21:05").compareTo(d1) == -1) {
+                //16车次
+                checi = "车次16\n";
+                checi += "21:45 西->21：55 南->东";
+            } else if (f.parse("19:40").compareTo(d1) == -1) {
+                if (week == 6 || week == 0) {
+                    //14
+                    //有些车周末周六不开，这种情况跳到下一班车
+                    checi = "车次14\n";
+                    checi += "19:30 西->19:40 南->东";
+                } else {
+                    //15
+                    checi = "车次15\n";
+                    checi += "20:55 西->21：05 南->东";
+                }
+            } else if (f.parse("18:40").compareTo(d1) == -1) {
+                if (week == 0) {
+                    //13
+                    checi = "车次13\n";
+                    checi += "18:30 东->18:40 南->西";
+                } else {
+                    //14
+                    checi = "车次14\n";
+                    checi += "19:30 西->19:40 南->东";
+                }
+            } else if (f.parse("17:50").compareTo(d1) == -1) {
+                //13
+                checi = "车次13\n";
+                checi += "18:30 东->18:40 南->西";
+            } else if (f.parse("16:05").compareTo(d1) == -1) {
+                //12,11
+                checi = "车次11和12\n";
+                checi += "17：40 东->17:50 南->西\n";
+                checi += "17:40 西->17：50 南->东";
+            } else if (f.parse("15:25").compareTo(d1) == -1) {
+                if (week == 0) {
+                    //9
+                    checi = "车次9\n";
+                    checi += "15：15 东->15：25 南->西";
+                } else {
+                    //10
+                    checi = "车次10\n";
+                    checi += "15：55 西->16：05 南->东";
+                }
+            } else if (f.parse("13:45").compareTo(d1) == -1) {
+                if (week == 0) {
+                    //7,8
+                    checi = "车次7和8\n";
+                    checi += "13:35 东->13：45 南->西\n";
+                    checi += "13:35 西->13:45 南->东";
+                } else {
+                    //9
+                    checi = "车次9\n";
+                    checi += "15：15 东->15：25 南->西";
+                }
+            } else if (f.parse("12:00").compareTo(d1) == -1) {
+                //7,8
+                checi = "车次7和8\n";
+                checi += "13:35 东->13：45 南->西\n";
+                checi += "13:35 西->13:45 南->东";
+            } else if (f.parse("10:05").compareTo(d1) == -1) {
+                //5,6
+                checi = "车次5和6\n";
+                checi += "11:50 东->12:00 南->西\n";
+                checi += "11:50 西->12:00 南->东";
+            } else if (f.parse("9:30").compareTo(d1) == -1) {
+                if (week == 0) {
+                    //3
+                    checi = "车次3\n";
+                    checi += "9:20 东->9:30 南->西\n";
+                } else {
+                    //4
+                    checi = "车次4\n";
+                    checi += "9:55 东->10:05 南->西\n";
+                }
+            } else if (f.parse("7:45").compareTo(d1) == -1) {
+                //3
+                checi = "车次3\n";
+                checi += "9:20 东->9:30 南->西\n";
+
+            } else {
+                //2,1
+                checi = "车次1和2\n";
+                checi += "7:35 东->7:45 南->西\n";
+                checi += "7:35 西->7:45 南->东";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return checi;
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.nav_kb:
+                //跳转至课表
                 NavigateUtil.navigateTo(getActivity(), KbActivity.class);
                 break;
             case R.id.nav_grade:
@@ -247,17 +375,20 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
             case R.id.nav_library:
                 break;
             case R.id.nav_bus:
+                //显示即将到来的校车
+                showBusDialog(hasSchoolBus());
                 break;
             case R.id.nav_cet:
                 break;
             case R.id.nav_classroom:
                 break;
             case R.id.nav_pe:
+
                 break;
             case R.id.nav_system:
+                //显示可以进入的校园系统
                 showSystemDialog();
                 break;
-
         }
     }
 }

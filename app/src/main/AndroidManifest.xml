@@ -36,7 +36,11 @@
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.KbActivity" />
         <activity android:name=".activity.CropViewActivity" />
-        <activity android:name=".activity.BrowserActivity"></activity>
+        <activity android:name=".activity.BrowserActivity" />
+        <activity
+            android:name=".activity.UsActivity"
+            android:label="@string/about_us"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

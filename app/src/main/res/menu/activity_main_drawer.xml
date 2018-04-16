@@ -17,6 +17,10 @@
                 android:id="@+id/nav_contactMe"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/contact_me" />
+            <item
+                android:id="@+id/nav_joinUs"
+                android:icon="@drawable/ic_menu_join_us"
+                android:title="@string/joinUs" />
         </menu>
     </item>
 

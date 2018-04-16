@@ -1,6 +1,11 @@
 package com.lyy.guohe2.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,14 +24,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lyy.guohe2.R;
+import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.fragment.NewsFragment;
 import com.lyy.guohe2.fragment.PlayFragment;
 import com.lyy.guohe2.fragment.TodayFragment;
+import com.lyy.guohe2.model.DBCourse;
+import com.lyy.guohe2.utils.NavigateUtil;
+import com.lyy.guohe2.utils.SpUtils;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,10 +88,13 @@ public class MainActivity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.vp_view);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
 
-//        TextView tvName=findViewById(R.id.tvName);
-//        TextView tvStyuId=findViewById(R.id.tvStuId);
-//        tvName.setText("姓名："+"12");
-//        tvStyuId.setText("学号："+"123");
+        TextView tvName = navigationView.getHeaderView(0).findViewById(R.id.tvName);
+        TextView tvStuId = navigationView.getHeaderView(0).findViewById(R.id.tvStuId);
+        String name = SpUtils.getString(getApplicationContext(), SpConstant.STU_NAME);
+        String stuId = SpUtils.getString(getApplicationContext(), SpConstant.STU_ID);
+        tvName.setText("姓名：" + name);
+        tvStuId.setText("学号：" + stuId);
+
     }
 
     private void initFragment() {
@@ -164,9 +181,96 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch (id) {
+            case R.id.nav_aboutUs:
+                NavigateUtil.navigateTo(this, UsActivity.class);
+                break;
+            case R.id.nav_shareApp:
+                break;
+            case R.id.nav_contactMe:
+                //跳转进qq
+                if (checkApkExist(this, "com.tencent.mobileqq")) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=" + "420326369" + "&version=1")));
+                } else {
+                    Toasty.error(this, "本机未安装QQ应用", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.nav_joinUs:
+                if (checkApkExist(this, "com.tencent.mobileqq")) {
+                    joinQQGroup("DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8");
+                } else {
+                    Toasty.error(this, "本机未安装QQ应用", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.nav_changeAccount:
+                changeAccount();
+                break;
+            case R.id.nav_checkUpdate:
+                break;
+            case R.id.nav_updateInfo:
+                break;
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //检测手机上是否安装QQ
+    public boolean checkApkExist(Context context, String packageName) {
+        if (packageName == null || "".equals(packageName))
+            return false;
+        try {
+            ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName,
+                    PackageManager.GET_UNINSTALLED_PACKAGES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /****************
+     *
+     * 发起添加群流程。群号：果核 内测(673515498) 的 key 为： DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8
+     * 调用 joinQQGroup(DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8) 即可发起手Q客户端申请加群 果核 内测(673515498)
+     *
+     * @param key 由官网生成的key
+     * @return 返回true表示呼起手Q成功，返回fals表示呼起失败
+     ******************/
+    public void joinQQGroup(String key) {
+        Intent intent = new Intent();
+        intent.setData(Uri.parse("mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26k%3D" + key));
+        // 此Flag可根据具体产品需要自定义，如设置，则在加群界面按返回，返回手Q主界面，不设置，按返回会返回到呼起产品界面    //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            // 未安装手Q或安装的版本不支持
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toasty.error(MainActivity.this, "本机未安装QQ应用或版本不支持", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    //切换账号
+    private void changeAccount() {
+        final boolean isLogin = SpUtils.getBoolean(getApplicationContext(), SpConstant.IS_LOGIN);
+        if (isLogin) {
+            SpUtils.clear(getApplicationContext());
+
+            DataSupport.deleteAll(DBCourse.class);
+
+            finish();
+
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//关掉所要到的界面中间的activity
+            startActivity(intent);
+            Toasty.success(getApplicationContext(), "退出成功", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+        }
     }
 }

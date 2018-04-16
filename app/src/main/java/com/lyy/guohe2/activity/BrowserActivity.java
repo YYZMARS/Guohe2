@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe2.R;
+import com.lyy.guohe2.constant.UrlConstant;
 import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
@@ -244,14 +245,17 @@ public class BrowserActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
         mTitle.setText(title);
+        if (title.equals("校车时刻表")) {
+            mWebview.loadUrl(X5Url);
+        } else {
+            vpn_user = "1441904121";
+            vpn_pwd = "173010";
 
-        vpn_user = "1441904121";
-        vpn_pwd = "173010";
+            VpnSource(vpn_user, vpn_pwd);
 
-        VpnSource(vpn_user, vpn_pwd);
-
-        CheckThread thread = new CheckThread();
-        thread.start();
+            CheckThread thread = new CheckThread();
+            thread.start();
+        }
     }
 
     public void VpnSource(String vpn_user, String vpn_pwd) {
