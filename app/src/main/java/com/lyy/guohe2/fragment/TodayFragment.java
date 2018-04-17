@@ -15,13 +15,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lyy.guohe2.activity.BrowserActivity;
 import com.lyy.guohe2.activity.ClassRoomActivity;
+import com.lyy.guohe2.activity.SportActivity;
 import com.lyy.guohe2.activity.KbActivity;
 import com.lyy.guohe2.R;
 import com.lyy.guohe2.activity.LibraryActivity;
-import com.lyy.guohe2.activity.UsActivity;
 import com.lyy.guohe2.adapter.CourseAdapter;
 import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.constant.UrlConstant;
@@ -43,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -365,6 +367,38 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         return checi;
     }
 
+    //选择进入哪一个体育系统
+    private void showPEDialog() {
+        final String[] items = {"俱乐部查询", "早操出勤查询", "体育成绩查询"};
+        AlertDialog.Builder listDialog =
+                new AlertDialog.Builder(getActivity());
+        listDialog.setTitle("选择要进入的系统");
+        listDialog.setItems(items, (dialog, which) -> {
+            // which 下标从0开始
+
+            Intent intent = new Intent(getActivity(), SportActivity.class);
+            switch (which) {
+                case 0:
+                    intent.putExtra("url", UrlConstant.CLUB_SCORE);
+                    intent.putExtra("type", "1");
+                    startActivity(intent);
+                    break;
+                case 1:
+                    intent.putExtra("url", UrlConstant.EXERCISE_SCORE);
+                    intent.putExtra("type", "2");
+                    startActivity(intent);
+                    break;
+                case 2:
+//                    intent.putExtra("url", UrlConstant.LAB_URL);
+//                    intent.putExtra("type", "3");
+//                    startActivity(intent);
+                    Toasty.success(getActivity(), "敬请期待", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
+        listDialog.show();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -389,7 +423,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
                 break;
             case R.id.nav_pe:
-
+                //显示可以进入的体育系统
+                showPEDialog();
                 break;
             case R.id.nav_system:
                 //显示可以进入的校园系统

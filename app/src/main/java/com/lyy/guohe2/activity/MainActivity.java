@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.lyy.guohe2.R;
 import com.lyy.guohe2.constant.SpConstant;
+import com.lyy.guohe2.fragment.KbFragment;
 import com.lyy.guohe2.fragment.NewsFragment;
 import com.lyy.guohe2.fragment.PlayFragment;
 import com.lyy.guohe2.fragment.TodayFragment;
@@ -102,18 +103,20 @@ public class MainActivity extends AppCompatActivity
         fragments = new ArrayList<>();
         listTextViews = new ArrayList<>();
 
+        listTitles.add("课表");
         listTitles.add("今日");
         listTitles.add("资讯");
         listTitles.add("操场");
 
 
-//        TodayFragment fragment1 = TodayFragment.newInstance(listTitles.get(i));
-        TodayFragment fragment1 = new TodayFragment();
+        KbFragment fragment1 = new KbFragment();
         fragments.add(fragment1);
-        NewsFragment fragment2 = new NewsFragment();
+        TodayFragment fragment2 = new TodayFragment();
         fragments.add(fragment2);
-        PlayFragment fragment3 = new PlayFragment();
+        NewsFragment fragment3 = new NewsFragment();
         fragments.add(fragment3);
+        PlayFragment fragment4 = new PlayFragment();
+        fragments.add(fragment4);
 
         //mTabLayout.setTabMode(TabLayout.SCROLL_AXIS_HORIZONTAL);//设置tab模式，当前为系统默认模式
         for (int i = 0; i < listTitles.size(); i++) {
@@ -273,4 +276,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         }
     }
+
+    
+
 }

@@ -16,7 +16,7 @@
             android:layout_gravity="center_horizontal"
             android:text="搜索列表"
             android:textColor="@color/material_white_1000"
-            android:textSize="20sp" />
+            android:textSize="@dimen/sp_20" />
 
     </android.support.v7.widget.Toolbar>
 

@@ -32,50 +32,28 @@
             <org.angmarch.views.NiceSpinner
                 android:id="@+id/niceSpinner1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_70"
                 android:layout_weight="1" />
 
             <org.angmarch.views.NiceSpinner
                 android:id="@+id/niceSpinner2"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_70"
                 android:layout_weight="1" />
 
             <org.angmarch.views.NiceSpinner
                 android:id="@+id/niceSpinner3"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_70"
                 android:layout_weight="1" />
 
             <org.angmarch.views.NiceSpinner
                 android:id="@+id/niceSpinner4"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_70"
                 android:layout_weight="1" />
 
         </LinearLayout>
-
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="-5dp"-->
-            <!--android:orientation="horizontal">-->
-
-            <!--<org.angmarch.views.NiceSpinner-->
-                <!--android:id="@+id/niceSpinner3"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_margin="10dp"-->
-                <!--android:layout_weight="1" />-->
-
-            <!--<org.angmarch.views.NiceSpinner-->
-                <!--android:id="@+id/niceSpinner4"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_margin="10dp"-->
-                <!--android:layout_weight="1" />-->
-
-        <!--</LinearLayout>-->
 
     </LinearLayout>
 
@@ -99,7 +77,7 @@
             android:background="@color/material_white_1000"
             android:gravity="center"
             android:text="空教室"
-            android:textSize="20sp" />
+            android:textSize="@dimen/sp_20" />
 
         <TextView
             android:layout_width="0dp"
@@ -109,7 +87,7 @@
             android:background="@color/material_white_1000"
             android:gravity="center"
             android:text="空闲课时"
-            android:textSize="20sp" />
+            android:textSize="@dimen/sp_20" />
 
     </LinearLayout>
 

@@ -44,7 +44,8 @@
         <activity android:name=".activity.ClassRoomActivity" />
         <activity android:name=".activity.LibraryActivity" />
         <activity android:name=".activity.BookList" />
-        <activity android:name=".activity.BookDetail"></activity>
+        <activity android:name=".activity.BookDetail" />
+        <activity android:name=".activity.SportActivity"></activity>
     </application>
 
 </manifest>
