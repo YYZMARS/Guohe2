@@ -17,8 +17,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.lyy.guohe2.activity.BrowserActivity;
+import com.lyy.guohe2.activity.ClassRoomActivity;
 import com.lyy.guohe2.activity.KbActivity;
 import com.lyy.guohe2.R;
+import com.lyy.guohe2.activity.LibraryActivity;
 import com.lyy.guohe2.activity.UsActivity;
 import com.lyy.guohe2.adapter.CourseAdapter;
 import com.lyy.guohe2.constant.SpConstant;
@@ -373,6 +375,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
             case R.id.nav_grade:
                 break;
             case R.id.nav_library:
+                //跳转至图书馆藏查询
+                NavigateUtil.navigateTo(getActivity(), LibraryActivity.class);
                 break;
             case R.id.nav_bus:
                 //显示即将到来的校车
@@ -381,6 +385,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
             case R.id.nav_cet:
                 break;
             case R.id.nav_classroom:
+                //跳转至查询空教室
+                NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
                 break;
             case R.id.nav_pe:
 
