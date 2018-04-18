@@ -26,6 +26,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flyco.dialog.listener.OnBtnClickL;
+import com.flyco.dialog.widget.MaterialDialog;
 import com.lyy.guohe2.R;
 import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.fragment.KbFragment;
@@ -98,20 +100,21 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    //初始化相应的fragment
     private void initFragment() {
         listTitles = new ArrayList<>();
         fragments = new ArrayList<>();
         listTextViews = new ArrayList<>();
 
-        listTitles.add("课表");
+
         listTitles.add("今日");
+        listTitles.add("课表");
         listTitles.add("资讯");
         listTitles.add("操场");
 
-
-        KbFragment fragment1 = new KbFragment();
+        TodayFragment fragment1 = new TodayFragment();
         fragments.add(fragment1);
-        TodayFragment fragment2 = new TodayFragment();
+        KbFragment fragment2 = new KbFragment();
         fragments.add(fragment2);
         NewsFragment fragment3 = new NewsFragment();
         fragments.add(fragment3);
@@ -172,7 +175,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_donate) {
+            showDonateDialog();
             return true;
         }
 
@@ -219,7 +223,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    //检测手机上是否安装QQ
+    //检测手机上是否安装某应用
     public boolean checkApkExist(Context context, String packageName) {
         if (packageName == null || "".equals(packageName))
             return false;
@@ -277,6 +281,50 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    
+    //弹出支持捐赠对话框
+    private void showDonateDialog() {
+        final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
+        dialog.content(
+                "假如此App为您带来了便利与舒适，假如您愿意支持我们。我们希望能得到小小的赞赏，这是一种莫大的肯定与鼓励。\n" +
+                        "金钱是保持自由的一种工具，我们诚挚祈望未来与你同在。^ ^")//
+                .btnText("关闭", "支持")//
+                .show();
+
+        dialog.setOnBtnClickL(
+                new OnBtnClickL() {//left btn click listener
+                    @Override
+                    public void onBtnClick() {
+                        dialog.dismiss();
+                    }
+                },
+                new OnBtnClickL() {//right btn click listener
+                    @Override
+                    public void onBtnClick() {
+                        if (checkApkExist(MainActivity.this, "com.eg.android.AlipayGphone")) {
+                            donate();
+                        } else {
+                            Toasty.warning(MainActivity.this, "本机未安装支付宝", Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    }
+                }
+        );
+    }
+
+    //跳转到支付宝付款界面
+    private void donate() {
+        String intentFullUrl = "intent://platformapi/startapp?saId=10000007&" +
+                "clientVersion=3.7.0.0718&qrcode=https%3A%2F%2Fqr.alipay.com%2FFKX07846GRVQI6HABMOJ72%3F_s" +
+                "%3Dweb-other&_t=1472443966571#Intent;" +
+                "scheme=alipayqr;package=com.eg.android.AlipayGphone;end";
+        try {
+            Intent intent = Intent.parseUri(intentFullUrl, Intent.URI_INTENT_SCHEME);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 }

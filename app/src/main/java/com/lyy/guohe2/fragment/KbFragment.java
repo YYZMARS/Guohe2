@@ -135,64 +135,67 @@ public class KbFragment extends Fragment {
             Glide.with(mContext).load(R.drawable.bg_kb_default).into(iv_course_table);
         }
 
-        //构造课表界面
+        List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
+        if (dbCourses.size() > 0) {
+            //构造课表界面
+            courseTableView = (CourseTableView) view.findViewById(R.id.ctv);
 
-        courseTableView = (CourseTableView) view.findViewById(R.id.ctv);
-
-        courseTableView.setOnCourseItemClickListener(new CourseTableView.OnCourseItemClickListener() {
-            @Override
-            public void onCourseItemClick(TextView tv, int jieci, int day, String des) {
+            courseTableView.setOnCourseItemClickListener(new CourseTableView.OnCourseItemClickListener() {
+                @Override
+                public void onCourseItemClick(TextView tv, int jieci, int day, String des) {
 //                String string = tv.getText().toString();
-                Log.d(TAG, "onCourseItemClick: " + des);
-                showCourseDialog(des);
-            }
-        });
-
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage("课表导入中,请稍后……");
-        mProgressDialog.setCancelable(true);
-        mProgressDialog.setCanceledOnTouchOutside(true);
-
-        stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
-        stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
-
-        server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
-        if (server_week != null) {
-
-            Calendar calendar = Calendar.getInstance();
-            int weekday = calendar.get(Calendar.DAY_OF_WEEK);
-            //判断今天是不是周一
-            if (weekday == 2) {
-                //判断是否第一次导入课表，默认false，没有导入课表
-                boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
-                if (first_open_course) {
-                    getXiaoLi();
-                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-                } else {
-                    showKb(server_week);
+                    Log.d(TAG, "onCourseItemClick: " + des);
+                    showCourseDialog(des);
                 }
-            } else {
-                //判断是否第一次导入课表，默认false，没有导入课表
-                boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
-                if (first_open_course) {
-                    getXiaoLi();
-                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-                } else {
-                    showKb(server_week);
-                }
-            }
+            });
 
-            List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
-            if (dbCourses.size() == 0) {
-                getXiaoLi();
-                SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-            }
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage("课表导入中,请稍后……");
+            mProgressDialog.setCancelable(true);
+            mProgressDialog.setCanceledOnTouchOutside(true);
 
+            stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
+            stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
+
+            server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
+            showKb(server_week);
+//            if (server_week != null) {
+//                Calendar calendar = Calendar.getInstance();
+//                int weekday = calendar.get(Calendar.DAY_OF_WEEK);
+//                //判断今天是不是周一
+//                if (weekday == 2) {
+//                    //判断是否第一次导入课表，默认false，没有导入课表
+//                    boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
+//                    if (first_open_course) {
+//                        getXiaoLi();
+//                        SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+//                    } else {
+//                        showKb(server_week);
+//                    }
+//                } else {
+//                    //判断是否第一次导入课表，默认false，没有导入课表
+//                    boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
+//                    if (first_open_course) {
+//                        getXiaoLi();
+//                        SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+//                    } else {
+//                        showKb(server_week);
+//                    }
+//                }
+//
+////                List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
+//                if (dbCourses.size() == 0) {
+//                    getXiaoLi();
+//                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+//                }
+//
+//            } else {
+//                getXiaoLi();
+//                SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+//            }
         } else {
-            getXiaoLi();
-            SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
+            Toasty.warning(mContext, "请导入课表后查看", Toast.LENGTH_SHORT).show();
         }
-
 
         return view;
     }
