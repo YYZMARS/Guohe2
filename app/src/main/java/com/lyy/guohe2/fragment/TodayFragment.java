@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.lyy.guohe2.activity.BrowserActivity;
 import com.lyy.guohe2.activity.ClassRoomActivity;
+import com.lyy.guohe2.activity.ScoreActivity;
 import com.lyy.guohe2.activity.SportActivity;
 import com.lyy.guohe2.activity.KbActivity;
 import com.lyy.guohe2.R;
@@ -407,6 +408,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 NavigateUtil.navigateTo(getActivity(), KbActivity.class);
                 break;
             case R.id.nav_grade:
+                //跳转至成绩查询界面
+                NavigateUtil.navigateTo(getActivity(), ScoreActivity.class);
                 break;
             case R.id.nav_library:
                 //跳转至图书馆藏查询
