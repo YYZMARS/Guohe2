@@ -90,6 +90,30 @@ public class MainActivity extends AppCompatActivity
 
         mViewPager = (ViewPager) findViewById(R.id.vp_view);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
+        //设置tablayout滑动监听
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 1:
+                        List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
+                        if (!(dbCourses.size() > 0)) {
+                            Toasty.warning(MainActivity.this, "请导入课表后查看", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         TextView tvName = navigationView.getHeaderView(0).findViewById(R.id.tvName);
         TextView tvStuId = navigationView.getHeaderView(0).findViewById(R.id.tvStuId);
@@ -325,6 +349,5 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-
 
 }

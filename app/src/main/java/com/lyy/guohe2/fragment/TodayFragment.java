@@ -144,7 +144,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
     private void initMess() {
         HttpUtil.get(UrlConstant.GET_MSG, new Callback() {
             @Override
@@ -434,5 +433,11 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 showSystemDialog();
                 break;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initTodayKb();
     }
 }

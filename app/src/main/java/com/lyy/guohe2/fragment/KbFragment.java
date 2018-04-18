@@ -136,28 +136,29 @@ public class KbFragment extends Fragment {
         }
 
         List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
-        if (dbCourses.size() > 0) {
-            //构造课表界面
-            courseTableView = (CourseTableView) view.findViewById(R.id.ctv);
 
-            courseTableView.setOnCourseItemClickListener(new CourseTableView.OnCourseItemClickListener() {
-                @Override
-                public void onCourseItemClick(TextView tv, int jieci, int day, String des) {
+        //构造课表界面
+        courseTableView = (CourseTableView) view.findViewById(R.id.ctv);
+
+        courseTableView.setOnCourseItemClickListener(new CourseTableView.OnCourseItemClickListener() {
+            @Override
+            public void onCourseItemClick(TextView tv, int jieci, int day, String des) {
 //                String string = tv.getText().toString();
-                    Log.d(TAG, "onCourseItemClick: " + des);
-                    showCourseDialog(des);
-                }
-            });
+                Log.d(TAG, "onCourseItemClick: " + des);
+                showCourseDialog(des);
+            }
+        });
 
-            mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage("课表导入中,请稍后……");
-            mProgressDialog.setCancelable(true);
-            mProgressDialog.setCanceledOnTouchOutside(true);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("课表导入中,请稍后……");
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setCanceledOnTouchOutside(true);
 
-            stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
-            stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
+        stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
+        stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
 
-            server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
+        server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
+        if (dbCourses.size() > 0) {
             showKb(server_week);
 //            if (server_week != null) {
 //                Calendar calendar = Calendar.getInstance();
@@ -193,8 +194,6 @@ public class KbFragment extends Fragment {
 //                getXiaoLi();
 //                SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
 //            }
-        } else {
-            Toasty.warning(mContext, "请导入课表后查看", Toast.LENGTH_SHORT).show();
         }
 
         return view;
@@ -518,88 +517,103 @@ public class KbFragment extends Fragment {
         List<Course> list = new ArrayList<>();
 
         List<DBCourse> courseList = DataSupport.where("zhouci = ? ", week).find(DBCourse.class);
-        List<String> stringList = new ArrayList<>();
+        if (courseList.size() > 0) {
+            List<String> stringList = new ArrayList<>();
 
-        for (DBCourse dbCourse : courseList) {
-            stringList.add(dbCourse.getDes());
-        }
-
-        List<String> listWithoutDup = new ArrayList<>(new HashSet<>(stringList));
-
-        for (DBCourse dbCourse : courseList) {
-            Course course = new Course();
-
-            String courseInfo[] = dbCourse.getDes().split("@");
-            String courseNum = "";
-            String courseClassroom = "";
-            String courseName = "";
-            String courseTeacher = "";
-
-            if (courseInfo.length == 1) {
-                courseNum = courseInfo[0];
-            }
-            if (courseInfo.length == 2) {
-                courseNum = courseInfo[0];
-                courseName = courseInfo[1];
-            }
-            if (courseInfo.length == 3) {
-                courseNum = courseInfo[0];
-                courseName = courseInfo[1];
-                courseTeacher = courseInfo[2];
-            }
-            if (courseInfo.length == 4) {
-                courseNum = courseInfo[0];
-                courseName = courseInfo[1];
-                courseTeacher = courseInfo[2];
-                courseClassroom = courseInfo[3];
+            for (DBCourse dbCourse : courseList) {
+                stringList.add(dbCourse.getDes());
             }
 
-            if (dbCourse.getDes().length() > 3) {
-                course.setDay(dbCourse.getDay());
-                course.setJieci(dbCourse.getJieci());
-                course.setDes(dbCourse.getDes());
-                course.setClassName(courseName);      //课程名
-                course.setClassRoomName(courseClassroom);  //教室
-                course.setClassTeacher(courseTeacher);   //教师
-                course.setClassTypeName(courseNum);  //课程号
-                course.setBg_Color(color[listWithoutDup.indexOf(dbCourse.getDes())]);
-                list.add(course);
+            List<String> listWithoutDup = new ArrayList<>(new HashSet<>(stringList));
+
+            for (DBCourse dbCourse : courseList) {
+                Course course = new Course();
+
+                String courseInfo[] = dbCourse.getDes().split("@");
+                String courseNum = "";
+                String courseClassroom = "";
+                String courseName = "";
+                String courseTeacher = "";
+
+                if (courseInfo.length == 1) {
+                    courseNum = courseInfo[0];
+                }
+                if (courseInfo.length == 2) {
+                    courseNum = courseInfo[0];
+                    courseName = courseInfo[1];
+                }
+                if (courseInfo.length == 3) {
+                    courseNum = courseInfo[0];
+                    courseName = courseInfo[1];
+                    courseTeacher = courseInfo[2];
+                }
+                if (courseInfo.length == 4) {
+                    courseNum = courseInfo[0];
+                    courseName = courseInfo[1];
+                    courseTeacher = courseInfo[2];
+                    courseClassroom = courseInfo[3];
+                }
+
+                if (dbCourse.getDes().length() > 3) {
+                    course.setDay(dbCourse.getDay());
+                    course.setJieci(dbCourse.getJieci());
+                    course.setDes(dbCourse.getDes());
+                    course.setClassName(courseName);      //课程名
+                    course.setClassRoomName(courseClassroom);  //教室
+                    course.setClassTeacher(courseTeacher);   //教师
+                    course.setClassTypeName(courseNum);  //课程号
+                    course.setBg_Color(color[listWithoutDup.indexOf(dbCourse.getDes())]);
+                    list.add(course);
+                }
+
+                Log.d(TAG, "showKb: " + courseName);
             }
-        }
 
-        String a[] = {"1", "2", "3", "4", "5", "6", "7"};
-        String b = "";
-        String month = "";
-        List<DBDate> dbDateList = DataSupport.findAll(DBDate.class);
-        for (DBDate dbDate : dbDateList) {
-            if (dbDate.getZhouci() == Integer.parseInt(week)) {
-                month = dbDate.getMonth();
-                b = dbDate.getDate();
+            String a[] = {"1", "2", "3", "4", "5", "6", "7"};
+            String b = "";
+            String month = "";
+            List<DBDate> dbDateList = DataSupport.findAll(DBDate.class);
+            for (DBDate dbDate : dbDateList) {
+                if (dbDate.getZhouci() == Integer.parseInt(week)) {
+                    month = dbDate.getMonth();
+                    b = dbDate.getDate();
+                }
             }
-        }
 
-        String c[] = b.split(",");
-        if (!b.equals("")) {
-            courseTableView.setDates(c);
-        } else {
-            courseTableView.setDates(a);
-        }
+            String c[] = b.split(",");
+            if (!b.equals("")) {
+                courseTableView.setDates(c);
+            } else {
+                courseTableView.setDates(a);
+            }
 
-        courseTableView.setPreMonth(month + "月");
+            courseTableView.setPreMonth(month + "月");
 
-        courseTableView.drawFrame();
-        courseTableView.updateCourseViews(list);
+            courseTableView.drawFrame();
+            courseTableView.updateCourseViews(list);
 
 //        Intssent updateIntent = new Intent(ACTION_UPDATE_ALL);
 //        mContext.sendBroadcast(updateIntent);
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mProgressDialog.isShowing())
-                    mProgressDialog.dismiss();
-            }
-        });
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mProgressDialog.isShowing())
+                        mProgressDialog.dismiss();
+                }
+            });
+        }
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
+        Log.d(TAG, "onResume: " + server_week);
+        if (server_week != null) {
+            Log.d(TAG, "onResume: " + server_week);
+            showKb(server_week);
+        }
+    }
 }
