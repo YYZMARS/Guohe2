@@ -18,6 +18,7 @@ import com.lyy.guohe2.constant.SpConstant;
 import com.lyy.guohe2.utils.NavigateUtil;
 import com.lyy.guohe2.utils.ProgressGenerator;
 import com.lyy.guohe2.utils.SpUtils;
+import com.tencent.stat.StatService;
 
 import org.json.JSONObject;
 
@@ -69,6 +70,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             default:
                 break;
             case R.id.btn_SignIn:
+                // 用户登录事件，统计用户点击登录按钮的次数
+                StatService.trackCustomKVEvent(this, "login", null);
                 if (!mEtLoginAccount.getText().toString().equals("") && !mEtLoginPass.getText().toString().equals("")) {
                     //传递用户名和密码
                     progressGenerator.setStu_id(mEtLoginAccount.getText().toString());

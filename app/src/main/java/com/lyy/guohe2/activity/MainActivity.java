@@ -42,6 +42,7 @@ import com.lyy.guohe2.model.DBCourse;
 import com.lyy.guohe2.utils.NavigateUtil;
 import com.lyy.guohe2.utils.SpUtils;
 import com.tencent.bugly.beta.Beta;
+import com.tencent.stat.StatService;
 
 import org.litepal.crud.DataSupport;
 
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_main);
+
+        // 进入首页事件,统计用户进入首页的次数
+        StatService.trackCustomKVEvent(this, "homepage", null);
 
         initPermission();
         initView();
@@ -390,6 +394,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // 此处为android 6.0以上动态授权的回调，用户自行实现。
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StatService.onResume(this);
     }
 
 }
