@@ -1,5 +1,6 @@
 package com.lyy.guohe2.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -9,10 +10,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -37,6 +41,7 @@ import com.lyy.guohe2.fragment.TodayFragment;
 import com.lyy.guohe2.model.DBCourse;
 import com.lyy.guohe2.utils.NavigateUtil;
 import com.lyy.guohe2.utils.SpUtils;
+import com.tencent.bugly.beta.Beta;
 
 import org.litepal.crud.DataSupport;
 
@@ -60,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     private List<TextView> listTextViews;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +77,7 @@ public class MainActivity extends AppCompatActivity
         }
         setContentView(R.layout.activity_main);
 
+        initPermission();
         initView();
         initFragment();
     }
@@ -237,6 +244,7 @@ public class MainActivity extends AppCompatActivity
                 changeAccount();
                 break;
             case R.id.nav_checkUpdate:
+                Beta.checkUpgrade();
                 break;
             case R.id.nav_updateInfo:
                 break;
@@ -348,6 +356,40 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * android 6.0 以上需要动态申请权限
+     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void initPermission() {
+        String permissions[] = {
+                Manifest.permission.READ_LOGS,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.REQUEST_INSTALL_PACKAGES
+        };
+
+        ArrayList<String> toApplyList = new ArrayList<String>();
+
+        for (String perm : permissions) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm)) {
+                toApplyList.add(perm);
+                //进入到这里代表没有权限.
+
+            }
+        }
+        String tmpList[] = new String[toApplyList.size()];
+        if (!toApplyList.isEmpty()) {
+            ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), 123);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // 此处为android 6.0以上动态授权的回调，用户自行实现。
     }
 
 }

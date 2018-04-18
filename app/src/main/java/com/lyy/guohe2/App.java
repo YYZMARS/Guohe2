@@ -3,6 +3,7 @@ package com.lyy.guohe2;
 import android.app.Application;
 import android.content.Context;
 
+import com.tencent.bugly.Bugly;
 import com.tencent.smtt.sdk.QbSdk;
 
 import org.litepal.LitePalApplication;
@@ -18,6 +19,9 @@ public class App extends Application {
         LitePalApplication.initialize(context);
 
         initX5WebView();
+
+        //初始化Bugly
+        Bugly.init(getApplicationContext(), "5675fbf964", false);
 
     }
 
