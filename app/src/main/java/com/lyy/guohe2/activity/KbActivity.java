@@ -47,6 +47,7 @@ import com.lyy.guohe2.model.Res;
 import com.lyy.guohe2.utils.HttpUtil;
 import com.lyy.guohe2.utils.SpUtils;
 import com.lyy.guohe2.view.CourseTableView;
+import com.tencent.stat.StatService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -713,6 +714,7 @@ public class KbActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void onResume() {
         super.onResume();
         bg_course_64 = SpUtils.getString(this, SpConstant.BG_COURSE_64);
@@ -722,6 +724,9 @@ public class KbActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeStream(bais);
             iv_course_table.setImageBitmap(bitmap);
         }
+        //更新课表小部件
+        updateWidget();
+        StatService.onResume(this);
     }
 
     @Override
@@ -852,5 +857,12 @@ public class KbActivity extends AppCompatActivity {
         lp.width = (int) (display.getWidth() * 0.8); //设置宽度
         lp.height = (int) (display.getHeight() * 0.7);
         dialog.getWindow().setAttributes(lp);
+    }
+
+    //更新小部件
+    private void updateWidget() {
+        String WIDGET_UPDATE = "com.lyy.widget.UPDATE_ALL";
+        Intent intent = new Intent(WIDGET_UPDATE);
+        sendBroadcast(intent);
     }
 }

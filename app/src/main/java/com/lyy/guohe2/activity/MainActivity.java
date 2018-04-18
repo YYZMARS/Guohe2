@@ -81,9 +81,14 @@ public class MainActivity extends AppCompatActivity
         // 进入首页事件,统计用户进入首页的次数
         StatService.trackCustomKVEvent(this, "homepage", null);
 
+        //初始化权限
         initPermission();
+        //初始化布局
         initView();
+        //初始化Fragment
         initFragment();
+        //更新小部件
+        updateWidget();
     }
 
     private void initView() {
@@ -399,7 +404,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        updateWidget();
         StatService.onResume(this);
+    }
+
+    //更新小部件
+    private void updateWidget() {
+        String WIDGET_UPDATE = "com.lyy.widget.UPDATE_ALL";
+        Intent intent = new Intent(WIDGET_UPDATE);
+        sendBroadcast(intent);
     }
 
 }
