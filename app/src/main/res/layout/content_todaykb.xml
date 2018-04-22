@@ -30,6 +30,7 @@
         android:background="@color/material_blue_grey_200" />
 
     <LinearLayout
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -41,11 +42,11 @@
             android:layout_gravity="center"
             android:layout_margin="@dimen/dp_30"
             android:gravity="center"
-            android:text="无课，不欺"
-            android:textSize="@dimen/sp_17"
+            android:textSize="@dimen/sp_16"
             android:visibility="visible" />
 
         <ListView
+            android:layout_gravity="center"
             android:id="@+id/lv_kbToday"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

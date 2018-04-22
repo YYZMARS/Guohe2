@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_kb"
                 tools:ignore="NestedWeights" />
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_grade" />
 
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_library" />
 
@@ -98,9 +98,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_menu_school_bus" />
+                android:src="@drawable/ic_menu_bus" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -123,7 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_classroom" />
 
@@ -141,7 +141,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_2">
+        android:layout_marginBottom="@dimen/dp_5">
 
         <LinearLayout
             android:id="@+id/nav_system"
@@ -155,7 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_system" />
 
@@ -180,7 +180,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_menu_cet" />
 
@@ -205,9 +205,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_menu_club" />
+                android:src="@drawable/ic_menu_pe" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -229,7 +229,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop" />
 
             <TextView
@@ -251,7 +251,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:padding="@dimen/dp_22"
+                android:padding="@dimen/dp_18"
                 android:scaleType="centerCrop" />
 
             <TextView

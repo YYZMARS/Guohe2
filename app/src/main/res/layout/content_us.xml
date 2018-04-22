@@ -5,14 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activity.UsActivity"
+    tools:context="com.lyy.guohe.activity.UsActivity"
     tools:showIn="@layout/activity_us">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_16"
-        android:textSize="@dimen/sp_15"
-        android:text="@string/large_text" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.scwang.wave.MultiWaveHeader
+            android:id="@+id/waveHeader"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            app:mwhCloseColor="@color/material_blue_200"
+            app:mwhStartColor="@color/material_blue_200" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_16"
+            android:lineSpacingExtra="@dimen/dp_5"
+            android:padding="@dimen/dp_5"
+            android:text="@string/large_text"
+            android:textSize="@dimen/sp_15" />
+
+        <ImageView
+            android:id="@+id/iv_turing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_50"
+            android:paddingStart="@dimen/dp_50"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_turing" />
+
+    </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

@@ -125,12 +125,12 @@
 
                 </LinearLayout>
 
-                <com.lyy.guohe2.view.MyListView
+                <com.lyy.guohe.view.MyListView
                     android:id="@+id/lv_subject_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                </com.lyy.guohe2.view.MyListView>
+                </com.lyy.guohe.view.MyListView>
 
             </LinearLayout>
 

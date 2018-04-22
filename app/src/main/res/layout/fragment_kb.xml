@@ -25,7 +25,7 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop" />
 
-                <com.lyy.guohe2.view.CourseTableView
+                <com.lyy.guohe.view.CourseTableView
                     android:id="@+id/ctv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

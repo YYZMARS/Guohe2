@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,63 +7,75 @@
     android:background="#FAFAFA"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".activity.LoginActivity">
+    tools:context="com.lyy.guohe.activity.LoginActivity">
 
-    <ImageView
-        android:id="@+id/iv_loginHeader"
-        android:layout_width="@dimen/dp_200"
-        android:layout_height="@dimen/dp_200"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/dp_20"
-        android:scaleType="centerCrop" />
+    <com.scwang.wave.MultiWaveHeader
+        android:id="@+id/waveHeader"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_220" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="@dimen/dp_50">
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/et_loginAccount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_15"
-            android:hint="@string/login_account"
-            android:textCursorDrawable="@drawable/edit_cursor_color"
-            android:theme="@style/MyETTheme" />
-
-        <EditText
-            android:id="@+id/et_loginPass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/login_pass"
-            android:inputType="textPassword"
-            android:textCursorDrawable="@drawable/edit_cursor_color"
-            android:theme="@style/MyETTheme" />
-
-        <com.dd.processbutton.iml.ActionProcessButton
-            android:id="@+id/btn_SignIn"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_48"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_loginHeader"
+            android:layout_width="@dimen/dp_80"
+            android:layout_height="@dimen/dp_80"
             android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/dp_16"
-            android:layout_marginTop="@dimen/dp_10"
-            android:padding="@dimen/dp_5"
-            android:text="@string/login"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/sp_18"
-            app:pb_colorComplete="@color/material_light_green_300"
-            app:pb_colorError="@color/red_error"
-            app:pb_colorNormal="@color/blue_normal"
-            app:pb_colorPressed="@color/blue_pressed"
-            app:pb_colorProgress="@color/purple_progress"
-            app:pb_cornerRadius="@dimen/dp_8"
-            app:pb_textComplete="@string/login_success"
-            app:pb_textError="@string/login_failure"
-            app:pb_textProgress="@string/login_loading" />
+            android:layout_marginTop="@dimen/dp_170"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_50">
+
+            <EditText
+                android:id="@+id/et_loginAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_15"
+                android:hint="@string/login_account"
+                android:textCursorDrawable="@drawable/edit_cursor_color"
+                android:theme="@style/MyETTheme" />
+
+            <EditText
+                android:id="@+id/et_loginPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/login_pass"
+                android:inputType="textPassword"
+                android:textCursorDrawable="@drawable/edit_cursor_color"
+                android:theme="@style/MyETTheme" />
+
+            <com.dd.processbutton.iml.ActionProcessButton
+                android:id="@+id/btn_SignIn"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_48"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_10"
+                android:padding="@dimen/dp_5"
+                android:text="@string/login"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_18"
+                app:pb_colorComplete="@color/material_light_green_300"
+                app:pb_colorError="@color/red_error"
+                app:pb_colorNormal="@color/blue_normal"
+                app:pb_colorPressed="@color/blue_pressed"
+                app:pb_colorProgress="@color/purple_progress"
+                app:pb_cornerRadius="@dimen/dp_8"
+                app:pb_textComplete="@string/login_success"
+                app:pb_textError="@string/login_failure"
+                app:pb_textProgress="@string/login_loading" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
 
-</LinearLayout>
+</FrameLayout>

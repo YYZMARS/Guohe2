@@ -23,14 +23,14 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_10"
-                android:background="@color/material_blue_grey_50" />
+                android:background="#f8f8f8" />
 
             <include layout="@layout/content_todaykb" />
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_10"
-                android:background="@color/material_blue_grey_50" />
+                android:background="#f8f8f8" />
 
             <include layout="@layout/content_message" />
 
