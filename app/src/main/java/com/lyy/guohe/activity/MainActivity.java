@@ -1,16 +1,17 @@
 package com.lyy.guohe.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
@@ -25,38 +26,46 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flyco.dialog.listener.OnBtnClickL;
+import com.flyco.dialog.listener.OnOperItemClickL;
+import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
-import com.lyy.guohe.constant.UrlConstant;
-import com.lyy.guohe.fragment.KbFragment;
-import com.lyy.guohe.model.DBCourse;
-import com.lyy.guohe.utils.NavigateUtil;
-import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
+import com.lyy.guohe.constant.UrlConstant;
+import com.lyy.guohe.fragment.KbFragment;
 import com.lyy.guohe.fragment.NewsFragment;
 import com.lyy.guohe.fragment.PlayFragment;
 import com.lyy.guohe.fragment.TodayFragment;
+import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.utils.NavigateUtil;
+import com.lyy.guohe.utils.SpUtils;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static final int CHOOSE_PHOTO = 2;
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -68,6 +77,11 @@ public class MainActivity extends AppCompatActivity
     private List<String> listTitles;
     private List<Fragment> fragments;
     private List<TextView> listTextViews;
+
+    //首页头像的base64编码
+    private String imageBase64;
+
+    private CircleImageView civ_header;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -137,6 +151,34 @@ public class MainActivity extends AppCompatActivity
 
         TextView tvName = navigationView.getHeaderView(0).findViewById(R.id.tvName);
         TextView tvStuId = navigationView.getHeaderView(0).findViewById(R.id.tvStuId);
+        civ_header = navigationView.getHeaderView(0).findViewById(R.id.civ_header);
+        civ_header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String[] stringItems = {"更换头像"};
+                final ActionSheetDialog dialog = new ActionSheetDialog(MainActivity.this, stringItems, null);
+                dialog.isTitleShow(false).show();
+
+                dialog.setOnOperItemClickL(new OnOperItemClickL() {
+                    @Override
+                    public void onOperItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        switch (position) {
+                            case 0:
+                                choosePhotoFromGallery();
+                                break;
+                        }
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+        if (imageBase64 != null) {
+            byte[] byte64 = Base64.decode(imageBase64, 0);
+            ByteArrayInputStream bais = new ByteArrayInputStream(byte64);
+            Bitmap bitmap = BitmapFactory.decodeStream(bais);
+            civ_header.setImageBitmap(bitmap);
+        }
+
         String name = SpUtils.getString(getApplicationContext(), SpConstant.STU_NAME);
         String stuId = SpUtils.getString(getApplicationContext(), SpConstant.STU_ID);
         tvName.setText("姓名：" + name);
@@ -150,10 +192,9 @@ public class MainActivity extends AppCompatActivity
         fragments = new ArrayList<>();
         listTextViews = new ArrayList<>();
 
-
         listTitles.add("今日");
         listTitles.add("课表");
-        listTitles.add("资讯");
+        listTitles.add("广播");
         listTitles.add("操场");
 
         TodayFragment fragment1 = new TodayFragment();
@@ -408,15 +449,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // 此处为android 6.0以上动态授权的回调，用户自行实现。
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateWidget();
-        StatService.onResume(this);
+    //从相册中选择图片
+    private void choosePhotoFromGallery() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
     }
 
     //更新小部件
@@ -434,4 +475,35 @@ public class MainActivity extends AppCompatActivity
         startActivity(Intent.createChooser(intent, "果核"));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateWidget();
+        StatService.onResume(this);
+        imageBase64 = SpUtils.getString(this, SpConstant.IMAGE_BASE_64);
+        if (imageBase64 != null) {
+            byte[] byte64 = Base64.decode(imageBase64, 0);
+            ByteArrayInputStream bais = new ByteArrayInputStream(byte64);
+            Bitmap bitmap = BitmapFactory.decodeStream(bais);
+            civ_header.setImageBitmap(bitmap);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case CHOOSE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    // 4.4及以上系统使用这个方法处理图片
+                    Uri uri = data.getData();
+                    Intent cropIntent = new Intent(MainActivity.this, CropViewActivity.class);
+                    cropIntent.putExtra("flag", "header");
+                    cropIntent.putExtra("uri", uri.toString());
+                    startActivity(cropIntent);
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }

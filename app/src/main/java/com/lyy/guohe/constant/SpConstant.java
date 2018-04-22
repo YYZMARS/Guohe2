@@ -8,6 +8,12 @@ public class SpConstant {
     //记录是否已经登录
     public static final String IS_LOGIN = "isLogIn";
 
+    //记录头部照片的URL
+    public static final String HEAD_PIC_URL = "head_pic";
+
+    //记录base64码的照片
+    public static final String IMAGE_BASE_64 = "image_base_64";
+
     //记录姓名
     public static final String STU_NAME = "stu_name";
 

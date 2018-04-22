@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name="com.lyy.guohe.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -37,7 +37,7 @@
         </provider>
 
         <!-- 果核桌面小部件的receiver -->
-        <receiver android:name="com.lyy.guohe.widget.KbWidget">
+        <receiver android:name=".widget.KbWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.lyy.widget.UPDATE_ALL" />
@@ -49,7 +49,7 @@
         </receiver>
 
         <activity
-            android:name="com.lyy.guohe.activity.SplashActivity"
+            android:name=".activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,31 +58,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.lyy.guohe.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme" />
-        <activity android:name="com.lyy.guohe.activity.LoginActivity" />
-        <activity android:name="com.lyy.guohe.activity.KbActivity" />
-        <activity android:name="com.lyy.guohe.activity.CropViewActivity" />
-        <activity android:name="com.lyy.guohe.activity.BrowserActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.KbActivity" />
+        <activity android:name=".activity.CropViewActivity" />
+        <activity android:name=".activity.BrowserActivity" />
         <activity
-            android:name="com.lyy.guohe.activity.UsActivity"
+            android:name=".activity.UsActivity"
             android:label="@string/about_us"
             android:theme="@style/AppTheme" />
-        <activity android:name="com.lyy.guohe.activity.ClassRoomActivity" />
-        <activity android:name="com.lyy.guohe.activity.LibraryActivity" />
-        <activity android:name="com.lyy.guohe.activity.BookList" />
-        <activity android:name="com.lyy.guohe.activity.BookDetail" />
-        <activity android:name="com.lyy.guohe.activity.SportActivity" />
-        <activity android:name="com.lyy.guohe.activity.ScoreActivity" />
+        <activity android:name=".activity.ClassRoomActivity" />
+        <activity android:name=".activity.LibraryActivity" />
+        <activity android:name=".activity.BookList" />
+        <activity android:name=".activity.BookDetail" />
+        <activity android:name=".activity.SportActivity" />
+        <activity android:name=".activity.ScoreActivity" />
         <!-- bugly版本更新对话框 -->
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
             android:theme="@android:style/Theme.Translucent" />
         <activity
-            android:name="com.lyy.guohe.activity.DialogActivity"
+            android:name=".activity.DialogActivity"
             android:theme="@style/NoTitleDialog" />
+        <activity
+            android:name=".activity.GameActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_game"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

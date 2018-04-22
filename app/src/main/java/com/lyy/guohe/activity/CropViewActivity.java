@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
+import com.lyy.guohe.utils.SpUtils;
 import com.oginotihiro.cropview.CropUtil;
 import com.oginotihiro.cropview.CropView;
 
@@ -21,8 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class CropViewActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private static final String TAG = "CropViewActivity";
 
     private CropView cropView;
     private LinearLayout btnlay;
@@ -90,6 +88,8 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
 
                     if (flag.equals("course")) {
                         SpUtils.putString(CropViewActivity.this, SpConstant.BG_COURSE_64, imageBase64);
+                    } else if (flag.equals("header")) {
+                        SpUtils.putString(CropViewActivity.this, SpConstant.IMAGE_BASE_64, imageBase64);
                     }
 
                     Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));

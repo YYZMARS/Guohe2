@@ -28,7 +28,7 @@
     <string name="checkUpdate">检测升级</string>
     <string name="updateInfo">更新说明</string>
     <string name="changeAccount">切换账号</string>
-    <string name="joinUs">加入内测群</string>
+    <string name="joinUs">加入交流群</string>
     <string name="title_activity_pe">PEActivity</string>
     <string name="large_text">
         "&#160;&#160;&#8201; 安卓：梁越勇\n"
@@ -41,4 +41,9 @@
     <string name="add_widget">Add widget</string>
     <string name="widget_title_default">第13周</string>
     <string name="building">前方施工，注意安全</string>
+    <string name="game">休闲游戏</string>
+
+    <string name="title_activity_game">GameActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

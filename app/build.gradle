@@ -15,8 +15,8 @@ android {
         }
         manifestPlaceholders = [
                 //腾讯MTA统计配置
-                MTA_APPKEY   : "A28UBH2TE8IT",
-                MTA_CHANNEL  : "tecent"
+                MTA_APPKEY : "A28UBH2TE8IT",
+                MTA_CHANNEL: "tecent"
         ]
     }
     buildTypes {

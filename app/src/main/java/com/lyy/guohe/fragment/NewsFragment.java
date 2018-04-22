@@ -97,15 +97,9 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position) {
-            case 0:
-                Intent intent = new Intent(getActivity(), BrowserActivity.class);
-                intent.putExtra("title", "第八届全国大学生绿植领养");
-                intent.putExtra("url", "https://m.weibo.cn/zt/schoolEvent?event=312&luicode=10000011&lfid=2302540002_6151");
-                intent.putExtra("isVpn", false);
-                startActivity(intent);
-                break;
-        }
+
+        Toasty.success(Objects.requireNonNull(getActivity()), "暂无内容，欢迎投稿", Toast.LENGTH_SHORT).show();
+
     }
 
     //获取轮播图
@@ -186,15 +180,15 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
         banner.start();
     }
 
-    private void initNews(){
-        News news1 = new News("http://p7gzvzwe4.bkt.clouddn.com/IMG_4157.JPG", "第八届全国大学生绿植领养", "https://m.weibo.cn/zt/schoolEvent?event=312&luicode=10000011&lfid=2302540002_6151");
+    private void initNews() {
+        News news1 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
         newsList.add(news1);
-        News news2 = new News("http://p7gzvzwe4.bkt.clouddn.com/IMG_4157.JPG", "第八届全国大学生绿植领养", "https://m.weibo.cn/zt/schoolEvent?event=312&luicode=10000011&lfid=2302540002_6151");
+        News news2 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
         newsList.add(news2);
-        News news3 = new News("http://p7gzvzwe4.bkt.clouddn.com/IMG_4157.JPG", "第八届全国大学生绿植领养", "https://m.weibo.cn/zt/schoolEvent?event=312&luicode=10000011&lfid=2302540002_6151");
-        newsList.add(news3);
-        News news4 = new News("http://p7gzvzwe4.bkt.clouddn.com/IMG_4157.JPG", "第八届全国大学生绿植领养", "https://m.weibo.cn/zt/schoolEvent?event=312&luicode=10000011&lfid=2302540002_6151");
-        newsList.add(news4);
+//        News news3 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
+//        newsList.add(news3);
+//        News news4 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
+//        newsList.add(news4);
 
         NewsAdapter newsAdapter = new NewsAdapter(getActivity(), R.layout.item_news, newsList);
         lv_news.setAdapter(newsAdapter);

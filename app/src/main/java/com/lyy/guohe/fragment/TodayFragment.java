@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.ClassRoomActivity;
+import com.lyy.guohe.activity.GameActivity;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.activity.LibraryActivity;
 import com.lyy.guohe.activity.ScoreActivity;
@@ -80,7 +81,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 NavigateUtil.navigateTo(getActivity(), KbActivity.class);
             }
         });
-        tvKbShow.setText("今天居然没有课~"+"\uD83D\uDE01");
+        tvKbShow.setText("今天居然没有课~" + "\uD83D\uDE01");
 
         LinearLayout navKb = view.findViewById(R.id.nav_kb);
         navKb.setOnClickListener(this);
@@ -98,6 +99,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         navCet.setOnClickListener(this);
         LinearLayout navPE = view.findViewById(R.id.nav_pe);
         navPE.setOnClickListener(this);
+        LinearLayout navGame=view.findViewById(R.id.nav_game);
+        navGame.setOnClickListener(this);
 
         initMess();
         initTodayKb();
@@ -133,8 +136,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                     }
                 }
                 if (courses.size() > 0) {
-                    for (Course c:courses){
-                        Log.d(TAG, "initTodayKb: "+c.getClassName());
+                    for (Course c : courses) {
+                        Log.d(TAG, "initTodayKb: " + c.getClassName());
                     }
                     tvKbShow.setVisibility(View.GONE);
                     lvKbToday.setVisibility(View.VISIBLE);
@@ -146,6 +149,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    //加载首页Message
     private void initMess() {
         HttpUtil.get(UrlConstant.GET_MSG, new Callback() {
             @Override
@@ -169,7 +173,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                             Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    tvMessage.setText(res.getInfo());
+                                    String s = res.getInfo();
+                                    tvMessage.setText(s.substring(2, s.length() - 2));
                                 }
                             });
                         } catch (Exception e) {
@@ -193,6 +198,51 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.nav_kb:
+                //跳转至课表
+                NavigateUtil.navigateTo(getActivity(), KbActivity.class);
+                break;
+            case R.id.nav_grade:
+                //跳转至成绩查询界面
+                NavigateUtil.navigateTo(getActivity(), ScoreActivity.class);
+                break;
+            case R.id.nav_library:
+                //跳转至图书馆藏查询
+                NavigateUtil.navigateTo(getActivity(), LibraryActivity.class);
+                break;
+            case R.id.nav_bus:
+                //显示即将到来的校车
+                showBusDialog(hasSchoolBus());
+                break;
+            case R.id.nav_cet:
+                Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                intent.putExtra("url", UrlConstant.CET);
+                intent.putExtra("title", "全国大学英语四六级考试成绩查询");
+                intent.putExtra("isVpn", false);
+                startActivity(intent);
+                break;
+            case R.id.nav_classroom:
+                //跳转至查询空教室
+                NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
+                break;
+            case R.id.nav_pe:
+                //显示可以进入的体育系统
+                showPEDialog();
+                break;
+            case R.id.nav_system:
+                //显示可以进入的校园系统
+                showSystemDialog();
+                break;
+            case R.id.nav_game:
+                //显示可以玩的小游戏
+                showGameDialog();
+                break;
+        }
     }
 
     //选择进入哪一个校园系统
@@ -402,40 +452,22 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         listDialog.show();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.nav_kb:
-                //跳转至课表
-                NavigateUtil.navigateTo(getActivity(), KbActivity.class);
-                break;
-            case R.id.nav_grade:
-                //跳转至成绩查询界面
-                NavigateUtil.navigateTo(getActivity(), ScoreActivity.class);
-                break;
-            case R.id.nav_library:
-                //跳转至图书馆藏查询
-                NavigateUtil.navigateTo(getActivity(), LibraryActivity.class);
-                break;
-            case R.id.nav_bus:
-                //显示即将到来的校车
-                showBusDialog(hasSchoolBus());
-                break;
-            case R.id.nav_cet:
-                break;
-            case R.id.nav_classroom:
-                //跳转至查询空教室
-                NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
-                break;
-            case R.id.nav_pe:
-                //显示可以进入的体育系统
-                showPEDialog();
-                break;
-            case R.id.nav_system:
-                //显示可以进入的校园系统
-                showSystemDialog();
-                break;
-        }
+
+
+    //弹出选择小游戏对话框
+    private void showGameDialog() {
+        final String[] items = {"六角消除", "2048", "六角拼拼", "无尽之旅", "彩虹穿越", "西部枪手", "经典纸牌", "三塔扑克", "Flappy Bird", "飞行小游戏"};
+        AlertDialog.Builder listDialog = new AlertDialog.Builder(getActivity());
+        listDialog.setTitle("请选择你要进入的游戏");
+        listDialog.setItems(items, (dialog, which) -> {
+            // which 下标从0开始
+            // ...To-do
+            Intent intent = new Intent(getActivity(), GameActivity.class);
+            intent.putExtra("which", which);
+            startActivity(intent);
+
+        });
+        listDialog.show();
     }
 
     @Override

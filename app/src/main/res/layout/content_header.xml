@@ -219,6 +219,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/nav_game"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -226,6 +227,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:src="@drawable/ic_menu_game"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
@@ -233,6 +235,7 @@
                 android:scaleType="centerCrop" />
 
             <TextView
+                android:text="@string/game"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
