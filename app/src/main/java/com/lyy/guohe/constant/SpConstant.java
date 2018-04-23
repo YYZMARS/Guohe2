@@ -8,9 +8,6 @@ public class SpConstant {
     //记录是否已经登录
     public static final String IS_LOGIN = "isLogIn";
 
-    //记录头部照片的URL
-    public static final String HEAD_PIC_URL = "head_pic";
-
     //记录base64码的照片
     public static final String IMAGE_BASE_64 = "image_base_64";
 
@@ -35,8 +32,8 @@ public class SpConstant {
     //记录服务器上的当前周次
     public static final String SERVER_WEEK = "server_week";
 
-    //记录是不是第一次导入课程表
-    public static final String FIRST_OPEN_COURSE = "first_open_course";
+    //记录是否导入课程表,true表示已经导入过课表，false表示未导入课表，默认为false
+    public static final String IS_OPEN_KB = "is_open_kb";
 
     //记录校历信息
     public static final String XIAO_LI = "xiao_li";

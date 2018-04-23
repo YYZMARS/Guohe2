@@ -58,8 +58,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
@@ -123,16 +125,55 @@ public class KbActivity extends AppCompatActivity {
 
     private String server_week;     //服务器当前周
 
+    private boolean isOpenKb;       //判断是否导入过课表
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kb);
 
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         mContext = this;
-
         all_year_list = new ArrayList<>();
+        stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
+        stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
+        //记录服务器当前周
+        server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
+        //记录本地是否已经导入过课表
+        isOpenKb = SpUtils.getBoolean(mContext, SpConstant.IS_OPEN_KB);
+        //初始化界面
+        initView();
+
+        //如果没有导入过课表,则发请求
+        if (isOpenKb) {
+            /**
+             * 如果已经导入过课表,先判断本地是否保存周次，
+             *      如果已经保存过周次，判断今天是不是周一，
+             *              如果是周一，则发一个请求获得当前周
+             *              如果不是周一，就显示当前周课表
+             *      如果没有保存周次，直接发送请求
+             */
+            if (server_week != null) {
+                tv_course_table_toolbar.setText("第" + server_week + "周");
+                Calendar calendar = Calendar.getInstance();
+                int weekday = calendar.get(Calendar.DAY_OF_WEEK);
+                //判断今天是不是周一,是周一就发送请求查询今天的周数
+                if (weekday == 2) {
+                    getXiaoLi();
+                } else {
+                    showKb(server_week);
+                }
+            } else {
+                getXiaoLi();
+            }
+        } else {
+            getXiaoLi();
+        }
+    }
+
+    //加载界面
+    private void initView() {
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
 
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.course_toolbar);
@@ -157,72 +198,18 @@ public class KbActivity extends AppCompatActivity {
             Glide.with(mContext).load(R.drawable.bg_kb_default).into(iv_course_table);
         }
 
-        //构造课表界面
-
-        courseTableView = (CourseTableView) findViewById(R.id.ctv);
-
-        courseTableView.setOnCourseItemClickListener(new CourseTableView.OnCourseItemClickListener() {
-            @Override
-            public void onCourseItemClick(TextView tv, int jieci, int day, String des) {
-//                String string = tv.getText().toString();
-                Log.d(TAG, "onCourseItemClick: " + des);
-                showCourseDialog(des);
-            }
-        });
-
+        //初始化课表导入的对话框
         mProgressDialog = new ProgressDialog(KbActivity.this);
         mProgressDialog.setMessage("课表导入中,请稍后……");
         mProgressDialog.setCancelable(true);
         mProgressDialog.setCanceledOnTouchOutside(true);
 
-        stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
-        stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
+        //构造课表界面
+        courseTableView = findViewById(R.id.ctv);
+        courseTableView.setOnCourseItemClickListener((tv, jieci, day, des) -> showCourseDialog(des));
 
-        server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
-        if (server_week != null) {
-            tv_course_table_toolbar.setText("第" + server_week + "周");
-
-            Calendar calendar = Calendar.getInstance();
-            int weekday = calendar.get(Calendar.DAY_OF_WEEK);
-            //判断今天是不是周一
-            if (weekday == 2) {
-                //判断是否第一次导入课表，默认false，没有导入课表
-                boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
-                if (first_open_course) {
-                    getXiaoLi();
-                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-                } else {
-                    showKb(server_week);
-                }
-            } else {
-                //判断是否第一次导入课表，默认false，没有导入课表
-                boolean first_open_course = SpUtils.getBoolean(mContext, SpConstant.FIRST_OPEN_COURSE);
-                if (first_open_course) {
-                    getXiaoLi();
-                    SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-                } else {
-                    showKb(server_week);
-                }
-            }
-
-            List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
-            if (dbCourses.size() == 0) {
-                getXiaoLi();
-                SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-            }
-
-            LinearLayout ll_week = (LinearLayout) findViewById(R.id.ll_week);
-            ll_week.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showWeekChoiceDialog(0);
-                }
-            });
-
-        } else {
-            getXiaoLi();
-            SpUtils.putBoolean(mContext, SpConstant.FIRST_OPEN_COURSE, false);
-        }
+        LinearLayout ll_week = (LinearLayout) findViewById(R.id.ll_week);
+        ll_week.setOnClickListener(v -> showWeekChoiceDialog(0));
     }
 
     //显示课程信息的对话框
@@ -273,12 +260,7 @@ public class KbActivity extends AppCompatActivity {
 
     //发送查询校历的请求
     private void getXiaoLi() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.show();
-            }
-        });
+        runOnUiThread(() -> mProgressDialog.show());
         String url = UrlConstant.XIAO_LI;
         if (stu_id != null && stu_pass != null) {
             final RequestBody requestBody = new FormBody.Builder()
@@ -304,59 +286,62 @@ public class KbActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         String data = response.body().string();
                         Res res = HttpUtil.handleResponse(data);
-                        assert res != null;
-                        if (res.getCode() == 200) {
-                            SpUtils.putString(mContext, SpConstant.XIAO_LI, res.getInfo());
-                            try {
-                                JSONObject object = new JSONObject(res.getInfo());
-                                //获取当前周数
-                                server_week = object.getString("weekNum");
-                                //获取这个学生所有的学年
-                                JSONArray jsonArray = object.getJSONArray("all_year");
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    all_year_list.add(jsonArray.get(i).toString());
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                SpUtils.putString(mContext, SpConstant.XIAO_LI, res.getInfo());
+                                try {
+                                    JSONObject object = new JSONObject(res.getInfo());
+                                    //获取当前周数
+                                    server_week = object.getString("weekNum");
+                                    //获取这个学生所有的学年
+                                    JSONArray jsonArray = object.getJSONArray("all_year");
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        all_year_list.add(jsonArray.get(i).toString());
+                                    }
+                                    current_year = all_year_list.get(0);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                                current_year = all_year_list.get(0);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tv_course_table_toolbar.setText("第" + server_week + "周");
+                                runOnUiThread(() -> tv_course_table_toolbar.setText("第" + server_week + "周"));
+                                SpUtils.putString(mContext, SpConstant.SERVER_WEEK, server_week);
+                                boolean isOpenKb = SpUtils.getBoolean(KbActivity.this, SpConstant.IS_OPEN_KB);
+                                //如果当前学年不为空并且没有导入过课表就执行查询课表请求
+                                if (current_year != null) {
+                                    if (!isOpenKb) {
+                                        getKbInfo(current_year);
+                                    } else {
+                                        runOnUiThread(() -> showKb(server_week));
+                                    }
                                 }
-                            });
-                            SpUtils.putString(mContext, SpConstant.SERVER_WEEK, server_week);
-                            if (current_year != null) {
-                                getKbInfo(current_year);
+                            } else {
+                                runOnUiThread(() -> {
+                                    if (mProgressDialog.isShowing())
+                                        mProgressDialog.dismiss();
+                                    Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         } else {
-                            Looper.prepare();
-                            if (mProgressDialog.isShowing())
-                                mProgressDialog.dismiss();
-                            Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                            Looper.loop();
-                        }
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                            runOnUiThread(() -> {
                                 if (mProgressDialog.isShowing())
                                     mProgressDialog.dismiss();
-                                Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                            }
+                                Toasty.error(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+
+                    } else {
+                        runOnUiThread(() -> {
+                            if (mProgressDialog.isShowing())
+                                mProgressDialog.dismiss();
+                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
                 }
             });
         } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mProgressDialog.isShowing())
-                        mProgressDialog.dismiss();
-                    Toasty.error(mContext, "出现错误，请稍后重试", Toast.LENGTH_SHORT).show();
-                }
+            runOnUiThread(() -> {
+                if (mProgressDialog.isShowing())
+                    mProgressDialog.dismiss();
+                Toasty.error(mContext, "出现错误，请稍后重试", Toast.LENGTH_SHORT).show();
             });
         }
     }
@@ -373,13 +358,10 @@ public class KbActivity extends AppCompatActivity {
         HttpUtil.post(url, requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mProgressDialog.isShowing())
-                            mProgressDialog.dismiss();
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                runOnUiThread(() -> {
+                    if (mProgressDialog.isShowing())
+                        mProgressDialog.dismiss();
+                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -389,148 +371,148 @@ public class KbActivity extends AppCompatActivity {
                     String data = response.body().string();
                     if (data.length() > 3) {
                         Res res = HttpUtil.handleResponse(data);
-                        assert res != null;
-                        if (res.getCode() == 200) {
-                            try {
-                                JSONArray jsonArray = new JSONArray(res.getInfo());
-                                for (int k = 1; k <= jsonArray.length(); k++) {
-                                    JSONObject object = jsonArray.getJSONObject(k - 1);
-                                    JSONArray innerArray = object.getJSONArray(year + "_" + k);
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject monday = innerArray.getJSONObject(i);
-                                        if (!monday.getString("monday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(1);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setZhouci(k);
-                                            course.setDes(monday.getString("monday"));
-                                            course.save();
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                try {
+                                    JSONArray jsonArray = new JSONArray(res.getInfo());
+                                    for (int k = 1; k <= jsonArray.length(); k++) {
+                                        JSONObject object = jsonArray.getJSONObject(k - 1);
+                                        JSONArray innerArray = object.getJSONArray(year + "_" + k);
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject monday = innerArray.getJSONObject(i);
+                                            if (!monday.getString("monday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(1);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setZhouci(k);
+                                                course.setDes(monday.getString("monday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject tuesday = innerArray.getJSONObject(i);
-                                        if (!tuesday.getString("tuesday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(2);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setZhouci(k);
-                                            course.setDes(tuesday.getString("tuesday"));
-                                            course.save();
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject tuesday = innerArray.getJSONObject(i);
+                                            if (!tuesday.getString("tuesday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(2);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setZhouci(k);
+                                                course.setDes(tuesday.getString("tuesday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject wednesday = innerArray.getJSONObject(i);
-                                        if (!wednesday.getString("wednesday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(3);
-                                            course.setZhouci(k);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setDes(wednesday.getString("wednesday"));
-                                            course.save();
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject wednesday = innerArray.getJSONObject(i);
+                                            if (!wednesday.getString("wednesday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(3);
+                                                course.setZhouci(k);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setDes(wednesday.getString("wednesday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject thursday = innerArray.getJSONObject(i);
-                                        if (!thursday.getString("thursday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(4);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setZhouci(k);
-                                            course.setDes(thursday.getString("thursday"));
-                                            course.save();
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject thursday = innerArray.getJSONObject(i);
+                                            if (!thursday.getString("thursday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(4);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setZhouci(k);
+                                                course.setDes(thursday.getString("thursday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject friday = innerArray.getJSONObject(i);
-                                        if (!friday.getString("friday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(5);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setZhouci(k);
-                                            course.setDes(friday.getString("friday"));
-                                            course.save();
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject friday = innerArray.getJSONObject(i);
+                                            if (!friday.getString("friday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(5);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setZhouci(k);
+                                                course.setDes(friday.getString("friday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject saturday = innerArray.getJSONObject(i);
-                                        if (!saturday.getString("saturday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(6);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setZhouci(k);
-                                            course.setDes(saturday.getString("saturday"));
-                                            course.save();
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject saturday = innerArray.getJSONObject(i);
+                                            if (!saturday.getString("saturday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(6);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setZhouci(k);
+                                                course.setDes(saturday.getString("saturday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
-                                    for (int i = 0; i < 5; i++) {
-                                        JSONObject sunday = innerArray.getJSONObject(i);
-                                        if (!sunday.getString("sunday").equals("")) {
-                                            DBCourse course = new DBCourse();
-                                            course.setDay(7);
-                                            course.setJieci((i * 2) + 1);
-                                            course.setZhouci(k);
-                                            course.setDes(sunday.getString("sunday"));
-                                            course.save();
+                                        for (int i = 0; i < 5; i++) {
+                                            JSONObject sunday = innerArray.getJSONObject(i);
+                                            if (!sunday.getString("sunday").equals("")) {
+                                                DBCourse course = new DBCourse();
+                                                course.setDay(7);
+                                                course.setJieci((i * 2) + 1);
+                                                course.setZhouci(k);
+                                                course.setDes(sunday.getString("sunday"));
+                                                course.save();
+                                            }
                                         }
-                                    }
 
-                                    DBDate dbDate = new DBDate();
+                                        DBDate dbDate = new DBDate();
 
-                                    dbDate.setZhouci(k);
-                                    JSONObject object1 = innerArray.getJSONObject(5);
-                                    String month = object1.getString("month");
-                                    dbDate.setMonth(month);
+                                        dbDate.setZhouci(k);
+                                        JSONObject object1 = innerArray.getJSONObject(5);
+                                        String month = object1.getString("month");
+                                        dbDate.setMonth(month);
 
-                                    JSONArray dateArray = object1.getJSONArray("date");
-                                    StringBuilder date = new StringBuilder();
-                                    for (int i = 0; i < 7; i++) {
-                                        if (i != 6) {
-                                            date.append(dateArray.getString(i)).append(",");
-                                        } else {
-                                            date.append(dateArray.getString(i));
+                                        JSONArray dateArray = object1.getJSONArray("date");
+                                        StringBuilder date = new StringBuilder();
+                                        for (int i = 0; i < 7; i++) {
+                                            if (i != 6) {
+                                                date.append(dateArray.getString(i)).append(",");
+                                            } else {
+                                                date.append(dateArray.getString(i));
+                                            }
                                         }
+                                        dbDate.setDate(date.toString());
+                                        dbDate.save();
+                                        //表示已经导入过课表
+                                        SpUtils.putBoolean(mContext, SpConstant.IS_OPEN_KB, true);
+                                        runOnUiThread(() -> {
+                                            if (mProgressDialog.isShowing()) {
+                                                mProgressDialog.dismiss();
+                                            }
+                                            showKb(server_week);
+                                        });
                                     }
-                                    dbDate.setDate(date.toString());
-                                    dbDate.save();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mProgressDialog.isShowing()) {
+                            } else {
+                                runOnUiThread(() -> {
+                                    if (mProgressDialog.isShowing())
                                         mProgressDialog.dismiss();
-                                    }
-                                    showKb(server_week);
-                                }
-                            });
+                                    Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                });
+                            }
                         } else {
-                            Looper.prepare();
-                            if (mProgressDialog.isShowing())
-                                mProgressDialog.dismiss();
-                            Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                            Looper.loop();
-                        }
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                            runOnUiThread(() -> {
                                 if (mProgressDialog.isShowing())
                                     mProgressDialog.dismiss();
                                 Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
-                            }
+                            });
+                        }
+                    } else {
+                        runOnUiThread(() -> {
+                            if (mProgressDialog.isShowing())
+                                mProgressDialog.dismiss();
+                            Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
 
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mProgressDialog.isShowing())
-                                mProgressDialog.dismiss();
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        if (mProgressDialog.isShowing())
+                            mProgressDialog.dismiss();
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -545,10 +527,13 @@ public class KbActivity extends AppCompatActivity {
         List<String> stringList = new ArrayList<>();
 
         for (DBCourse dbCourse : courseList) {
-            stringList.add(dbCourse.getDes());
+            String courseInfo[] = dbCourse.getDes().split("@");
+            String courseName = courseInfo[1];
+            stringList.add(courseName);
         }
 
         List<String> listWithoutDup = new ArrayList<>(new HashSet<>(stringList));
+        listWithoutDup.add("");     //加这句是为了防止数组越界
 
         for (DBCourse dbCourse : courseList) {
             Course course = new Course();
@@ -586,7 +571,7 @@ public class KbActivity extends AppCompatActivity {
                 course.setClassRoomName(courseClassroom);  //教室
                 course.setClassTeacher(courseTeacher);   //教师
                 course.setClassTypeName(courseNum);  //课程号
-                course.setBg_Color(color[listWithoutDup.indexOf(dbCourse.getDes())]);
+                course.setBg_Color(color[listWithoutDup.indexOf(courseName)]);
                 list.add(course);
             }
         }
@@ -614,18 +599,17 @@ public class KbActivity extends AppCompatActivity {
         courseTableView.drawFrame();
         courseTableView.updateCourseViews(list);
 
-//        Intssent updateIntent = new Intent(ACTION_UPDATE_ALL);
-//        mContext.sendBroadcast(updateIntent);
+        //发送小部件更新的广播
+        Intent updateIntent = new Intent("com.lyy.widget.UPDATE_ALL");
+        mContext.sendBroadcast(updateIntent);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mProgressDialog.isShowing())
-                    mProgressDialog.dismiss();
-            }
+        runOnUiThread(() -> {
+            if (mProgressDialog.isShowing())
+                mProgressDialog.dismiss();
         });
     }
 
+    //从相册中选择背景图片
     private void choosePhotoFromGallery() {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
@@ -649,12 +633,8 @@ public class KbActivity extends AppCompatActivity {
                 DataSupport.deleteAll(DBCourse.class);
                 SpUtils.remove(mContext, SpConstant.SERVER_WEEK);
                 SpUtils.remove(mContext, SpConstant.XIAO_LI);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getXiaoLi();
-                    }
-                });
+                SpUtils.remove(mContext, SpConstant.IS_OPEN_KB);
+                getXiaoLi();
                 break;
             case R.id.action_change_year:
                 showSchoolYearChoiceDialog();
@@ -696,16 +676,19 @@ public class KbActivity extends AppCompatActivity {
             case CHOOSE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     // 判断手机系统版本号
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        // 4.4及以上系统使用这个方法处理图片
-                        Uri uri = data.getData();
-                        Intent cropIntent = new Intent(KbActivity.this, CropViewActivity.class);
-                        assert uri != null;
+                    // 4.4及以上系统使用这个方法处理图片
+                    Uri uri = data.getData();
+                    Intent cropIntent = new Intent(KbActivity.this, CropViewActivity.class);
+                    if (uri != null) {
                         cropIntent.putExtra("uri", uri.toString());
                         cropIntent.putExtra("flag", "course");
                         startActivity(cropIntent);
                     } else {
-                        Toasty.error(KbActivity.this, "安卓版本过低", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(() -> {
+                            if (mProgressDialog.isShowing())
+                                mProgressDialog.dismiss();
+                            Toasty.error(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 }
                 break;

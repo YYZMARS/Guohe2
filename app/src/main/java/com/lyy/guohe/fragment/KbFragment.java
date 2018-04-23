@@ -13,26 +13,40 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.flyco.animation.BounceEnter.BounceBottomEnter;
 import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.widget.MaterialDialog;
+import com.lyy.guohe.R;
+import com.lyy.guohe.constant.SpConstant;
+import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Course;
 import com.lyy.guohe.model.DBCourse;
 import com.lyy.guohe.model.DBDate;
+import com.lyy.guohe.model.Res;
+import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.lyy.guohe.R;
-import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.view.CourseTableView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class KbFragment extends Fragment {
 
@@ -70,6 +84,9 @@ public class KbFragment extends Fragment {
     };
     private String server_week;     //服务器当前周
 
+    private String stu_id;
+    private String stu_pass;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -77,6 +94,8 @@ public class KbFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_kb, container, false);
         mContext = getActivity();
+        stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
+        stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
         //初始化课表的背景
         ImageView iv_course_table = view.findViewById(R.id.iv_course_table);
         String bg_course_64 = SpUtils.getString(mContext, SpConstant.BG_COURSE_64);
@@ -102,10 +121,16 @@ public class KbFragment extends Fragment {
         mProgressDialog.setCanceledOnTouchOutside(true);
 
         server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
-        if (dbCourses.size() > 0) {
-            showKb(server_week);
+        Calendar calendar = Calendar.getInstance();
+        int weekday = calendar.get(Calendar.DAY_OF_WEEK);
+        //判断今天是不是周一,是周一就发送请求查询今天的周数
+        if (weekday == 2) {
+            getXiaoLi();
+        } else {
+            if (dbCourses.size() > 0) {
+                showKb(server_week);
+            }
         }
-
         return view;
     }
 
@@ -152,6 +177,48 @@ public class KbFragment extends Fragment {
 
     }
 
+    //发送查询校历的请求
+    private void getXiaoLi() {
+        String url = UrlConstant.XIAO_LI;
+        if (stu_id != null && stu_pass != null) {
+            final RequestBody requestBody = new FormBody.Builder()
+                    .add("username", stu_id)
+                    .add("password", stu_pass)
+                    .build();
+
+            HttpUtil.post(url, requestBody, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String data = response.body().string();
+                        Res res = HttpUtil.handleResponse(data);
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                SpUtils.putString(mContext, SpConstant.XIAO_LI, res.getInfo());
+                                try {
+                                    JSONObject object = new JSONObject(res.getInfo());
+                                    //获取当前周数
+                                    server_week = object.getString("weekNum");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                SpUtils.putString(mContext, SpConstant.SERVER_WEEK, server_week);
+                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> showKb(server_week));
+                            }
+                        } else {
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                        }
+
+                    }
+                }
+            });
+        }
+    }
+
     //显示课表
     private void showKb(final String week) {
         List<Course> list = new ArrayList<>();
@@ -161,10 +228,13 @@ public class KbFragment extends Fragment {
             List<String> stringList = new ArrayList<>();
 
             for (DBCourse dbCourse : courseList) {
-                stringList.add(dbCourse.getDes());
+                String courseInfo[] = dbCourse.getDes().split("@");
+                String courseName = courseInfo[1];
+                stringList.add(courseName);
             }
 
             List<String> listWithoutDup = new ArrayList<>(new HashSet<>(stringList));
+            listWithoutDup.add("");     //加这句是为了防止数组越界
 
             for (DBCourse dbCourse : courseList) {
                 Course course = new Course();
@@ -202,7 +272,7 @@ public class KbFragment extends Fragment {
                     course.setClassRoomName(courseClassroom);  //教室
                     course.setClassTeacher(courseTeacher);   //教师
                     course.setClassTypeName(courseNum);  //课程号
-                    course.setBg_Color(color[listWithoutDup.indexOf(dbCourse.getDes())]);
+                    course.setBg_Color(color[listWithoutDup.indexOf(courseName)]);
                     list.add(course);
                 }
             }

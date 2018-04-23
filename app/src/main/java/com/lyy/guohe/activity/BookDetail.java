@@ -65,11 +65,9 @@ public class BookDetail extends AppCompatActivity {
         // 设置下拉进度的主题颜色
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
 
-        listener = new SwipeRefreshLayout.OnRefreshListener() {
-            public void onRefresh() {
-                //TODO
-                requestBookDetail(keyword);
-            }
+        listener = () -> {
+            //TODO
+            requestBookDetail(keyword);
         };
 
         swipeRefreshLayout.setOnRefreshListener(listener);
@@ -88,12 +86,7 @@ public class BookDetail extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
+                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
                         Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -104,82 +97,70 @@ public class BookDetail extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     Res res = HttpUtil.handleResponse(data);
-                    assert res != null;
-                    if (res.getCode() == 200) {
-                        try {
-                            JSONArray array = new JSONArray(res.getInfo());
-                            for (int i = 0; i < array.length() - 1; i++) {
-                                JSONObject object = array.getJSONObject(i);
-                                String place = object.getString("place");
-                                String call_number = object.getString("call_number");
-                                String barcode = object.getString("barcode");
+                    if (res != null) {
+                        if (res.getCode() == 200) {
+                            try {
+                                JSONArray array = new JSONArray(res.getInfo());
+                                for (int i = 0; i < array.length() - 1; i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    String place = object.getString("place");
+                                    String call_number = object.getString("call_number");
+                                    String barcode = object.getString("barcode");
 
-                                String finalPlace = place.split(" ")[place.split(" ").length - 1];
+                                    String finalPlace = place.split(" ")[place.split(" ").length - 1];
 
-                                com.lyy.guohe.model.BookDetail bookDetail = new com.lyy.guohe.model.BookDetail(call_number, barcode, finalPlace);
-                                bookDetailList.add(bookDetail);
+                                    com.lyy.guohe.model.BookDetail bookDetail = new com.lyy.guohe.model.BookDetail(call_number, barcode, finalPlace);
+                                    bookDetailList.add(bookDetail);
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            BookDetailAdapter bookDetailAdapter = new BookDetailAdapter(BookDetail.this, R.layout.item_book_detail, bookDetailList);
+                                            lv_book_detail.setAdapter(bookDetailAdapter);
+                                            lv_book_detail.setVisibility(View.VISIBLE);
+                                        }
+                                    });
+                                }
+                                JSONObject object = array.getJSONObject(array.length() - 1);
+                                final String book_isbn = object.getString("book_isbn");
+                                final String book_press = object.getString("book_press");
+                                final String book_outline = object.getString("book_outline");
+                                final String book_name = object.getString("book_name");
+                                final String book_type = object.getString("book_type");
+                                final String book_author = object.getString("book_author");
 
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        BookDetailAdapter bookDetailAdapter = new BookDetailAdapter(BookDetail.this, R.layout.item_book_detail, bookDetailList);
-                                        lv_book_detail.setAdapter(bookDetailAdapter);
-                                        lv_book_detail.setVisibility(View.VISIBLE);
+                                        tv_book_name.setText(book_name);
+                                        tv_book_author.setText(book_author);
+                                        tv_book_type.setText(book_type);
+                                        tv_book_press.setText(book_press);
+                                        tv_book_isbn.setText(book_isbn);
+                                        tv_book_outline.setText(book_outline);
                                     }
                                 });
+                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            JSONObject object = array.getJSONObject(array.length() - 1);
-                            final String book_isbn = object.getString("book_isbn");
-                            final String book_press = object.getString("book_press");
-                            final String book_outline = object.getString("book_outline");
-                            final String book_name = object.getString("book_name");
-                            final String book_type = object.getString("book_type");
-                            final String book_author = object.getString("book_author");
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tv_book_name.setText(book_name);
-                                    tv_book_author.setText(book_author);
-                                    tv_book_type.setText(book_type);
-                                    tv_book_press.setText(book_press);
-                                    tv_book_isbn.setText(book_isbn);
-                                    tv_book_outline.setText(book_outline);
-                                }
+                        } else {
+                            runOnUiThread(() -> {
+                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
                             });
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
                     } else {
-                        Looper.prepare();
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
+                        runOnUiThread(() -> {
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                            Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
-                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                        Looper.loop();
                     }
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -228,24 +209,16 @@ public class BookDetail extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.book_detail_scrollView);
 
         if (scrollView != null) {
-            scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged() {
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setEnabled(scrollView.getScrollY() == 0);
-                    }
+            scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setEnabled(scrollView.getScrollY() == 0);
                 }
             });
         }
 
         initSwipeRefresh(book_url);
 
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
-            }
-        });
+        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(true));
         listener.onRefresh();
 
     }

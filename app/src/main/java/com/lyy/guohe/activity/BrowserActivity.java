@@ -187,32 +187,31 @@ public class BrowserActivity extends AppCompatActivity {
                         cookie = response.headers("Set-Cookie").get(0)
                                 + ";" + response.headers("Set-Cookie").get(1)
                                 + ";" + response.headers("Set-Cookie").get(2);
-                        assert location != null;
-                        Request request = new Request.Builder().url(location)
-                                .headers(requestHeaders).header("Cookie", cookie).build();
-                        try {
-                            response = mOkHttpClient.newCall(request).execute();
-                            cookie = cookie + ";" + response.header("Set-Cookie");
-                            response.close();
-                            if (cookie != null) {
-                                CookieManager cookieManager = CookieManager.getInstance();
-                                for (String t : cookie.split(";")) {
-                                    cookieManager.setCookie(X5url, t);
+                        if (location!=null){
+                            Request request = new Request.Builder().url(location)
+                                    .headers(requestHeaders).header("Cookie", cookie).build();
+                            try {
+                                response = mOkHttpClient.newCall(request).execute();
+                                cookie = cookie + ";" + response.header("Set-Cookie");
+                                response.close();
+                                if (cookie != null) {
+                                    CookieManager cookieManager = CookieManager.getInstance();
+                                    for (String t : cookie.split(";")) {
+                                        cookieManager.setCookie(X5url, t);
+                                    }
                                 }
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                                runOnUiThread(() -> {
                                     initView();
                                     message.what = 0;
                                     handler.sendMessage(message);
                                     mWebview.setInitialScale(100);
                                     mWebview.loadUrl(X5url);
-                                }
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+
                     }
                 }
             });
@@ -286,23 +285,24 @@ public class BrowserActivity extends AppCompatActivity {
             sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[]{xtm}, new SecureRandom());
 
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
         }
         HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+            @SuppressLint("BadHostnameVerifier")
             @Override
             public boolean verify(String hostname, SSLSession session) {
                 return true;
             }
         };
-        assert sslContext != null;
-        mOkHttpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory())
-                .hostnameVerifier(DO_NOT_VERIFY)
-                .followRedirects(false)
-                .followSslRedirects(false)
-                .build();
+        if (sslContext != null) {
+            mOkHttpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory())
+                    .hostnameVerifier(DO_NOT_VERIFY)
+                    .followRedirects(false)
+                    .followSslRedirects(false)
+                    .build();
+        }
+
     }
 
     /*
@@ -366,39 +366,41 @@ public class BrowserActivity extends AppCompatActivity {
                     cookie = response.headers("Set-Cookie").get(0)
                             + ";" + response.headers("Set-Cookie").get(1)
                             + ";" + response.headers("Set-Cookie").get(2);
-                    assert location != null;
-                    Request request = new Request.Builder().url(location)
-                            .headers(requestHeaders).header("Cookie", cookie).build();
-                    try {
-                        response = mOkHttpClient.newCall(request).execute();
-                        cookie = cookie + ";" + response.header("Set-Cookie");
-                        response.close();
-                        if (cookie != null) {
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                                CookieSyncManager.createInstance(mContext);
+                    if (location != null) {
+                        Request request = new Request.Builder().url(location)
+                                .headers(requestHeaders)
+                                .header("Cookie", cookie)
+                                .build();
+                        try {
+                            response = mOkHttpClient.newCall(request).execute();
+                            cookie = cookie + ";" + response.header("Set-Cookie");
+                            response.close();
+                            if (cookie != null) {
+                                CookieManager cookieManager = CookieManager.getInstance();
+                                for (String t : cookie.split(";")) {
+                                    cookieManager.setCookie(url, t);
+                                }
                             }
-                            CookieManager cookieManager = CookieManager.getInstance();
-                            for (String t : cookie.split(";")) {
-                                cookieManager.setCookie(url, t);
-                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    initView();
+                                    mWebview.setInitialScale(100);
+                                    mWebview.loadUrl(url);
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initView();
-                                mWebview.setInitialScale(100);
-                                mWebview.loadUrl(url);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
+
                 }
             }
         });
 
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initView() {
         mWebview = (WebView) findViewById(R.id.webview);
         progressBar = (ProgressBar) findViewById(R.id.progress);
@@ -517,10 +519,12 @@ public class BrowserActivity extends AppCompatActivity {
                     .add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
                     .build();
             X509TrustManager xtm = new X509TrustManager() {
+                @SuppressLint("TrustAllX509TrustManager")
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
 
+                @SuppressLint("TrustAllX509TrustManager")
                 @Override
                 public void checkServerTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -535,52 +539,52 @@ public class BrowserActivity extends AppCompatActivity {
                 sslContext = SSLContext.getInstance("SSL");
                 sslContext.init(null, new TrustManager[]{xtm}, new SecureRandom());
 
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
                 e.printStackTrace();
             }
             HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+                @SuppressLint("BadHostnameVerifier")
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
                 }
             };
-            assert sslContext != null;
-            OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
-                    .sslSocketFactory(sslContext.getSocketFactory())
-                    .hostnameVerifier(DO_NOT_VERIFY)
-                    .followRedirects(false)
-                    .followSslRedirects(false)
-                    .build();
-            Request request = new Request.Builder()
-                    .url("https://vpn.just.edu.cn/dana-na/auth/logout.cgi")
-                    .headers(requestHeaders)
-                    .header("Cookie", cookie)
-                    .build();
+            if (sslContext!=null){
+                OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
+                        .sslSocketFactory(sslContext.getSocketFactory())
+                        .hostnameVerifier(DO_NOT_VERIFY)
+                        .followRedirects(false)
+                        .followSslRedirects(false)
+                        .build();
+                Request request = new Request.Builder()
+                        .url("https://vpn.just.edu.cn/dana-na/auth/logout.cgi")
+                        .headers(requestHeaders)
+                        .header("Cookie", cookie)
+                        .build();
 
-            mOkHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toasty.error(mContext, "退出VPN失败", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                mOkHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toasty.error(mContext, "退出VPN失败", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
 
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    response.close();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toasty.success(mContext, "成功退出VPN", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        response.close();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toasty.success(mContext, "成功退出VPN", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 

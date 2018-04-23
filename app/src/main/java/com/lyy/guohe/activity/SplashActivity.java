@@ -21,22 +21,19 @@ public class SplashActivity extends AppCompatActivity {
 
 
         //延迟跳转
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
 
-                initMTA();
+            initMTA();
 
-                boolean isLogIn = SpUtils.getBoolean(getApplicationContext(), SpConstant.IS_LOGIN);
-                if (isLogIn) {
-                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+            boolean isLogIn = SpUtils.getBoolean(getApplicationContext(), SpConstant.IS_LOGIN);
+            if (isLogIn) {
+                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         }, 2000);
     }

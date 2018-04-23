@@ -4,9 +4,13 @@ import com.lyy.guohe.model.Res;
 
 import org.json.JSONObject;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -53,5 +57,18 @@ public class HttpUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    //通过传递map对象获得post请求的body
+    public static RequestBody getBody(Map map) {
+        FormBody.Builder builder = new FormBody.Builder();
+        Set keySet = map.keySet(); // key的set集合
+        Iterator it = keySet.iterator();
+        while (it.hasNext()) {
+            Object k = it.next(); // key
+            Object v = map.get(k);  //value
+            builder.add(k.toString(), v.toString());
+        }
+        return builder.build();
     }
 }

@@ -46,6 +46,8 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
         cancelBtn.setOnClickListener(this);
 
         Intent intent = getIntent();
+        if (getIntent() == null) throw new NullPointerException("缺少必须的参数");
+        if (!getIntent().hasExtra("uri")) throw new NullPointerException("缺少必须的参数");
         uri = Uri.parse(intent.getStringExtra("uri"));
         flag = intent.getStringExtra("flag");
 

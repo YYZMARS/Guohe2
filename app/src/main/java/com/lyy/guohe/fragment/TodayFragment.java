@@ -99,7 +99,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         navCet.setOnClickListener(this);
         LinearLayout navPE = view.findViewById(R.id.nav_pe);
         navPE.setOnClickListener(this);
-        LinearLayout navGame=view.findViewById(R.id.nav_game);
+        LinearLayout navGame = view.findViewById(R.id.nav_game);
         navGame.setOnClickListener(this);
 
         initMess();
@@ -154,12 +154,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         HttpUtil.get(UrlConstant.GET_MSG, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvMessage.setText("服务器异常");
-                    }
-                });
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
             }
 
             @Override
@@ -167,34 +162,24 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 String data = response.body().string();
                 if (response.isSuccessful()) {
                     final Res res = HttpUtil.handleResponse(data);
-                    assert res != null;
-                    if (res.getCode() == 200) {
-                        try {
-                            Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                    if (res!=null){
+                        if (res.getCode() == 200) {
+                            try {
+                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
                                     String s = res.getInfo();
                                     tvMessage.setText(s.substring(2, s.length() - 2));
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tvMessage.setText("服务器异常");
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        });
+                        } else {
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                        }
+                    }else {
+                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
                     }
                 } else {
-                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvMessage.setText("服务器异常");
-                        }
-                    });
+                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
                 }
             }
         });
@@ -451,7 +436,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         });
         listDialog.show();
     }
-
 
 
     //弹出选择小游戏对话框

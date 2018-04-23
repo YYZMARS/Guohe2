@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity
         listTextViews = new ArrayList<>();
 
         listTitles.add("今日");
-        listTitles.add("课表");
+        listTitles.add("本周");
         listTitles.add("广播");
         listTitles.add("操场");
 

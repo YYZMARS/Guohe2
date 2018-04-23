@@ -154,52 +154,65 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                         mProgressDialog.setCancelable(true);
                         mProgressDialog.setCanceledOnTouchOutside(true);
                         final String username1 = SpUtils.getString(mContext, SpConstant.STU_ID);
-//                        String url = UrlConstant.CLUB_SCORE;
-                        RequestBody requestBody = new FormBody.Builder()
-                                .add("username", username1)
-                                .add("password", editText.getText().toString())
-                                .build();
-                        HttpUtil.post(url, requestBody, new Callback() {
-                            @Override
-                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                runOnUiThread(() -> {
-                                    if (mProgressDialog.isShowing())
-                                        mProgressDialog.dismiss();
-                                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                                });
-                            }
-
-                            @Override
-                            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
-                                if (response.isSuccessful()) {
-                                    String data = response.body().string();
-                                    Res res = HttpUtil.handleResponse(data);
-                                    assert res != null;
-                                    if (res.getCode() == 200) {
-                                        runOnUiThread(() -> {
-                                            mProgressDialog.dismiss();
-                                            mProgressDialog = ProgressDialog.show(SportActivity.this, null, "验证成功,请稍后……", true, false);
-                                            mProgressDialog.setCancelable(true);
-                                            mProgressDialog.setCanceledOnTouchOutside(true);
-                                            getSportScore(username1, editText.getText().toString());
-                                            SpUtils.putString(mContext, SpConstant.PE_PASS, editText.getText().toString());
-                                        });
-                                    } else {
-                                        Looper.prepare();
-                                        if (mProgressDialog.isShowing())
-                                            mProgressDialog.dismiss();
-                                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
-                                } else {
+                        String pePass1 = editText.getText().toString();
+                        if (username1 != null && !pePass1.equals("")) {
+                            RequestBody requestBody = new FormBody.Builder()
+                                    .add("username", username1)
+                                    .add("password", pePass1)
+                                    .build();
+                            HttpUtil.post(url, requestBody, new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
                                     runOnUiThread(() -> {
                                         if (mProgressDialog.isShowing())
                                             mProgressDialog.dismiss();
-                                        Toasty.error(mContext, "服务器发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                                     });
                                 }
-                            }
-                        });
+
+                                @Override
+                                public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
+                                    if (response.isSuccessful()) {
+                                        String data = response.body().string();
+                                        Res res = HttpUtil.handleResponse(data);
+                                        if (res != null) {
+                                            if (res.getCode() == 200) {
+                                                runOnUiThread(() -> {
+                                                    mProgressDialog.dismiss();
+                                                    mProgressDialog = ProgressDialog.show(SportActivity.this, null, "验证成功,请稍后……", true, false);
+                                                    mProgressDialog.setCancelable(true);
+                                                    mProgressDialog.setCanceledOnTouchOutside(true);
+                                                    getSportScore(username1, pePass1);
+                                                    SpUtils.putString(mContext, SpConstant.PE_PASS, pePass1);
+                                                });
+                                            } else {
+                                                runOnUiThread(() -> {
+                                                    if (mProgressDialog.isShowing())
+                                                        mProgressDialog.dismiss();
+                                                    Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                                });
+                                            }
+                                        } else {
+                                            runOnUiThread(() -> {
+                                                if (mProgressDialog.isShowing())
+                                                    mProgressDialog.dismiss();
+                                                Toasty.error(mContext, "发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
+                                    } else {
+                                        runOnUiThread(() -> {
+                                            if (mProgressDialog.isShowing())
+                                                mProgressDialog.dismiss();
+                                            Toasty.error(mContext, "服务器发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
+                            runOnUiThread(() -> {
+                                Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show();
+                            });
+                        }
                     }).show();
         }
     }
@@ -229,76 +242,80 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                     if (response.isSuccessful()) {
                         String data = response.body().string();
                         Res res = HttpUtil.handleResponse(data);
-                        assert res != null;
-                        if (res.getCode() == 200) {
-                            try {
-                                JSONArray array = new JSONArray(res.getInfo());
-                                JSONObject object = array.getJSONObject(0);
-                                final String year = object.getString("year");
-                                String name = object.getString("name");
-                                String total = object.getString("total");
-                                final String sum = object.getString("sum");
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                try {
+                                    JSONArray array = new JSONArray(res.getInfo());
+                                    JSONObject object = array.getJSONObject(0);
+                                    final String year = object.getString("year");
+                                    String name = object.getString("name");
+                                    String total = object.getString("total");
+                                    final String sum = object.getString("sum");
 
-                                SpUtils.putString(mContext, "sport_info", total);
+                                    SpUtils.putString(mContext, "sport_info", total);
 
-                                JSONArray innerArray = array.getJSONArray(1);
-                                for (int i = 0; i < innerArray.length(); i++) {
-                                    JSONObject innerObject = innerArray.getJSONObject(i);
-                                    String number = innerObject.getString("number");
-                                    String date = innerObject.getString("date");
-                                    String time = innerObject.getString("time");
+                                    JSONArray innerArray = array.getJSONArray(1);
+                                    for (int i = 0; i < innerArray.length(); i++) {
+                                        JSONObject innerObject = innerArray.getJSONObject(i);
+                                        String number = innerObject.getString("number");
+                                        String date = innerObject.getString("date");
+                                        String time = innerObject.getString("time");
 
-                                    Sport sport = new Sport(time, number, date);
-                                    sportList.add(sport);
-                                }
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        String temp = sum.substring(sum.indexOf(" ") + 1, sum.lastIndexOf(" "));
-                                        tv_sport_info.setText(temp.substring(0, temp.indexOf("(")));
-                                        String[] s = year.split(" ");
-                                        tv_sport_year.setText(s[1]);
-
-                                        SportAdapter sportAdapter = new SportAdapter(SportActivity.this, R.layout.item_sport, sportList);
-                                        if (sportList.size() == 0) {
-                                            Toasty.warning(mContext, "列表数据为空", Toast.LENGTH_SHORT).show();
-                                        }
-                                        listView.setAdapter(sportAdapter);
-                                        listView.setVisibility(View.VISIBLE);
-                                        mProgressDialog.dismiss();
-                                        swipeRefreshLayout.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                swipeRefreshLayout.setRefreshing(false);
-                                            }
-                                        });
+                                        Sport sport = new Sport(time, number, date);
+                                        sportList.add(sport);
                                     }
-                                });
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String temp = sum.substring(sum.indexOf(" ") + 1, sum.lastIndexOf(" "));
+                                            tv_sport_info.setText(temp.substring(0, temp.indexOf("(")));
+                                            String[] s = year.split(" ");
+                                            tv_sport_year.setText(s[1]);
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            Looper.prepare();
-                            if (mProgressDialog.isShowing())
-                                mProgressDialog.dismiss();
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
+                                            SportAdapter sportAdapter = new SportAdapter(SportActivity.this, R.layout.item_sport, sportList);
+                                            if (sportList.size() == 0) {
+                                                Toasty.warning(mContext, "列表数据为空", Toast.LENGTH_SHORT).show();
+                                            }
+                                            listView.setAdapter(sportAdapter);
+                                            listView.setVisibility(View.VISIBLE);
+                                            mProgressDialog.dismiss();
+                                            swipeRefreshLayout.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    swipeRefreshLayout.setRefreshing(false);
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                            Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                            Looper.loop();
-                        }
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                            } else {
+                                Looper.prepare();
                                 if (mProgressDialog.isShowing())
                                     mProgressDialog.dismiss();
-                                Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
+                                swipeRefreshLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
+                                });
+                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                Looper.loop();
                             }
+                        } else {
+                            runOnUiThread(() -> {
+                                if (mProgressDialog.isShowing())
+                                    mProgressDialog.dismiss();
+                                Toasty.error(mContext, "发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    } else {
+                        runOnUiThread(() -> {
+                            if (mProgressDialog.isShowing())
+                                mProgressDialog.dismiss();
+                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
                 }
@@ -320,31 +337,29 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                         String data = response.body().string();
                         if (data.length() > 3) {
                             Res res = HttpUtil.handleResponse(data);
-                            assert res != null;
-                            if (res.getCode() == 200) {
-                                try {
-                                    JSONArray array = new JSONArray(res.getInfo());
-                                    JSONObject object = array.getJSONObject(0);
-                                    final String year = object.getString("year");
-                                    String name = object.getString("name");
-                                    final String total = object.getString("total");
+                            if (res != null) {
+                                if (res.getCode() == 200) {
+                                    try {
+                                        JSONArray array = new JSONArray(res.getInfo());
+                                        JSONObject object = array.getJSONObject(0);
+                                        final String year = object.getString("year");
+                                        String name = object.getString("name");
+                                        final String total = object.getString("total");
 
-                                    SpUtils.putString(mContext, "exercise_info", name + "\n" + total);
+                                        SpUtils.putString(mContext, "exercise_info", name + "\n" + total);
 
-                                    JSONArray innerArray = array.getJSONArray(1);
-                                    for (int i = 0; i < innerArray.length(); i++) {
-                                        JSONObject innerObject = innerArray.getJSONObject(i);
-                                        String number = innerObject.getString("number");
-                                        String date = innerObject.getString("date");
-                                        String time = innerObject.getString("time");
+                                        JSONArray innerArray = array.getJSONArray(1);
+                                        for (int i = 0; i < innerArray.length(); i++) {
+                                            JSONObject innerObject = innerArray.getJSONObject(i);
+                                            String number = innerObject.getString("number");
+                                            String date = innerObject.getString("date");
+                                            String time = innerObject.getString("time");
 
-                                        Sport exercise = new Sport(time, number, date);
-                                        sportList.add(exercise);
-                                    }
+                                            Sport exercise = new Sport(time, number, date);
+                                            sportList.add(exercise);
+                                        }
 
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
+                                        runOnUiThread(() -> {
                                             String[] s = year.split(" ");
                                             tv_sport_year.setText(s[1]);
 
@@ -359,19 +374,25 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                                             listView.setVisibility(View.VISIBLE);
                                             mProgressDialog.dismiss();
                                             swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                                        }
-                                    });
+                                        });
 
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    runOnUiThread(() -> {
+                                        if (mProgressDialog.isShowing())
+                                            mProgressDialog.dismiss();
+                                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             } else {
-                                Looper.prepare();
-                                if (mProgressDialog.isShowing())
-                                    mProgressDialog.dismiss();
-                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                                Looper.loop();
+                                runOnUiThread(() -> {
+                                    if (mProgressDialog.isShowing())
+                                        mProgressDialog.dismiss();
+                                    Toasty.error(mContext, "发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
                     } else {
@@ -383,31 +404,18 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                     }
                 }
             });
-
         }
-
     }
 
-    private void showMaterialDialogDefault(String msg) {
+    private void showSportInfoDialog(String msg) {
         final MaterialDialog dialog = new MaterialDialog(SportActivity.this);
-        dialog.content(msg)//
-                .btnText("取消", "确定")//
-                .showAnim(new BounceBottomEnter())//
+        dialog.content(msg)
+                .btnText("取消", "确定")
+                .showAnim(new BounceBottomEnter())
                 .show();
-
         dialog.setOnBtnClickL(
-                new OnBtnClickL() {//left btn click listener
-                    @Override
-                    public void onBtnClick() {
-                        dialog.dismiss();
-                    }
-                },
-                new OnBtnClickL() {//right btn click listener
-                    @Override
-                    public void onBtnClick() {
-                        dialog.dismiss();
-                    }
-                }
+                () -> dialog.dismiss(),
+                () -> dialog.dismiss()
         );
     }
 
@@ -445,7 +453,7 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.sport_floating_btn:
                 String msg = SpUtils.getString(mContext, "sport_info");
-                showMaterialDialogDefault(msg);
+                showSportInfoDialog(msg);
                 break;
         }
     }
