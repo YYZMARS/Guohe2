@@ -2,6 +2,8 @@ package com.lyy.guohe.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.ClassRoomActivity;
 import com.lyy.guohe.activity.GameActivity;
@@ -24,6 +28,8 @@ import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.activity.LibraryActivity;
 import com.lyy.guohe.activity.ScoreActivity;
 import com.lyy.guohe.activity.SportActivity;
+import com.lyy.guohe.adapter.CourseAdapter;
+import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Course;
 import com.lyy.guohe.model.DBCourse;
@@ -32,9 +38,6 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.lyy.guohe.R;
-import com.lyy.guohe.adapter.CourseAdapter;
-import com.lyy.guohe.constant.SpConstant;
 
 import org.litepal.crud.DataSupport;
 
@@ -49,6 +52,8 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.support.constraint.Constraints.TAG;
@@ -65,10 +70,15 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     //显示今日课程的ListView
     private ListView lvKbToday;
 
+    private Context mContext;
+
+    private ProgressDialog mProgressDialog;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        mContext = getActivity();
         view = inflater.inflate(R.layout.fragment_today, container, false);
         tvKbShow = (TextView) view.findViewById(R.id.tv_kb_show);
         lvKbToday = view.findViewById(R.id.lv_kbToday);
@@ -162,7 +172,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 String data = response.body().string();
                 if (response.isSuccessful()) {
                     final Res res = HttpUtil.handleResponse(data);
-                    if (res!=null){
+                    if (res != null) {
                         if (res.getCode() == 200) {
                             try {
                                 Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
@@ -175,7 +185,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                         } else {
                             Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
                         }
-                    }else {
+                    } else {
                         Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
                     }
                 } else {
@@ -427,16 +437,94 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                     startActivity(intent);
                     break;
                 case 2:
-//                    intent.putExtra("url", UrlConstant.LAB_URL);
-//                    intent.putExtra("type", "3");
-//                    startActivity(intent);
-                    Toasty.success(getActivity(), "敬请期待", Toast.LENGTH_SHORT).show();
+//                    Toasty.success(getActivity(), "敬请期待", Toast.LENGTH_SHORT).show();
+                    showPePassDialog();
                     break;
             }
         });
         listDialog.show();
     }
 
+    private void showPePassDialog() {
+        String pePass = SpUtils.getString(getActivity(), SpConstant.PE_PASS);
+        if (pePass == null) {
+            final EditText editText = new EditText(getActivity());
+            AlertDialog.Builder inputDialog =
+                    new AlertDialog.Builder(getActivity());
+            inputDialog.setTitle("请输入你的体育学院密码(默认姓名首字母大写)").setView(editText);
+            inputDialog.setPositiveButton("确定",
+                    (dialog, which) -> {
+                        mProgressDialog = ProgressDialog.show(getActivity(), null, "密码验证中,请稍后……", true, false);
+                        mProgressDialog.setCancelable(true);
+                        mProgressDialog.setCanceledOnTouchOutside(true);
+                        final String username1 = SpUtils.getString(mContext, SpConstant.STU_ID);
+                        String pePass1 = editText.getText().toString();
+                        if (username1 != null && !pePass1.equals("")) {
+                            RequestBody requestBody = new FormBody.Builder()
+                                    .add("username", username1)
+                                    .add("password", pePass1)
+                                    .build();
+                            HttpUtil.post(UrlConstant.CLUB_SCORE, requestBody, new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                        if (mProgressDialog.isShowing())
+                                            mProgressDialog.dismiss();
+                                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+
+                                @Override
+                                public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
+                                    if (response.isSuccessful()) {
+                                        String data = response.body().string();
+                                        Res res = HttpUtil.handleResponse(data);
+                                        if (res != null) {
+                                            if (res.getCode() == 200 || res.getCode() == 1000) {
+                                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                                    mProgressDialog.dismiss();
+                                                    SpUtils.putString(mContext, SpConstant.PE_PASS, pePass1);
+                                                    Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                                                    intent.putExtra("url", UrlConstant.PE_SCORE);
+                                                    intent.putExtra("title", "体育成绩查询");
+                                                    startActivity(intent);
+                                                });
+                                            } else {
+                                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                                    if (mProgressDialog.isShowing())
+                                                        mProgressDialog.dismiss();
+                                                    Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                                });
+                                            }
+                                        } else {
+                                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                                if (mProgressDialog.isShowing())
+                                                    mProgressDialog.dismiss();
+                                                Toasty.error(mContext, "发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
+                                    } else {
+                                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                            if (mProgressDialog.isShowing())
+                                                mProgressDialog.dismiss();
+                                            Toasty.error(mContext, "服务器发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }).show();
+        } else {
+            Intent intent = new Intent(getActivity(), BrowserActivity.class);
+            intent.putExtra("url", UrlConstant.PE_SCORE);
+            intent.putExtra("title", "体育成绩查询");
+            startActivity(intent);
+        }
+    }
 
     //弹出选择小游戏对话框
     private void showGameDialog() {

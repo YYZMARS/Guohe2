@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,12 +24,14 @@ import android.widget.Toast;
 
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
+import com.lyy.guohe.constant.SpConstant;
+import com.lyy.guohe.constant.UrlConstant;
+import com.lyy.guohe.utils.SpUtils;
 import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.CookieManager;
-import com.tencent.smtt.sdk.CookieSyncManager;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -55,6 +56,7 @@ import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class BrowserActivity extends AppCompatActivity {
@@ -87,7 +89,6 @@ public class BrowserActivity extends AppCompatActivity {
      */
     private TextView mTitle;
 
-
     //0表示正常，-1表示被占用，1表示密码错误,-3表示网络异常
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -107,6 +108,7 @@ public class BrowserActivity extends AppCompatActivity {
                         index = 0;
                     CheckThread thread1 = new CheckThread();
                     thread1.start();
+
                     break;
                 case 1:
                     Log.d(TAG, "handleMessage: " + "vpn密码错误");
@@ -187,7 +189,7 @@ public class BrowserActivity extends AppCompatActivity {
                         cookie = response.headers("Set-Cookie").get(0)
                                 + ";" + response.headers("Set-Cookie").get(1)
                                 + ";" + response.headers("Set-Cookie").get(2);
-                        if (location!=null){
+                        if (location != null) {
                             Request request = new Request.Builder().url(location)
                                     .headers(requestHeaders).header("Cookie", cookie).build();
                             try {
@@ -205,13 +207,18 @@ public class BrowserActivity extends AppCompatActivity {
                                     message.what = 0;
                                     handler.sendMessage(message);
                                     mWebview.setInitialScale(100);
-                                    mWebview.loadUrl(X5url);
+                                    if (X5url.equals(UrlConstant.PE_SCORE)) {
+                                        String stu_id = SpUtils.getString(BrowserActivity.this, SpConstant.STU_ID);
+                                        String pe_pass = SpUtils.getString(BrowserActivity.this, SpConstant.PE_PASS);
+                                        loginTy(stu_id, pe_pass);
+                                    } else {
+                                        mWebview.loadUrl(X5url);
+                                    }
                                 });
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
-
                     }
                 }
             });
@@ -250,6 +257,7 @@ public class BrowserActivity extends AppCompatActivity {
 
             CheckThread thread = new CheckThread();
             thread.start();
+
         } else {
             if (!X5url.equals(""))
                 mWebview.loadUrl(X5url);
@@ -302,6 +310,51 @@ public class BrowserActivity extends AppCompatActivity {
                     .followSslRedirects(false)
                     .build();
         }
+
+    }
+
+    /*
+    0:  success
+    -1: error
+    -2: network error
+     */
+    public void loginTy(String user, String pwd) {
+        FormBody.Builder formBodyBuilder = new FormBody.Builder()
+                .add("username", user)
+                .add("password", pwd)
+                .add("chkuser", "true");
+        RequestBody requestBody = formBodyBuilder.build();
+        Request request = new Request.Builder().url("https://vpn.just.edu.cn/,DanaInfo=202.195.195.147+index1.asp")
+                .headers(requestHeaders)
+                .post(requestBody)
+                .header("Cookie", cookie)
+                .build();
+
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                byte[] b = response.body().bytes();
+                String info = new String(b, "GB2312");
+                if (info.contains("密码或用户名不正确")) {
+
+                } else {
+//                cookie = cookie + ";" + response.headers("Set-Cookie").get(0);
+//                APPAplication.save.edit().putString("vpn_cookie", cookie).apply();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mWebview.loadUrl(X5url);
+                        }
+                    });
+                }
+            }
+        });
+
 
     }
 
@@ -549,7 +602,7 @@ public class BrowserActivity extends AppCompatActivity {
                     return true;
                 }
             };
-            if (sslContext!=null){
+            if (sslContext != null) {
                 OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
                         .sslSocketFactory(sslContext.getSocketFactory())
                         .hostnameVerifier(DO_NOT_VERIFY)
