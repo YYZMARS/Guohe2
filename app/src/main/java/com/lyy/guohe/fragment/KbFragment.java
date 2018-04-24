@@ -29,6 +29,7 @@ import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.view.CourseTableView;
+import com.tencent.stat.StatService;
 
 import org.json.JSONException;
 import org.json.JSONObject;

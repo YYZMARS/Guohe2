@@ -44,6 +44,7 @@
     <string name="game">休闲游戏</string>
 
     <string name="title_activity_game">GameActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="noCourse">今天居然没有课~😁</string>
+    <string name="todayKB">今日课程</string>
+    <string name="refresh">刷新</string>
 </resources>

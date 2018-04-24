@@ -6,8 +6,8 @@ android {
         applicationId "com.lyy.guohe"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 10
-        versionName "2.0"
+        versionCode 11
+        versionName "2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             //设置支持的SO库架构
@@ -62,5 +62,5 @@ dependencies {
     implementation 'com.qq.visual:visual:3.3.1-release'
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'com.scwang.wave:MultiWaveHeader:1.0.0-alpha-1'
-    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }

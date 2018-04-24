@@ -290,7 +290,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_joinUs:
                 if (checkApkExist(this, "com.tencent.mobileqq")) {
-                    joinQQGroup("DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8");
+//                    joinQQGroup("DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8");
+                    joinQQGroup("673515498");
                 } else {
                     Toasty.error(this, "本机未安装QQ应用", Toast.LENGTH_SHORT).show();
                 }
@@ -328,17 +329,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /****************
-     *
-     * 发起添加群流程。群号：果核 内测(673515498) 的 key 为： DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8
-     * 调用 joinQQGroup(DqWWi3II6MaKcmTVy2mH_SVwgzR_bGs8) 即可发起手Q客户端申请加群 果核 内测(673515498)
-     *
-     * @param key 由官网生成的key
-     * @return 返回true表示呼起手Q成功，返回fals表示呼起失败
-     ******************/
+    //加入QQ群，传递qq群号即可
     public void joinQQGroup(String key) {
         Intent intent = new Intent();
-        intent.setData(Uri.parse("mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26k%3D" + key));
+//        intent.setData(Uri.parse("mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26k%3D" + key));
+        intent.setData(Uri.parse("mqqapi://card/show_pslcard?src_type=internal&version=1&uin=" + key + "&card_type=group&source=qrcode\n"));
         // 此Flag可根据具体产品需要自定义，如设置，则在加群界面按返回，返回手Q主界面，不设置，按返回会返回到呼起产品界面    //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try {
             startActivity(intent);

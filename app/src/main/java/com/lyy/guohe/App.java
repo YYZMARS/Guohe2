@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Process;
 
 import com.tencent.bugly.Bugly;
+import com.tencent.mta.track.StatisticsDataAPI;
 import com.tencent.smtt.sdk.QbSdk;
 
 import org.litepal.LitePalApplication;
@@ -25,16 +26,12 @@ public class App extends Application {
         LitePalApplication.initialize(context);
 
         initX5WebView();
-//        initPush();
 
+        //腾讯MTA可视化埋点
+        StatisticsDataAPI.instance(this);
         //初始化Bugly
         Bugly.init(getApplicationContext(), "1f3d59d6cb", false);
 
-    }
-
-    private boolean initPush() {
-
-        return true;
     }
 
     //初始化腾讯X5WebView内核

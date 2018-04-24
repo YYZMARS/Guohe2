@@ -13,20 +13,20 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.model.DBCourse;
+import com.tencent.stat.StatService;
 
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Random;
 
 /**
  * Implementation of App Widget functionality.
  */
 public class KbWidget extends AppWidgetProvider {
-
-    private static final String TAG = "KbWidget";
 
     private final String WIDGET_UPDATE = "com.lyy.widget.UPDATE_ALL";
 
@@ -45,6 +45,10 @@ public class KbWidget extends AppWidgetProvider {
                 case WIDGET_UPDATE:
                     //小部件更新事件
                     appWidgetManager.updateAppWidget(componentName, refreshKb(context));
+                    //统计refresh按钮被点击的次数
+                    Properties prop = new Properties();
+                    prop.setProperty("name", "refresh");
+                    StatService.trackCustomKVEvent(context, "widget_refresh", prop);
                     break;
             }
         } catch (Exception e) {

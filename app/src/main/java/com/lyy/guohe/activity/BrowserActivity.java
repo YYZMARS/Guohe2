@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -557,13 +558,39 @@ public class BrowserActivity extends AppCompatActivity {
         });
         mWebview.setWebViewClient(new WebViewClient() {
 
+            //设置webview是否可以发开外链
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+
+                if (!url.startsWith("http")) {
+                    toIntent(url);
+                    return true;
+                }
+
+                return super.shouldOverrideUrlLoading(webView, url);
+
+            }
+
             @Override
             public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, SslError sslError) {
                 // handler.cancel();// Android默认的处理方式
                 sslErrorHandler.proceed();// 接受所有网站的证书
                 // handleMessage(Message msg);// 进行其他处理
             }
+
+
         });
+    }
+
+    private void toIntent(String url) {
+        try {
+            Toast.makeText(mContext, "尝试打开外部应用", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        } catch (Exception e) {
+            Toasty.warning(mContext, "您还未安装客户端", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void exitVpn() {
