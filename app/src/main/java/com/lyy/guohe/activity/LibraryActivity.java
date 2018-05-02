@@ -25,8 +25,11 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.LibraryAdapter;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Library;
+import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.searchlibrary.searchbox.SearchFragment;
 import com.lyy.searchlibrary.searchbox.custom.IOnSearchClickListener;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +37,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -89,12 +93,9 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
         // 设置下拉进度的主题颜色
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
 
-        listener = new SwipeRefreshLayout.OnRefreshListener() {
-            public void onRefresh() {
-                //TODO
-                libraryList.clear();
-                requestBookTop();
-            }
+        listener = () -> {
+            libraryList.clear();
+            requestBookTop();
         };
 
         swipeRefreshLayout.setOnRefreshListener(listener);
@@ -107,17 +108,9 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
         HttpUtil.get(url, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                runOnUiThread(() -> {
+                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -126,33 +119,26 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     Res res = HttpUtil.handleResponse(data);
-                    requestHotBook();
-                    assert res != null;
-                    if (res.getCode() == 200)
-                        handleResponse(res.getInfo());
-                    else {
-                        Looper.prepare();
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
+                    getHotBook();
+                    if (res != null) {
+                        if (res.getCode() == 200)
+                            handleResponse(res.getInfo());
+                        else {
+                            Looper.prepare();
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                            Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+                    } else {
+                        runOnUiThread(() -> {
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                            Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
-                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                        Looper.loop();
                     }
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -160,22 +146,14 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
     }
 
     //热搜图书
-    private void requestHotBook() {
+    private void getHotBook() {
         String url = UrlConstant.HOT_BOOK;
         HttpUtil.get(url, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                runOnUiThread(() -> {
+                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -184,51 +162,36 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     Res res = HttpUtil.handleResponse(data);
-                    if (res.getCode() == 200) {
-                        try {
-                            JSONArray array = new JSONArray(res.getInfo());
-                            JSONArray innerArray = array.getJSONArray(0);
-                            for (int i = 0; i < 10; i++) {
-                                if (innerArray.get(i) != null) {
-                                    Log.d(TAG, "onResponse: " + innerArray.get(i).toString());
-                                    mVals[i] = innerArray.get(i).toString().split(" ")[1];
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        swipeRefreshLayout.setRefreshing(false);
+                    if (res != null) {
+                        if (res.getCode() == 200) {
+                            try {
+                                JSONArray array = new JSONArray(res.getInfo());
+                                JSONArray innerArray = array.getJSONArray(0);
+                                for (int i = 0; i < 10; i++) {
+                                    if (innerArray.get(i) != null) {
+                                        mVals[i] = innerArray.get(i).toString().split(" ")[1];
                                     }
-                                });
-                                Toasty.error(mContext, "服务器异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                        } else {
+                            runOnUiThread(() -> {
+                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                Toasty.error(mContext, "服务器异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    } else {
+                        runOnUiThread(() -> {
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                            Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -251,14 +214,11 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
                 libraryList.add(library);
             }
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    recyclerView.setLayoutManager(layoutManager);
-                    adapter = new LibraryAdapter(libraryList);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setVisibility(View.VISIBLE);
-                }
+            runOnUiThread(() -> {
+                recyclerView.setLayoutManager(layoutManager);
+                adapter = new LibraryAdapter(libraryList);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setVisibility(View.VISIBLE);
             });
         } catch (JSONException e) {
             e.printStackTrace();
@@ -267,9 +227,12 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
 
     @Override
     public void OnSearchClick(String keyword) {
-        Intent bookListIntent = new Intent(LibraryActivity.this, BookList.class);
-        bookListIntent.putExtra("keyword", keyword);
-        startActivity(bookListIntent);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("keyword", keyword);
+        NavigateUtil.navigateTo(LibraryActivity.this,BookList.class,map);
+//        Intent bookListIntent = new Intent(LibraryActivity.this, BookList.class);
+//        bookListIntent.putExtra("keyword", keyword);
+//        startActivity(bookListIntent);
     }
 
     @Override
@@ -334,5 +297,18 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
             }
         });
         listener.onRefresh();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

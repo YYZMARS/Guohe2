@@ -27,6 +27,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,18 +53,26 @@ import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+import com.umeng.message.inapp.IUmengInAppMsgCloseCallback;
+import com.umeng.message.inapp.InAppMessageManager;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
 
     public static final int CHOOSE_PHOTO = 2;
 
@@ -98,6 +107,8 @@ public class MainActivity extends AppCompatActivity
 
         // 进入首页事件,统计用户进入首页的次数
         StatService.trackCustomKVEvent(this, "homepage", null);
+        //统计应用启动数据
+        PushAgent.getInstance(this).onAppStart();
 
         //初始化权限
         initPermission();
@@ -107,6 +118,10 @@ public class MainActivity extends AppCompatActivity
         initFragment();
         //更新小部件
         updateWidget();
+
+        //插屏消息关闭时，会回调该方法
+        InAppMessageManager.getInstance(this).showCardMessage(this, "main",
+                () -> Log.i(TAG, "card message close"));
     }
 
     private void initView() {
@@ -195,7 +210,7 @@ public class MainActivity extends AppCompatActivity
         listTitles.add("今日");
         listTitles.add("本周");
         listTitles.add("广播");
-        listTitles.add("操场");
+//        listTitles.add("操场");
 
         TodayFragment fragment1 = new TodayFragment();
         fragments.add(fragment1);
@@ -203,8 +218,8 @@ public class MainActivity extends AppCompatActivity
         fragments.add(fragment2);
         NewsFragment fragment3 = new NewsFragment();
         fragments.add(fragment3);
-        PlayFragment fragment4 = new PlayFragment();
-        fragments.add(fragment4);
+//        PlayFragment fragment4 = new PlayFragment();
+//        fragments.add(fragment4);
 
         //mTabLayout.setTabMode(TabLayout.SCROLL_AXIS_HORIZONTAL);//设置tab模式，当前为系统默认模式
         for (int i = 0; i < listTitles.size(); i++) {
@@ -475,6 +490,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         updateWidget();
         StatService.onResume(this);
+        MobclickAgent.onResume(this);
         imageBase64 = SpUtils.getString(this, SpConstant.IMAGE_BASE_64);
         if (imageBase64 != null) {
             byte[] byte64 = Base64.decode(imageBase64, 0);
@@ -482,6 +498,12 @@ public class MainActivity extends AppCompatActivity
             Bitmap bitmap = BitmapFactory.decodeStream(bais);
             civ_header.setImageBitmap(bitmap);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

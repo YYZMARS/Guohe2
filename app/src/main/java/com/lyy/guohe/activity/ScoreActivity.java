@@ -30,6 +30,8 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.SubjectAdapter;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.model.Subject;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.angmarch.views.NiceSpinner;
 import org.json.JSONArray;
@@ -520,5 +522,17 @@ public class ScoreActivity extends AppCompatActivity {
         super.onStop();
         if (mProgressDialog.isShowing() && !isFinishing())
             mProgressDialog.dismiss();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

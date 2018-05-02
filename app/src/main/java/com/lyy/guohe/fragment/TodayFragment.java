@@ -38,6 +38,10 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
+import com.umeng.analytics.MobclickAgent;
 
 import org.litepal.crud.DataSupport;
 
@@ -111,6 +115,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         navPE.setOnClickListener(this);
         LinearLayout navGame = view.findViewById(R.id.nav_game);
         navGame.setOnClickListener(this);
+        LinearLayout navIdea = view.findViewById(R.id.nav_idea);
+        navIdea.setOnClickListener(this);
 
         initMess();
         initTodayKb();
@@ -237,7 +243,28 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 //显示可以玩的小游戏
                 showGameDialog();
                 break;
+            case R.id.nav_idea:
+                toGuoheLite();
+                break;
         }
+    }
+
+    private void toGuoheLite() {
+//        WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
+//        miniProgramObj.webpageUrl = "http://www.qq.com"; // 兼容低版本的网页链接
+//        miniProgramObj.miniprogramType = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;// 正式版:0，测试版:1，体验版:2
+//        miniProgramObj.userName = "gh_d43f693ca31f";     // 小程序原始id
+//        miniProgramObj.path = "/pages/media";            //小程序页面路径
+//        WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
+//        msg.title = "小程序消息Title";                    // 小程序消息title
+//        msg.description = "小程序消息Desc";               // 小程序消息desc
+//        msg.thumbData = getThumb();                      // 小程序消息封面图片，小于128k
+//
+//        SendMessageToWX.Req req = new SendMessageToWX.Req();
+//        req.transaction = buildTransaction("webpage");
+//        req.message = msg;
+//        req.scene = SendMessageToWX.Req.WXSceneSession;  // 目前支持会话
+//        api.sendReq(req);
     }
 
     //选择进入哪一个校园系统
@@ -528,7 +555,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
     //弹出选择小游戏对话框
     private void showGameDialog() {
-        final String[] items = {"六角消除", "2048", "六角拼拼", "无尽之旅", "彩虹穿越", "西部枪手", "经典纸牌", "三塔扑克", "Flappy Bird", "飞行小游戏"};
+        final String[] items = {"六角消除", "2048", "六角拼拼", "无尽之旅", "彩虹穿越", "西部枪手"};
         AlertDialog.Builder listDialog = new AlertDialog.Builder(getActivity());
         listDialog.setTitle("请选择你要进入的游戏");
         listDialog.setItems(items, (dialog, which) -> {
@@ -546,5 +573,12 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         initTodayKb();
+        MobclickAgent.onPageStart("MainScreen"); //统计页面("MainScreen"为页面名称，可自定义)
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("MainScreen");
     }
 }

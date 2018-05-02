@@ -1,16 +1,17 @@
 package com.lyy.guohe.activity;
 
-import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
-import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
+import com.lyy.guohe.utils.NavigateUtil;
+import com.lyy.guohe.utils.SpUtils;
 import com.tencent.stat.MtaSDkException;
 import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -27,15 +28,13 @@ public class SplashActivity extends AppCompatActivity {
 
             boolean isLogIn = SpUtils.getBoolean(getApplicationContext(), SpConstant.IS_LOGIN);
             if (isLogIn) {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
+                NavigateUtil.navigateTo(this, MainActivity.class);
                 finish();
             } else {
-                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                startActivity(intent);
+                NavigateUtil.navigateTo(this, LoginActivity.class);
                 finish();
             }
-        }, 2000);
+        }, 0);
     }
 
     //初始化MTA统计
@@ -51,5 +50,20 @@ public class SplashActivity extends AppCompatActivity {
             // MTA初始化失败
             Log.d("MTA", "MTA初始化失败" + e);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("SplashScreen"); //手动统计页面("SplashScreen"为页面名称，可自定义)
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        MobclickAgent.onPause(this);
     }
 }

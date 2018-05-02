@@ -16,6 +16,8 @@ import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.utils.SpUtils;
 import com.oginotihiro.cropview.CropUtil;
 import com.oginotihiro.cropview.CropView;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -115,5 +117,17 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
     private void reset() {
         cropView.setVisibility(View.GONE);
         btnlay.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

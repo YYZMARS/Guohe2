@@ -221,12 +221,9 @@ public class CourseTableView extends RelativeLayout {
             tv.setTextColor(Color.rgb(255, 255, 255));
             tv.setBackgroundResource(c.getBg_Color());
             tv.setLayoutParams(flp);
-            tv.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onCourseItemClickListener != null) {
-                        onCourseItemClickListener.onCourseItemClick((TextView) v, jieci, day, c.getDes());
-                    }
+            tv.setOnClickListener(v -> {
+                if (onCourseItemClickListener != null) {
+                    onCourseItemClickListener.onCourseItemClick((TextView) v, jieci, day, c.getDes());
                 }
             });
             fl.addView(tv);

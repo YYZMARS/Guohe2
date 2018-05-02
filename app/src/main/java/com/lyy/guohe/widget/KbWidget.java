@@ -6,13 +6,14 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.utils.SpUtils;
 import com.tencent.stat.StatService;
 
 import org.litepal.crud.DataSupport;
@@ -29,6 +30,8 @@ import java.util.Random;
 public class KbWidget extends AppWidgetProvider {
 
     private final String WIDGET_UPDATE = "com.lyy.widget.UPDATE_ALL";
+
+    private static final String TAG = "KbWidget";
 
     /**
      * 接受广播事件
@@ -59,8 +62,8 @@ public class KbWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-
         appWidgetManager.updateAppWidget(appWidgetIds, refreshKb(context));
+        Log.d(TAG, "onUpdate: ");
     }
 
     /**
@@ -82,14 +85,11 @@ public class KbWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
+        Log.d(TAG, "onEnabled: ");
     }
 
     public RemoteViews refreshKb(Context context) {
         String server_week = SpUtils.getString(context, SpConstant.SERVER_WEEK);
-        int week = 0;
-        if (server_week != null) {
-            week = Integer.parseInt(server_week);
-        }
 
         //每周的天数的集合
         List<Integer> single_list = new ArrayList<Integer>();
@@ -126,10 +126,12 @@ public class KbWidget extends AppWidgetProvider {
         single_index.add(R.id.widget_single_4);
         single_index.add(R.id.widget_single_5);
 
-        List<DBCourse> courseList = DataSupport.where("zhouci = ? ", week + "").find(DBCourse.class);
+        List<DBCourse> courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
+
+        Log.d(TAG, "refreshKb: " + server_week);
 
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.kb_widget);
-        remoteViews.setTextViewText(R.id.widget_week, "第" + week + "周");
+        remoteViews.setTextViewText(R.id.widget_week, "第" + server_week + "周");
         //点击头部跳转到页面内
         Intent skipIntent = new Intent(context, KbActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, 200, skipIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -137,6 +139,7 @@ public class KbWidget extends AppWidgetProvider {
 
         for (int i = 1; i <= 7; i++) {
             RemoteViews nestedView = new RemoteViews(context.getPackageName(), R.layout.widget_single_layout);
+            nestedView.removeAllViews(single_list.get(i - 1));
             for (DBCourse dbCourse : courseList) {
                 if (dbCourse.getDay() == i) {
                     int jieci = dbCourse.getJieci();
@@ -145,7 +148,6 @@ public class KbWidget extends AppWidgetProvider {
                     String courseInfo[] = des.split("@");
                     String courseClassroom = "";
                     String courseName = "";
-
 
                     if (courseInfo.length == 2) {
                         courseName = courseInfo[1];
@@ -157,6 +159,9 @@ public class KbWidget extends AppWidgetProvider {
                         courseName = courseInfo[1];
                         courseClassroom = courseInfo[3];
                     }
+
+                    Log.d(TAG, "refreshKb: " + courseName);
+                    Log.d(TAG, "refreshKb: " + jieci);
 
                     String result = courseName + "@" + courseClassroom;
                     Random random = new Random();
@@ -186,6 +191,7 @@ public class KbWidget extends AppWidgetProvider {
             }
             remoteViews.addView(single_list.get(i - 1), nestedView);
         }
+        Log.d(TAG, "refreshKb: " + "已更新课表");
         return remoteViews;
     }
 }

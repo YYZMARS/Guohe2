@@ -17,6 +17,7 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.service.KbListService;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.stat.StatService;
 

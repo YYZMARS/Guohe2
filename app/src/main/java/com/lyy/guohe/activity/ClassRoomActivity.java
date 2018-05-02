@@ -25,6 +25,8 @@ import com.lyy.guohe.model.ClassRoom;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.angmarch.views.NiceSpinner;
 import org.json.JSONArray;
@@ -473,5 +475,17 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
                 listener.onRefresh();
                 break;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

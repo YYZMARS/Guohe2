@@ -1,12 +1,10 @@
 <resources>
     <string name="app_name">果核</string>
     <string name="apk_introduction">Crafted with love by 果核开发小组</string>
-    <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">姓名：</string>
     <string name="nav_header_subtitle">学号：</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="login_account">学号</string>
     <string name="login_pass">密码</string>
     <string name="login">登录</string>
@@ -29,7 +27,6 @@
     <string name="updateInfo">更新说明</string>
     <string name="changeAccount">切换账号</string>
     <string name="joinUs">加入交流群</string>
-    <string name="title_activity_pe">PEActivity</string>
     <string name="large_text">
         "&#160;&#160;&#8201; 安卓：梁越勇\n"
         "&#160;&#160;&#8201;后台&amp;微信小程序：季航宇、浦希成\n\n"
@@ -38,7 +35,6 @@
         "&#160;&#160;&#8201;「果核里的图灵」是我们去年九月开始维护的一个公众号，更新一些手记、杂谈，欢迎翻阅与投稿，是谁来自山川湖海，却囿于昼夜、厨房与爱。\n"
     </string>
     <string name="donate">支持捐赠</string>
-    <string name="add_widget">Add widget</string>
     <string name="widget_title_default">第13周</string>
     <string name="building">前方施工，注意安全</string>
     <string name="game">休闲游戏</string>
@@ -47,4 +43,5 @@
     <string name="noCourse">今天居然没有课~😁</string>
     <string name="todayKB">今日课程</string>
     <string name="refresh">刷新</string>
+    <string name="idea">创意</string>
 </resources>

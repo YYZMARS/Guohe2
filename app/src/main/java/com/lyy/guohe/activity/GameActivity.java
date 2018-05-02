@@ -15,6 +15,7 @@ import com.lyy.guohe.R;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -148,17 +149,6 @@ public class GameActivity extends AppCompatActivity {
             case 5:
                 webView.loadUrl("http://cdn.games.imlianpu.com/platform/top-shootout/index.html");
                 break;
-            case 6:
-                webView.loadUrl("http://cdn.games.imlianpu.com/platform/western-solitaire/index.html");
-                break;
-            case 7:
-                webView.loadUrl("http://cdn.games.imlianpu.com/platform/tripeaks/index.html?orientation=landscape");
-                break;
-            case 8:
-                webView.loadUrl("http://www.5iweb.com.cn/resource/5iweb2017062502/index.html");
-                break;
-            case 9:
-                webView.loadUrl("http://www.5iweb.com.cn/resource/5iweb2016050501/index.html");
         }
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -229,11 +219,13 @@ public class GameActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         StatService.onPause(this);
+        MobclickAgent.onPause(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         StatService.onResume(this);
+        MobclickAgent.onResume(this);
     }
 }

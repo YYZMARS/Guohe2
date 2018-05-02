@@ -34,6 +34,8 @@ import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -456,5 +458,18 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                 showSportInfoDialog(msg);
                 break;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

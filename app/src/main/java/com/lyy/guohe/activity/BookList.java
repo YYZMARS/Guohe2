@@ -23,6 +23,8 @@ import com.lyy.guohe.model.Book;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.R;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,7 +109,6 @@ public class BookList extends AppCompatActivity {
         bookList.clear();
         lv_book_list.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_LIST;
-
         RequestBody requestBody = new FormBody.Builder()
                 .add("bookName", bookName)
                 .build();
@@ -179,5 +180,17 @@ public class BookList extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

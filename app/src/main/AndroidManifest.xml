@@ -62,24 +62,38 @@
         </receiver>
 
         <service
-            android:name=".widget.KbListWidget.KbListService"
+            android:name=".service.KbListService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <activity
-            android:name=".activity.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:name=".activity.AdActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme_Umeng_Push_Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/SplashTheme">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
             <!-- MTA可视化启动连接接口 -->
             <intent-filter>
-                <data android:scheme="mtaautotrack.38f581075840bc222a9e7200455e4933"/>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="mtaautotrack.38f581075840bc222a9e7200455e4933" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
         <activity
@@ -113,7 +127,6 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game"
             android:theme="@style/FullscreenTheme" />
-
 
     </application>
 

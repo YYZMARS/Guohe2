@@ -48,6 +48,7 @@ import com.lyy.guohe.view.CourseTableView;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
 import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -125,8 +126,6 @@ public class KbActivity extends AppCompatActivity {
 
     private String server_week;     //服务器当前周
 
-    private boolean isOpenKb;       //判断是否导入过课表
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +139,7 @@ public class KbActivity extends AppCompatActivity {
         //记录服务器当前周
         server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
         //记录本地是否已经导入过课表
-        isOpenKb = SpUtils.getBoolean(mContext, SpConstant.IS_OPEN_KB);
+        boolean isOpenKb = SpUtils.getBoolean(mContext, SpConstant.IS_OPEN_KB);
         //初始化界面
         initView();
 
@@ -163,6 +162,7 @@ public class KbActivity extends AppCompatActivity {
                 } else {
                     showKb(server_week);
                 }
+                updateWidget();
             } else {
                 getXiaoLi();
             }
@@ -697,6 +697,13 @@ public class KbActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -710,6 +717,7 @@ public class KbActivity extends AppCompatActivity {
         //更新课表小部件
         updateWidget();
         StatService.onResume(this);
+        MobclickAgent.onResume(this);
     }
 
     @Override

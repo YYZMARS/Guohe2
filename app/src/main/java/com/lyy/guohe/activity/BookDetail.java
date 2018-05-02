@@ -24,6 +24,8 @@ import com.lyy.guohe.adapter.BookDetailAdapter;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -221,5 +223,17 @@ public class BookDetail extends AppCompatActivity {
         swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(true));
         listener.onRefresh();
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

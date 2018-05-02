@@ -22,6 +22,8 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.R;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import es.dmoral.toasty.Toasty;
 
@@ -125,5 +127,18 @@ public class UsActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -6,8 +6,8 @@ android {
         applicationId "com.lyy.guohe"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 11
-        versionName "2.1"
+        versionCode 12
+        versionName "2.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             //设置支持的SO库架构
@@ -21,7 +21,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -35,8 +36,8 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1183_43604_sharewithdownload_withoutGame_obfs_20180211_105126.jar')
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -63,4 +64,10 @@ dependencies {
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'com.scwang.wave:MultiWaveHeader:1.0.0-alpha-1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.umeng.sdk:common:1.5.0'
+    implementation 'com.umeng.sdk:analytics:7.5.0'
+    implementation 'com.umeng.sdk:utdid:1.1.5.3'
+    implementation 'com.umeng.sdk:push:4.1.0'
+    implementation 'com.umeng.sdk:push-xiaomi:1.0.0'
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 }

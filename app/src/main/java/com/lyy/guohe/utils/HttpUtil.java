@@ -48,11 +48,13 @@ public class HttpUtil {
     //处理传来的信息
     public static Res handleResponse(String response) {
         try {
-            JSONObject object = new JSONObject(response);
-            String code = object.getString("code");
-            String msg = object.getString("msg");
-            String info = object.getString("info");
-            return new Res(Integer.parseInt(code), msg, info);
+            if (response != null && !response.equals("")) {
+                JSONObject object = new JSONObject(response);
+                String code = object.getString("code");
+                String msg = object.getString("msg");
+                String info = object.getString("info");
+                return new Res(Integer.parseInt(code), msg, info);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

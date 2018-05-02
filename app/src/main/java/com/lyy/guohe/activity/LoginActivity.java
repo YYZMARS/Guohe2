@@ -23,6 +23,7 @@ import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
 import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONObject;
 
@@ -155,5 +156,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Toasty.error(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lyy.guohe.R;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 public class DialogActivity extends AppCompatActivity {
 
@@ -27,5 +29,18 @@ public class DialogActivity extends AppCompatActivity {
 
     private void initView() {
         mTvDialog = (TextView) findViewById(R.id.tv_dialog);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }
