@@ -69,104 +69,113 @@ public class BookDetail extends AppCompatActivity {
 
         listener = () -> {
             //TODO
-            requestBookDetail(keyword);
+            getBookDetail(keyword);
         };
 
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
 
-    private void requestBookDetail(String book_url) {
+    //获取图书详情
+    private void getBookDetail(String book_url) {
         bookDetailList.clear();
         lv_book_detail.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_DETAIL;
-        RequestBody requestBody = new FormBody.Builder()
-                .add("bookUrl", book_url)
-                .build();
-        HttpUtil.post(url, requestBody, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+        if (url != null && !url.equals("")) {
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("bookUrl", book_url)
+                    .build();
+            HttpUtil.post(url, requestBody, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                            Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String data = response.body().string();
-                    Res res = HttpUtil.handleResponse(data);
-                    if (res != null) {
-                        if (res.getCode() == 200) {
-                            try {
-                                JSONArray array = new JSONArray(res.getInfo());
-                                for (int i = 0; i < array.length() - 1; i++) {
-                                    JSONObject object = array.getJSONObject(i);
-                                    String place = object.getString("place");
-                                    String call_number = object.getString("call_number");
-                                    String barcode = object.getString("barcode");
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String data = response.body().string();
+                        Res res = HttpUtil.handleResponse(data);
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                try {
+                                    JSONArray array = new JSONArray(res.getInfo());
+                                    for (int i = 0; i < array.length() - 1; i++) {
+                                        JSONObject object = array.getJSONObject(i);
+                                        String place = object.getString("place");
+                                        String call_number = object.getString("call_number");
+                                        String barcode = object.getString("barcode");
 
-                                    String finalPlace = place.split(" ")[place.split(" ").length - 1];
+                                        String finalPlace = place.split(" ")[place.split(" ").length - 1];
 
-                                    com.lyy.guohe.model.BookDetail bookDetail = new com.lyy.guohe.model.BookDetail(call_number, barcode, finalPlace);
-                                    bookDetailList.add(bookDetail);
+                                        com.lyy.guohe.model.BookDetail bookDetail = new com.lyy.guohe.model.BookDetail(call_number, barcode, finalPlace);
+                                        bookDetailList.add(bookDetail);
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                BookDetailAdapter bookDetailAdapter = new BookDetailAdapter(BookDetail.this, R.layout.item_book_detail, bookDetailList);
+                                                lv_book_detail.setAdapter(bookDetailAdapter);
+                                                lv_book_detail.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+                                    }
+                                    JSONObject object = array.getJSONObject(array.length() - 1);
+                                    final String book_isbn = object.getString("book_isbn");
+                                    final String book_press = object.getString("book_press");
+                                    final String book_outline = object.getString("book_outline");
+                                    final String book_name = object.getString("book_name");
+                                    final String book_type = object.getString("book_type");
+                                    final String book_author = object.getString("book_author");
 
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            BookDetailAdapter bookDetailAdapter = new BookDetailAdapter(BookDetail.this, R.layout.item_book_detail, bookDetailList);
-                                            lv_book_detail.setAdapter(bookDetailAdapter);
-                                            lv_book_detail.setVisibility(View.VISIBLE);
+                                            tv_book_name.setText(book_name);
+                                            tv_book_author.setText(book_author);
+                                            tv_book_type.setText(book_type);
+                                            tv_book_press.setText(book_press);
+                                            tv_book_isbn.setText(book_isbn);
+                                            tv_book_outline.setText(book_outline);
                                         }
                                     });
+                                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                                JSONObject object = array.getJSONObject(array.length() - 1);
-                                final String book_isbn = object.getString("book_isbn");
-                                final String book_press = object.getString("book_press");
-                                final String book_outline = object.getString("book_outline");
-                                final String book_name = object.getString("book_name");
-                                final String book_type = object.getString("book_type");
-                                final String book_author = object.getString("book_author");
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        tv_book_name.setText(book_name);
-                                        tv_book_author.setText(book_author);
-                                        tv_book_type.setText(book_type);
-                                        tv_book_press.setText(book_press);
-                                        tv_book_isbn.setText(book_isbn);
-                                        tv_book_outline.setText(book_outline);
-                                    }
+                            } else {
+                                runOnUiThread(() -> {
+                                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                    Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
                                 });
-                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
                         } else {
                             runOnUiThread(() -> {
                                 swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
                             });
                         }
                     } else {
                         runOnUiThread(() -> {
                             swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                            Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
+                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
-                } else {
-                    runOnUiThread(() -> {
-                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                    });
                 }
-            }
-        });
+            });
+        } else {
+            runOnUiThread(() -> {
+                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
+            });
+        }
+
     }
 
     @Override
@@ -182,10 +191,10 @@ public class BookDetail extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         setContentView(R.layout.activity_book_detail);
 
         mContext = this;
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
 
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.book_detail_toolbar);
@@ -231,6 +240,7 @@ public class BookDetail extends AppCompatActivity {
         MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();

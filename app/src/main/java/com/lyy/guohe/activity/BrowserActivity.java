@@ -79,7 +79,7 @@ public class BrowserActivity extends AppCompatActivity {
     private String cookie;
 
     private String[] vpn_ACC = {"172210710135", "172210708219", "172210702133", "172210703201", "172210703202", "172210710108"};  //VPN账号数组
-    private String[] vpn_Pass = {"220455", "242410", "211375", "033880", "012943", "080021 "};//VPN密码数组
+    private String[] vpn_Pass = {"220455", "242410", "211375", "033880", "012943", "080021"};//VPN密码数组
 
     private String vpn_user;
     private String vpn_pwd;
@@ -111,7 +111,6 @@ public class BrowserActivity extends AppCompatActivity {
                         index = 0;
                     CheckThread thread1 = new CheckThread();
                     thread1.start();
-
                     break;
                 case 1:
                     Log.d(TAG, "handleMessage: " + "vpn密码错误");
@@ -231,11 +230,10 @@ public class BrowserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         setContentView(R.layout.activity_browser);
 
         mContext = this;
-
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         Intent intent = getIntent();
         X5url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");

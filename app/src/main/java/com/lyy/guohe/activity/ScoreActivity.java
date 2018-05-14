@@ -23,7 +23,7 @@ import com.google.gson.reflect.TypeToken;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.view.MyListView;
-import com.lyy.guohe.model.g_Subject;
+import com.lyy.guohe.model.GSubject;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
@@ -70,7 +70,7 @@ public class ScoreActivity extends AppCompatActivity {
 
     private List<Subject> subjectList;  //成绩集合
     private List<String> all_year_list; //所有学年的集合
-    private List<g_Subject> gSubjectList;
+    private List<GSubject> gSubjectList;
 
     private String stu_id;
     private String stu_pass;
@@ -86,15 +86,13 @@ public class ScoreActivity extends AppCompatActivity {
     private List<PointValue> mPointValues = new ArrayList<PointValue>();
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(255, 255, 255));
         setContentView(R.layout.activity_score);
 
         mContext = this;
-
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(255, 255, 255));
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.new_subject_toolbar);
         setSupportActionBar(toolbar);
@@ -206,12 +204,9 @@ public class ScoreActivity extends AppCompatActivity {
 
     //发送查询校历的请求
     private void getXiaoLi() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.setMessage("查询成绩中...");
-                mProgressDialog.show();
-            }
+        runOnUiThread(() -> {
+            mProgressDialog.setMessage("查询成绩中...");
+            mProgressDialog.show();
         });
         String url = UrlConstant.XIAO_LI;
         if (stu_id != null && stu_pass != null) {
@@ -223,13 +218,10 @@ public class ScoreActivity extends AppCompatActivity {
             HttpUtil.post(url, requestBody, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mProgressDialog.isShowing())
-                                mProgressDialog.dismiss();
-                            Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        if (mProgressDialog.isShowing())
+                            mProgressDialog.dismiss();
+                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
 
@@ -238,49 +230,45 @@ public class ScoreActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         String data = response.body().string();
                         Res res = HttpUtil.handleResponse(data);
-                        assert res != null;
-                        if (res.getCode() == 200 && res.getInfo() != null) {
-                            SpUtils.putString(mContext, SpConstant.XIAO_LI, res.getInfo());
-                            try {
-                                JSONObject object = new JSONObject(res.getInfo());
-                                //获取当前周数
-                                //获取这个学生所有的学年
-                                JSONArray jsonArray = object.getJSONArray("all_year");
-                                all_year_list.add("请选择学年");
-                                for (int i = 1; i < jsonArray.length(); i++) {
-                                    all_year_list.add(jsonArray.get(i).toString());
-                                }
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        spinner_year.attachDataSource(all_year_list);
+                        if (res != null) {
+                            if (res.getCode() == 200 && res.getInfo() != null) {
+                                SpUtils.putString(mContext, SpConstant.XIAO_LI, res.getInfo());
+                                try {
+                                    JSONObject object = new JSONObject(res.getInfo());
+                                    //获取当前周数
+                                    //获取这个学生所有的学年
+                                    JSONArray jsonArray = object.getJSONArray("all_year");
+                                    all_year_list.add("请选择学年");
+                                    for (int i = 1; i < jsonArray.length(); i++) {
+                                        all_year_list.add(jsonArray.get(i).toString());
                                     }
-                                });
-                                getScore();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                                    runOnUiThread(() -> spinner_year.attachDataSource(all_year_list));
+                                    getScore();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                        } else {
+                            runOnUiThread(() -> {
                                 if (mProgressDialog.isShowing() && !isFinishing())
                                     mProgressDialog.dismiss();
-                                Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                            }
+                                Toasty.error(mContext, "出现错误，请稍后重试", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    } else {
+                        runOnUiThread(() -> {
+                            if (mProgressDialog.isShowing() && !isFinishing())
+                                mProgressDialog.dismiss();
+                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
                 }
             });
         } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mProgressDialog.isShowing())
-                        mProgressDialog.dismiss();
-                    Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
-                }
+            runOnUiThread(() -> {
+                if (mProgressDialog.isShowing())
+                    mProgressDialog.dismiss();
+                Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -289,7 +277,6 @@ public class ScoreActivity extends AppCompatActivity {
     //发出分数查询的请求
     private void getScore() {
         String url = UrlConstant.STU_SCORE;
-
         RequestBody requestBody = new FormBody.Builder()
                 .add("username", stu_id)
                 .add("password", stu_pass)
@@ -297,13 +284,10 @@ public class ScoreActivity extends AppCompatActivity {
         HttpUtil.post(url, requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mProgressDialog.isShowing() && !isFinishing())
-                            mProgressDialog.dismiss();
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                runOnUiThread(() -> {
+                    if (mProgressDialog.isShowing() && !isFinishing())
+                        mProgressDialog.dismiss();
+                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -312,25 +296,30 @@ public class ScoreActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     Res res = HttpUtil.handleResponse(data);
-                    assert res != null;
-                    if (res.getCode() == 200 && res.getInfo() != null) {
-                        handleScoreResponse(res.getInfo());
-                        getGPA();
+                    if (res != null) {
+                        if (res.getCode() == 200 && res.getInfo() != null) {
+                            handleScoreResponse(res.getInfo());
+                            getGPA();
+                        } else {
+                            runOnUiThread(() -> {
+                                if (mProgressDialog.isShowing() && !isFinishing())
+                                    mProgressDialog.dismiss();
+                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                            });
+                        }
                     } else {
-                        Looper.prepare();
-                        if (mProgressDialog.isShowing() && !isFinishing())
-                            mProgressDialog.dismiss();
-                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                        Looper.loop();
-                    }
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        runOnUiThread(() -> {
                             if (mProgressDialog.isShowing() && !isFinishing())
                                 mProgressDialog.dismiss();
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                            Toasty.error(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                } else {
+                    runOnUiThread(() -> {
+                        if (mProgressDialog.isShowing() && !isFinishing())
+                            mProgressDialog.dismiss();
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -338,13 +327,10 @@ public class ScoreActivity extends AppCompatActivity {
     }
 
     private void getGPA() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!isFinishing()) {
-                    mProgressDialog.setMessage("绩点导入中,请稍后……");
-                    mProgressDialog.show();
-                }
+        runOnUiThread(() -> {
+            if (!isFinishing()) {
+                mProgressDialog.setMessage("绩点导入中,请稍后……");
+                mProgressDialog.show();
             }
         });
 
@@ -358,13 +344,10 @@ public class ScoreActivity extends AppCompatActivity {
         HttpUtil.post(pointUrl, requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mProgressDialog.isShowing() && !isFinishing())
-                            mProgressDialog.dismiss();
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                runOnUiThread(() -> {
+                    if (mProgressDialog.isShowing() && !isFinishing())
+                        mProgressDialog.dismiss();
+                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -373,31 +356,32 @@ public class ScoreActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     Res res = HttpUtil.handleResponse(data);
-                    assert res != null;
-                    if (res.getCode() == 200 && res.getInfo() != null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                    if (res != null) {
+                        if (res.getCode() == 200 && res.getInfo() != null) {
+                            runOnUiThread(() -> {
                                 if (mProgressDialog.isShowing() && !isFinishing())
                                     mProgressDialog.dismiss();
-                            }
-                        });
-                        showGPA(res.getInfo());
+                            });
+                            showGPA(res.getInfo());
+                        } else {
+                            runOnUiThread(() -> {
+                                if (mProgressDialog.isShowing() && !isFinishing())
+                                    mProgressDialog.dismiss();
+                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                            });
+                        }
                     } else {
-                        Looper.prepare();
-                        if (mProgressDialog.isShowing() && !isFinishing())
-                            mProgressDialog.dismiss();
-                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                        Looper.loop();
-                    }
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        runOnUiThread(() -> {
                             if (mProgressDialog.isShowing() && !isFinishing())
                                 mProgressDialog.dismiss();
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                            Toasty.error(mContext, "出现错误，请稍后重试", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } else {
+                    runOnUiThread(() -> {
+                        if (mProgressDialog.isShowing() && !isFinishing())
+                            mProgressDialog.dismiss();
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -410,14 +394,11 @@ public class ScoreActivity extends AppCompatActivity {
             JSONArray jsonArray = new JSONArray(responseText);
             final JSONObject object = jsonArray.getJSONObject(0); //总学年绩点信息
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        tv_GPA_ALL.setText("总学年绩点：" + object.getString("point"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+            runOnUiThread(() -> {
+                try {
+                    tv_GPA_ALL.setText("总学年绩点：" + object.getString("point"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             });
 
@@ -433,7 +414,6 @@ public class ScoreActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         getAxisXLables();//获取x轴的标注
         getAxisPoints();//获取坐标点
@@ -471,19 +451,14 @@ public class ScoreActivity extends AppCompatActivity {
             }
         }
         subjectAdapter = new SubjectAdapter(ScoreActivity.this, R.layout.item_subjects, subjectList);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                listView.setAdapter(subjectAdapter);
-            }
-        });
+        runOnUiThread(() -> listView.setAdapter(subjectAdapter));
     }
 
     //对服务器响应的数据进行接收
     private void handleScoreResponse(String response) {
         if (!TextUtils.isEmpty(response)) {
             Gson gson = new Gson();
-            gSubjectList = gson.fromJson(response, new TypeToken<List<g_Subject>>() {
+            gSubjectList = gson.fromJson(response, new TypeToken<List<GSubject>>() {
             }.getType());
             showAllResult(gSubjectList);
         } else {
@@ -491,18 +466,13 @@ public class ScoreActivity extends AppCompatActivity {
         }
     }
 
-    private void showAllResult(List<g_Subject> gSubjectList) {
+    private void showAllResult(List<GSubject> gSubjectList) {
         for (int i = 0; i < gSubjectList.size(); i++) {
             Subject subject = new Subject(gSubjectList.get(i).getCourse_name(), gSubjectList.get(i).getCredit(), gSubjectList.get(i).getScore());
             subjectList.add(subject);
         }
         subjectAdapter = new SubjectAdapter(ScoreActivity.this, R.layout.item_subjects, subjectList);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                listView.setAdapter(subjectAdapter);
-            }
-        });
+        runOnUiThread(() -> listView.setAdapter(subjectAdapter));
         mProgressDialog.dismiss();
         chooseYear();
     }
@@ -530,6 +500,7 @@ public class ScoreActivity extends AppCompatActivity {
         MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();

@@ -84,11 +84,9 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        changeStatusBar();
         setContentView(R.layout.activity_sport);
 
         mContext = this;
-
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
         type = intent.getStringExtra("type");
@@ -135,6 +133,7 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
 
+    //获取体育信息
     private void getSportInfo() {
         String username = SpUtils.getString(mContext, SpConstant.STU_ID);
         String pePass = SpUtils.getString(mContext, SpConstant.PE_PASS);
@@ -219,6 +218,7 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    //获取体育成绩
     private void getSportScore(String username, String pePass) {
         sportList.clear();
         listView.setVisibility(View.GONE);
@@ -419,16 +419,6 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                 () -> dialog.dismiss(),
                 () -> dialog.dismiss()
         );
-    }
-
-    //将背景图和状态栏融合到一起
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void changeStatusBar() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
-        }
     }
 
     @Override

@@ -56,11 +56,10 @@ public class BookList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         setContentView(R.layout.activity_book_list);
 
         mContext = this;
-
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
 
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.book_list_toolbar);
@@ -99,77 +98,85 @@ public class BookList extends AppCompatActivity {
         // 设置下拉进度的主题颜色
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
 
-        listener = () -> requestBookList(keyword);
+        listener = () -> getBookList(keyword);
 
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
 
     //查询图书列表
-    private void requestBookList(String bookName) {
+    private void getBookList(String bookName) {
         bookList.clear();
         lv_book_list.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_LIST;
-        RequestBody requestBody = new FormBody.Builder()
-                .add("bookName", bookName)
-                .build();
+        if (url != null && !url.equals("")) {
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("bookName", bookName)
+                    .build();
 
-        HttpUtil.post(url, requestBody, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> {
-                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                });
-            }
+            HttpUtil.post(url, requestBody, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                    });
+                }
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String data = response.body().string();
-                    Res res = HttpUtil.handleResponse(data);
-                    if (res != null) {
-                        if (res.getCode() == 200) {
-                            try {
-                                JSONArray array = new JSONArray(res.getInfo());
-                                for (int i = 0; i < array.length(); i++) {
-                                    JSONObject object = array.getJSONObject(i);
-                                    String book_author_press = object.getString("book_author_press");
-                                    String book_can_borrow = object.getString("book_can_borrow");
-                                    String book_url = object.getString("book_url");
-                                    String book_title = object.getString("book_title");
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String data = response.body().string();
+                        Res res = HttpUtil.handleResponse(data);
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                try {
+                                    JSONArray array = new JSONArray(res.getInfo());
+                                    for (int i = 0; i < array.length(); i++) {
+                                        JSONObject object = array.getJSONObject(i);
+                                        String book_author_press = object.getString("book_author_press");
+                                        String book_can_borrow = object.getString("book_can_borrow");
+                                        String book_url = object.getString("book_url");
+                                        String book_title = object.getString("book_title");
 
-                                    Book book = new Book(book_title, book_author_press, book_can_borrow, book_url);
-                                    bookList.add(book);
+                                        Book book = new Book(book_title, book_author_press, book_can_borrow, book_url);
+                                        bookList.add(book);
+                                    }
+                                    runOnUiThread(() -> {
+                                        BookAdapter bookAdapter = new BookAdapter(BookList.this, R.layout.item_book_list, bookList);
+                                        lv_book_list.setAdapter(bookAdapter);
+                                        lv_book_list.setVisibility(View.VISIBLE);
+                                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                    });
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                                runOnUiThread(() -> {
-                                    BookAdapter bookAdapter = new BookAdapter(BookList.this, R.layout.item_book_list, bookList);
-                                    lv_book_list.setAdapter(bookAdapter);
-                                    lv_book_list.setVisibility(View.VISIBLE);
-                                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                                });
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                            } else {
+                                Looper.prepare();
+                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
+                                Looper.loop();
                             }
                         } else {
-                            Looper.prepare();
-                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                            Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                            Looper.loop();
+                            runOnUiThread(() -> {
+                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     } else {
                         runOnUiThread(() -> {
                             swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                            Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
+                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
                     }
-                } else {
-                    runOnUiThread(() -> {
-                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
-                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                    });
                 }
-            }
-        });
+            });
+        } else {
+            runOnUiThread(() -> {
+                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                Toasty.error(mContext, "发生错误，请稍后重试", Toast.LENGTH_SHORT).show();
+            });
+        }
+
     }
 
     @Override
@@ -188,6 +195,7 @@ public class BookList extends AppCompatActivity {
         MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();

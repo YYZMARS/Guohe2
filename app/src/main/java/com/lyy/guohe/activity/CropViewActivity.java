@@ -10,6 +10,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
@@ -21,6 +22,8 @@ import com.umeng.analytics.MobclickAgent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+
+import es.dmoral.toasty.Toasty;
 
 public class CropViewActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,14 +50,19 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
         doneBtn.setOnClickListener(this);
         cancelBtn.setOnClickListener(this);
 
-        Intent intent = getIntent();
-        if (getIntent() == null) throw new NullPointerException("缺少必须的参数");
-        if (!getIntent().hasExtra("uri")) throw new NullPointerException("缺少必须的参数");
-        uri = Uri.parse(intent.getStringExtra("uri"));
-        flag = intent.getStringExtra("flag");
+        try {
+            Intent intent = getIntent();
+            uri = Uri.parse(intent.getStringExtra("uri"));
+            flag = intent.getStringExtra("flag");
+            cropView.setVisibility(View.VISIBLE);
+            btnlay.setVisibility(View.VISIBLE);
 
-        cropView.setVisibility(View.VISIBLE);
-        btnlay.setVisibility(View.VISIBLE);
+        } catch (NullPointerException e) {
+            runOnUiThread(() -> {
+                Toasty.warning(CropViewActivity.this, "缺少必要的参数", Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        }
 
         switch (flag) {
             case "header":
@@ -125,6 +133,7 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
         MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();

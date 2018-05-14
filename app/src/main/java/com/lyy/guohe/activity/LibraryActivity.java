@@ -95,14 +95,14 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
 
         listener = () -> {
             libraryList.clear();
-            requestBookTop();
+            getBookTop();
         };
 
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
 
     //发送查询前本热门书籍的请求
-    private void requestBookTop() {
+    private void getBookTop() {
         recyclerView.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_TOP;
         HttpUtil.get(url, new Callback() {
@@ -230,9 +230,6 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
         HashMap<String, String> map = new HashMap<>();
         map.put("keyword", keyword);
         NavigateUtil.navigateTo(LibraryActivity.this,BookList.class,map);
-//        Intent bookListIntent = new Intent(LibraryActivity.this, BookList.class);
-//        bookListIntent.putExtra("keyword", keyword);
-//        startActivity(bookListIntent);
     }
 
     @Override
@@ -265,11 +262,10 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         setContentView(R.layout.activity_library);
 
         mContext = this;
-
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.library_toolbar);
         setSupportActionBar(toolbar);

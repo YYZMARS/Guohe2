@@ -58,13 +58,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //设置当前窗体为全屏显示
         getWindow().setFlags(flag, flag);
         setContentView(R.layout.activity_login);
-//        StatusBarCompat.setStatusBarColor(this, Color.rgb(250, 250, 250));
         context = this;
         initView();
+        int currentapiVersion=android.os.Build.VERSION.SDK_INT;
+        Log.d(TAG, "onCreate: "+currentapiVersion);
     }
 
     //初始化相关控件
     private void initView() {
+
         CircleImageView mIvLoginHeader = findViewById(R.id.iv_loginHeader);
         Glide.with(this).load(R.mipmap.ic_launcher_round).into(mIvLoginHeader);
 
@@ -72,6 +74,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mEtLoginPass = (EditText) findViewById(R.id.et_loginPass);
         mBtnSignIn = (ActionProcessButton) findViewById(R.id.btn_SignIn);
         mBtnSignIn.setOnClickListener(this);
+
+
     }
 
     @Override
@@ -128,12 +132,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             SpUtils.putBoolean(getApplicationContext(), SpConstant.IS_LOGIN, true);
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mBtnSignIn.setProgress(100);
-                    Toasty.success(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
-                }
+            runOnUiThread(() -> {
+                mBtnSignIn.setProgress(100);
+                Toasty.success(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
             });
             NavigateUtil.navigateTo(this, MainActivity.class);
             finish();

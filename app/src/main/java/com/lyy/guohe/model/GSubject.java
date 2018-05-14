@@ -4,7 +4,7 @@ package com.lyy.guohe.model;
  * Created by lyy on 2017/10/8.
  */
 
-public class g_Subject {
+public class GSubject {
 
     private String course_name;
 

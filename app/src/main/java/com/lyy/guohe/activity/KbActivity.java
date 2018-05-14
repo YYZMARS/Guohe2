@@ -247,13 +247,9 @@ public class KbActivity extends AppCompatActivity {
                 .showAnim(new BounceBottomEnter())
                 .show();
 
+        //left btn click listener
         dialog.setOnBtnClickL(
-                new OnBtnClickL() {//left btn click listener
-                    @Override
-                    public void onBtnClick() {
-                        dialog.dismiss();
-                    }
-                }
+                (OnBtnClickL) () -> dialog.dismiss()
         );
 
     }

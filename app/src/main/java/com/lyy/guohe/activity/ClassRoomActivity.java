@@ -88,11 +88,10 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         setContentView(R.layout.activity_class_room);
 
         mContext = this;
-
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.classroom_toolbar);
         setSupportActionBar(toolbar);
@@ -333,7 +332,8 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-    private void requestClassroom() {
+    //发送获取空教室的请求
+    private void getClassroom() {
         classRoomList.clear();
         lv_classroom.setVisibility(View.GONE);
         String user = SpUtils.getString(mContext, SpConstant.STU_ID);
@@ -370,24 +370,22 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     Res res = HttpUtil.handleResponse(data);
-                    assert res != null;
-                    if (res.getCode() == 200) {
-                        try {
-                            JSONArray array = new JSONArray(res.getInfo());
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject object = array.getJSONObject(i);
-                                String weekday = object.getString("weekday");
-                                String time = object.getString("time");
-                                String place = object.getString("place");
+                    if (res != null) {
+                        if (res.getCode() == 200) {
+                            try {
+                                JSONArray array = new JSONArray(res.getInfo());
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    String weekday = object.getString("weekday");
+                                    String time = object.getString("time");
+                                    String place = object.getString("place");
 
-                                ClassRoom classRoom = new ClassRoom(weekday, time, place);
-                                if (Weekday.equals(weekday)) {
-                                    classRoomList.add(classRoom);
+                                    ClassRoom classRoom = new ClassRoom(weekday, time, place);
+                                    if (Weekday.equals(weekday)) {
+                                        classRoomList.add(classRoom);
+                                    }
                                 }
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                                runOnUiThread(() -> {
                                     ClassRoomAdapter classRoomAdapter = new ClassRoomAdapter(ClassRoomActivity.this, R.layout.item_classroom, classRoomList);
                                     lv_classroom.setAdapter(classRoomAdapter);
                                     lv_classroom.setVisibility(View.VISIBLE);
@@ -397,34 +395,26 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
                                             swipeRefreshLayout.setRefreshing(false);
                                         }
                                     });
-                                }
+                                });
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            runOnUiThread(() -> {
+                                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
                             });
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
                     } else {
-                        Looper.prepare();
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
+                        runOnUiThread(() -> {
+                            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                            Toasty.error(mContext, "出现错误，请稍后重试", Toast.LENGTH_SHORT).show();
                         });
-                        Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-                        Looper.loop();
                     }
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    swipeRefreshLayout.setRefreshing(false);
-                                }
-                            });
-                            Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                        Toasty.error(mContext, "错误" + response.code() + "，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -440,11 +430,9 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         // 设置下拉进度的主题颜色
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
 
-        listener = new SwipeRefreshLayout.OnRefreshListener() {
-            public void onRefresh() {
-                //TODO
-                requestClassroom();
-            }
+        listener = () -> {
+            //TODO
+            getClassroom();
         };
 
         swipeRefreshLayout.setOnRefreshListener(listener);
@@ -483,6 +471,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();
