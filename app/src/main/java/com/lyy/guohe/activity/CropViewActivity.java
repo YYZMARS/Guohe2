@@ -65,7 +65,7 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
         }
 
         switch (flag) {
-            case "header":
+            case "img_header":
                 cropView.of(uri).asSquare().initialize(CropViewActivity.this);
                 break;
             case "course":
@@ -100,7 +100,7 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
 
                     if (flag.equals("course")) {
                         SpUtils.putString(CropViewActivity.this, SpConstant.BG_COURSE_64, imageBase64);
-                    } else if (flag.equals("header")) {
+                    } else if (flag.equals("img_header")) {
                         SpUtils.putString(CropViewActivity.this, SpConstant.IMAGE_BASE_64, imageBase64);
                     }
 

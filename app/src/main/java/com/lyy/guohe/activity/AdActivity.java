@@ -1,12 +1,21 @@
 package com.lyy.guohe.activity;
 
+import com.tencent.stat.StatService;
 import com.umeng.message.inapp.InAppMessageManager;
 import com.umeng.message.inapp.UmengSplashMessageActivity;
+
+import java.util.Properties;
 
 public class AdActivity extends UmengSplashMessageActivity {
 
     @Override
     public boolean onCustomPretreatment() {
+
+        //统计refresh的次数
+        Properties prop = new Properties();
+        prop.setProperty("name", "ad");
+        StatService.trackCustomKVEvent(this, "ad", prop);
+
         InAppMessageManager mInAppMessageManager = InAppMessageManager.getInstance(this);
         //设置应用内消息为Debug模式
         mInAppMessageManager.setInAppMsgDebugMode(true);

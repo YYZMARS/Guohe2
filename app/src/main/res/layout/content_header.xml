@@ -252,6 +252,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:src="@drawable/ic_menu_idea"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
@@ -259,6 +260,7 @@
                 android:scaleType="centerCrop" />
 
             <TextView
+                android:text="@string/idea"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"

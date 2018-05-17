@@ -40,14 +40,15 @@ public class NewsAdapter extends ArrayAdapter<News> {
         @SuppressLint("ViewHolder") View view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
         ImageView iv_newsImg = view.findViewById(R.id.iv_newsImg);
         TextView iv_newsTitle = view.findViewById(R.id.iv_newsTitle);
-        assert news != null;
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.mipmap.ic_launcher)
-                .priority(Priority.HIGH)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
-        Glide.with(mContext).load(news.getImgUrl()).apply(options).into(iv_newsImg);
-        iv_newsTitle.setText(news.getNewsTitle());
+        if (news!=null){
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.mipmap.ic_launcher)
+                    .priority(Priority.HIGH)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
+            Glide.with(mContext).load(news.getImgUrl()).apply(options).into(iv_newsImg);
+            iv_newsTitle.setText(news.getNewsTitle());
+        }
         return view;
     }
 }

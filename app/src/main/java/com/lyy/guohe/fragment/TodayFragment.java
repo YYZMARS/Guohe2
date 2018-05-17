@@ -50,7 +50,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
@@ -221,11 +223,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 showBusDialog(hasSchoolBus());
                 break;
             case R.id.nav_cet:
-                Intent intent = new Intent(getActivity(), BrowserActivity.class);
-                intent.putExtra("url", UrlConstant.CET);
-                intent.putExtra("title", "全国大学英语四六级考试成绩查询");
-                intent.putExtra("isVpn", false);
-                startActivity(intent);
+                //跳转至四六级查询
+                toCET();
                 break;
             case R.id.nav_classroom:
                 //跳转至查询空教室
@@ -244,11 +243,33 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 showGameDialog();
                 break;
             case R.id.nav_idea:
-                toGuoheLite();
+                //跳转至抽奖页面
+                toLottery();
                 break;
         }
     }
 
+    //跳转至四六级查询部分
+    private void toCET() {
+        Intent intent = new Intent(getActivity(), BrowserActivity.class);
+        intent.putExtra("url", UrlConstant.CET);
+        intent.putExtra("title", "全国大学英语四六级考试成绩查询");
+        intent.putExtra("isVpn", false);
+        startActivity(intent);
+    }
+
+    //跳转至抽奖页面
+    private void toLottery() {
+        String username = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.STU_ID);
+        Log.d(TAG, "toLottery: " + UrlConstant.LOTTERY + username);
+        Intent intent = new Intent(getActivity(), BrowserActivity.class);
+        intent.putExtra("url", UrlConstant.LOTTERY + username);
+        intent.putExtra("title", "果核抽奖助手");
+        intent.putExtra("isVpn", false);
+        startActivity(intent);
+    }
+
+    //跳转至果核Lite小程序
     private void toGuoheLite() {
 //        WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
 //        miniProgramObj.webpageUrl = "http://www.qq.com"; // 兼容低版本的网页链接
@@ -473,7 +494,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     }
 
     private void showPePassDialog() {
-        String pePass = SpUtils.getString(getActivity(), SpConstant.PE_PASS);
+        String pePass = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.PE_PASS);
         if (pePass == null) {
             final EditText editText = new EditText(getActivity());
             AlertDialog.Builder inputDialog =

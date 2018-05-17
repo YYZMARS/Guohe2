@@ -40,9 +40,9 @@
         <item name="android:background">#FFFFFF</item>
     </style>
 
-    <style name="NoTitleDialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <!--没有标题-->
-        <item name="windowNoTitle">true</item>
+        <item name="android:windowNoTitle">true</item>
         <!--背景透明-->
         <item name="android:windowIsTranslucent">true</item>
         <!--是否有覆盖-->

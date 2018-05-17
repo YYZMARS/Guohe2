@@ -33,6 +33,7 @@ import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.CookieManager;
+import com.tencent.smtt.sdk.DownloadListener;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -460,6 +461,18 @@ public class BrowserActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progress);
         mTitle = (TextView) findViewById(R.id.title);
 
+        mWebview.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+                // TODO: 2017-5-6 处理下载事件
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+        });
+
+
         WebSettings webSettings = mWebview.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAppCacheEnabled(true);
@@ -699,6 +712,7 @@ public class BrowserActivity extends AppCompatActivity {
         MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
+
     @Override
     public void onPause() {
         super.onPause();

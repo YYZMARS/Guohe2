@@ -15,23 +15,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/dp_50"
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_80"
-                android:src="@drawable/ic_menu_building" />
+            <include layout="@layout/playground_header" />
 
-            <TextView
+            <include
+                layout="@layout/playground_body"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/dp_20"
-                android:gravity="center"
-                android:text="@string/building"
-                android:textSize="@dimen/sp_20" />
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 

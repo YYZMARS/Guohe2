@@ -13,6 +13,7 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:name=".App"
@@ -121,13 +122,12 @@
             android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".activity.DialogActivity"
-            android:theme="@style/NoTitleDialog" />
+            android:theme="@style/DialogTheme" />
         <activity
             android:name=".activity.GameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game"
             android:theme="@style/FullscreenTheme" />
-
     </application>
 
 </manifest>

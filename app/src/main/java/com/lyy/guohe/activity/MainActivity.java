@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
@@ -33,7 +32,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,16 +53,13 @@ import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
-import com.umeng.message.inapp.IUmengInAppMsgCloseCallback;
 import com.umeng.message.inapp.InAppMessageManager;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
@@ -210,7 +205,7 @@ public class MainActivity extends AppCompatActivity
         listTitles.add("今日");
         listTitles.add("本周");
         listTitles.add("广播");
-//        listTitles.add("操场");
+        listTitles.add("操场");
 
         TodayFragment fragment1 = new TodayFragment();
         fragments.add(fragment1);
@@ -218,8 +213,8 @@ public class MainActivity extends AppCompatActivity
         fragments.add(fragment2);
         NewsFragment fragment3 = new NewsFragment();
         fragments.add(fragment3);
-//        PlayFragment fragment4 = new PlayFragment();
-//        fragments.add(fragment4);
+        PlayFragment fragment4 = new PlayFragment();
+        fragments.add(fragment4);
 
         //mTabLayout.setTabMode(TabLayout.SCROLL_AXIS_HORIZONTAL);//设置tab模式，当前为系统默认模式
         for (int i = 0; i < listTitles.size(); i++) {
@@ -514,7 +509,7 @@ public class MainActivity extends AppCompatActivity
                     // 4.4及以上系统使用这个方法处理图片
                     Uri uri = data.getData();
                     Intent cropIntent = new Intent(MainActivity.this, CropViewActivity.class);
-                    cropIntent.putExtra("flag", "header");
+                    cropIntent.putExtra("flag", "img_header");
                     cropIntent.putExtra("uri", uri.toString());
                     startActivity(cropIntent);
                 }
