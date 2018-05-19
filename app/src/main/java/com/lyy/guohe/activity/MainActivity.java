@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
@@ -48,7 +49,9 @@ import com.lyy.guohe.fragment.PlayFragment;
 import com.lyy.guohe.fragment.TodayFragment;
 import com.lyy.guohe.model.DBCourse;
 import com.lyy.guohe.utils.NavigateUtil;
+import com.lyy.guohe.utils.RomUtils;
 import com.lyy.guohe.utils.SpUtils;
+import com.lyy.guohe.view.EggDialog;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
@@ -86,19 +89,24 @@ public class MainActivity extends AppCompatActivity
     private String imageBase64;
 
     private CircleImageView civ_header;
+    /**
+     * 果核
+     */
+    private TextView mTvTitle;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         //设置状态栏透明
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        setContentView(R.layout.activity_main);
 
         // 进入首页事件,统计用户进入首页的次数
         StatService.trackCustomKVEvent(this, "homepage", null);
@@ -121,6 +129,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -194,6 +203,38 @@ public class MainActivity extends AppCompatActivity
         tvName.setText("姓名：" + name);
         tvStuId.setText("学号：" + stuId);
 
+        mTvTitle = (TextView) findViewById(R.id.tv_title);
+
+        mTvTitle.setOnClickListener(new View.OnClickListener() {
+            final static int COUNTS = 5;//点击次数
+            final static long DURATION = 3 * 1000;//规定有效时间
+            long[] mHits = new long[COUNTS];
+            int index = 0;
+
+            @Override
+            public void onClick(View v) {
+                /**
+                 * 实现双击方法
+                 * src 拷贝的源数组
+                 * srcPos 从源数组的那个位置开始拷贝.
+                 * dst 目标数组
+                 * dstPos 从目标数组的那个位子开始写数据
+                 * length 拷贝的元素的个数
+                 */
+                index++;
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                //实现左移，然后最后一个位置更新距离开机的时间，如果最后一个时间和最开始时间小于DURATION，即连续5次点击
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                Log.d(TAG, "onClick: " + index);
+                if (index == 3) {
+                    Toast.makeText(MainActivity.this, "哈哈哈，就快发现彩蛋了！", Toast.LENGTH_SHORT).show();
+                }
+                if (mHits[0] >= (SystemClock.uptimeMillis() - DURATION)) {
+                    showEggDialog();
+                    index = 0;
+                }
+            }
+        });
     }
 
     //初始化相应的fragment
@@ -319,6 +360,10 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("isVpn", false);
                 startActivity(intent);
                 break;
+            case R.id.nav_version:
+                String versionName = RomUtils.getLocalVersionName(this);
+                Toasty.success(this, "您当前的版本为：" + versionName, Toast.LENGTH_SHORT).show();
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -387,13 +432,9 @@ public class MainActivity extends AppCompatActivity
                 .btnText("关闭", "支持")//
                 .show();
 
+        //left btn click listener
         dialog.setOnBtnClickL(
-                new OnBtnClickL() {//left btn click listener
-                    @Override
-                    public void onBtnClick() {
-                        dialog.dismiss();
-                    }
-                },
+                () -> dialog.dismiss(),
                 new OnBtnClickL() {//right btn click listener
                     @Override
                     public void onBtnClick() {
@@ -406,6 +447,19 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
         );
+    }
+
+    //弹出显示菜单的对话框
+    private void showEggDialog() {
+        EggDialog eggDialog = new EggDialog(MainActivity.this);
+        eggDialog.setTitle("哇，你竟然发现了彩蛋");
+        eggDialog.onCreateView();
+        eggDialog.setUiBeforShow();
+        //点击空白区域不能退出
+        eggDialog.setCanceledOnTouchOutside(true);
+        //按返回键不能退出
+        eggDialog.setCancelable(true);
+        eggDialog.show();
     }
 
     //跳转到支付宝付款界面
@@ -518,4 +572,5 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
 }

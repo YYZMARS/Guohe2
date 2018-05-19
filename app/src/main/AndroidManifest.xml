@@ -121,9 +121,6 @@
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
             android:theme="@android:style/Theme.Translucent" />
         <activity
-            android:name=".activity.DialogActivity"
-            android:theme="@style/DialogTheme" />
-        <activity
             android:name=".activity.GameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game"

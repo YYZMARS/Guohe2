@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.UrlConstant;
+import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 
 import org.json.JSONArray;
@@ -151,6 +152,43 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
 
     //获取广告图
     private void getPic() {
+        HttpUtil.get(UrlConstant.HEAD_PIC, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String data = response.body().string();
+                    final Res res = HttpUtil.handleResponse(data);
+                    if (res != null) {
+                        if (res.getCode() == 200) {
+                            try {
+                                JSONObject object = new JSONObject(res.getInfo());
+                                /**
+                                 * @title 广告标题
+                                 * @img 广告的图片
+                                 * @url 点击广告转到的页面
+                                 * @describe 广告的详细描述
+                                 */
+                                String title = object.getString("title");
+                                String img = object.getString("img");
+                                String url = object.getString("url");
+                                String describe = object.getString("describe");
+
+                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Glide.with(mContext).load(url).into(mIvPgHeader));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                        }
+                    }
+                }
+            }
+        });
         Objects.requireNonNull(getActivity()).runOnUiThread(() -> Glide.with(mContext).load(headPicUrl).into(mIvPgHeader));
     }
 

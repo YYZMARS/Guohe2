@@ -31,6 +31,10 @@
                 android:icon="@drawable/ic_menu_change"
                 android:title="@string/changeAccount" />
             <item
+                android:id="@+id/nav_version"
+                android:icon="@drawable/ic_menu_version"
+                android:title="@string/version"/>
+            <item
                 android:id="@+id/nav_checkUpdate"
                 android:icon="@drawable/ic_menu_update"
                 android:title="@string/checkUpdate" />

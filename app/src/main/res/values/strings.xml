@@ -44,4 +44,5 @@
     <string name="todayKB">今日课程</string>
     <string name="refresh">刷新</string>
     <string name="idea">抽奖</string>
+    <string name="version">当前版本</string>
 </resources>

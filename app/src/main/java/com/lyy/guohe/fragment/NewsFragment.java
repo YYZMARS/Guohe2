@@ -66,7 +66,7 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = getActivity().getLayoutInflater().inflate(R.layout.fragment_news, null);
+        view = Objects.requireNonNull(getActivity()).getLayoutInflater().inflate(R.layout.fragment_news, null);
 
         banner = (Banner) view.findViewById(R.id.banner);
         banner.setOnBannerListener(this);
@@ -106,25 +106,18 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
         HttpUtil.get(UrlConstant.SLIDE, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String data = response.body().string();
                 if (response.isSuccessful()) {
+                    String data = response.body().string();
                     final Res res = HttpUtil.handleResponse(data);
-                    assert res != null;
-                    if (res.getCode() == 200) {
-                        try {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                    if (res!=null){
+                        if (res.getCode() == 200) {
+                            try {
+                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
                                     try {
                                         JSONArray array = new JSONArray(res.getInfo());
                                         for (int i = 0; i < array.length(); i++) {
@@ -141,26 +134,18 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show();
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        });
+                        } else {
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                        }
+                    }else {
+                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
                     }
                 } else {
-                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
                 }
             }
         });

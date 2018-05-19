@@ -1,5 +1,8 @@
 package com.lyy.guohe.utils;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +17,20 @@ import java.io.InputStreamReader;
 public class RomUtils {
 
     private static final String TAG = "RomUtils";
+
+    //获取本地软件版本号名称
+    public static String getLocalVersionName(Context ctx) {
+        String localVersion = "";
+        try {
+            PackageInfo packageInfo = ctx.getApplicationContext()
+                    .getPackageManager()
+                    .getPackageInfo(ctx.getPackageName(), 0);
+            localVersion = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return localVersion;
+    }
 
     private static String getSystemProperty(String propName) {
         String line;
