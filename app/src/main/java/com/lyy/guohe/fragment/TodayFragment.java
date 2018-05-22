@@ -38,9 +38,16 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
+import com.tencent.mm.opensdk.constants.ConstantsAPI;
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
 import org.litepal.crud.DataSupport;
@@ -67,7 +74,6 @@ import static android.support.constraint.Constraints.TAG;
 public class TodayFragment extends Fragment implements View.OnClickListener {
     //该Fragment的
     private View view;
-    private static final String KEY = "title";
 
     //今日没课时显示的TextView
     private TextView tvKbShow;
@@ -244,6 +250,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.nav_idea:
                 //跳转至抽奖页面
+//                toTel();
                 toLottery();
                 break;
         }
@@ -269,23 +276,26 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         startActivity(intent);
     }
 
+    //跳转至校园热线页面
+    private void toTel() {
+        Intent intent = new Intent(getActivity(), BrowserActivity.class);
+        intent.putExtra("url", UrlConstant.SCHOOL_TEL);
+        intent.putExtra("title", "校园热线");
+        intent.putExtra("isVpn", false);
+        startActivity(intent);
+    }
+
     //跳转至果核Lite小程序
     private void toGuoheLite() {
-//        WXMiniProgramObject miniProgramObj = new WXMiniProgramObject();
-//        miniProgramObj.webpageUrl = "http://www.qq.com"; // 兼容低版本的网页链接
-//        miniProgramObj.miniprogramType = WXMiniProgramObject.MINIPTOGRAM_TYPE_RELEASE;// 正式版:0，测试版:1，体验版:2
-//        miniProgramObj.userName = "gh_d43f693ca31f";     // 小程序原始id
-//        miniProgramObj.path = "/pages/media";            //小程序页面路径
-//        WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
-//        msg.title = "小程序消息Title";                    // 小程序消息title
-//        msg.description = "小程序消息Desc";               // 小程序消息desc
-//        msg.thumbData = getThumb();                      // 小程序消息封面图片，小于128k
-//
-//        SendMessageToWX.Req req = new SendMessageToWX.Req();
-//        req.transaction = buildTransaction("webpage");
-//        req.message = msg;
-//        req.scene = SendMessageToWX.Req.WXSceneSession;  // 目前支持会话
-//        api.sendReq(req);
+        String appId = "wx31c614cef0a3c2b1"; // 填应用AppId
+        IWXAPI api = WXAPIFactory.createWXAPI(mContext, appId, false);
+        api.registerApp(appId);
+
+        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
+        req.userName = "gh_75a1ef8c0da5"; // 填小程序原始id
+//        req.path = "/index";                  //拉起小程序页面的可带参路径，不填默认拉起小程序首页
+        req.miniprogramType = WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE;// 可选打开 开发版，体验版和正式版
+        api.sendReq(req);
     }
 
     //选择进入哪一个校园系统

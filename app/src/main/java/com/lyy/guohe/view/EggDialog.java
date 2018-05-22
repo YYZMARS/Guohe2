@@ -7,8 +7,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.flyco.dialog.widget.base.BaseDialog;
 import com.lyy.guohe.R;
+import com.lyy.guohe.constant.UrlConstant;
 
 public class EggDialog extends BaseDialog<EggDialog> {
 
@@ -24,13 +28,20 @@ public class EggDialog extends BaseDialog<EggDialog> {
     @Override
     public View onCreateView() {
 
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                //.placeholder(R.mipmap.ic_launcher_round)
+                .priority(Priority.HIGH)
+                //.skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
+
         widthScale(0.85f);
         //填充弹窗布局
         View inflate = View.inflate(context, R.layout.dialog_egg, null);
         //用来放整个图片的控件
         iv_egg = (ImageView) inflate.findViewById(R.id.iv_egg);
         //用来加载网络图片，填充iv_ad控件，注意要添加网络权限，和Picasso的依赖和混淆
-        Glide.with(context).load(R.drawable.img_turing).into(iv_egg);
+        Glide.with(context).load(UrlConstant.EGG).apply(options).into(iv_egg);
 //        Glide.with(context).load(R.drawable.ic_menu_update).into(iv_back);
 
         return inflate;
@@ -41,7 +52,7 @@ public class EggDialog extends BaseDialog<EggDialog> {
     public void setUiBeforShow() {
         //点击弹窗相应位置，处理相关逻辑。
         iv_egg.setOnClickListener(v -> {
-            Toast.makeText(context, "哈哈", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "哈哈", Toast.LENGTH_SHORT).show();
             //处理完逻辑关闭弹框的代码
             dismiss();
         });
