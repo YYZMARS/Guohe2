@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.qq.visual:visual-3.3.1-release">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/visual-3.3.1-release.aar/ee7d39496ffef51236460543714f13da/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/visual-3.3.1-release.aar/ee7d39496ffef51236460543714f13da/jars/libs/track-sdk_v3.3.1.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/visual-3.3.1-release.aar/ee7d39496ffef51236460543714f13da/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/visual-3.3.1-release.aar/ee7d39496ffef51236460543714f13da/jars/libs/slf4j-api-1.7.24.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/visual-3.3.1-release.aar/ee7d39496ffef51236460543714f13da/jars/libs/libthrift-0.10.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.qq.visual/visual/3.3.1-release/387150db45cf3d2fb3d7fc121727ad8b1825ff20/visual-3.3.1-release-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

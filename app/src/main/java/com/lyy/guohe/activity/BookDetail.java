@@ -76,13 +76,13 @@ public class BookDetail extends AppCompatActivity {
     }
 
     //获取图书详情
-    private void getBookDetail(String book_url) {
+    private void getBookDetail(String bookUrl) {
         bookDetailList.clear();
         lv_book_detail.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_DETAIL;
-        if (url != null && !url.equals("")) {
+        if (bookUrl!= null) {
             RequestBody requestBody = new FormBody.Builder()
-                    .add("bookUrl", book_url)
+                    .add("bookUrl", bookUrl)
                     .build();
             HttpUtil.post(url, requestBody, new Callback() {
                 @Override

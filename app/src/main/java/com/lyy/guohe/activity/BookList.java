@@ -108,7 +108,7 @@ public class BookList extends AppCompatActivity {
         bookList.clear();
         lv_book_list.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_LIST;
-        if (url != null && !url.equals("")) {
+        if (bookName != null) {
             RequestBody requestBody = new FormBody.Builder()
                     .add("bookName", bookName)
                     .build();

@@ -34,6 +34,13 @@
 
             <include layout="@layout/content_message" />
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_10"
+                android:background="#f8f8f8" />
+
+            <include layout="@layout/content_one" />
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

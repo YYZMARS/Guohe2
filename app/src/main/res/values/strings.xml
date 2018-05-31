@@ -45,4 +45,6 @@
     <string name="refresh">刷新</string>
     <string name="idea">抽奖助手</string>
     <string name="version">当前版本</string>
+    <string name="one">日知录</string>
+    <string name="default_date">2018/06/01</string>
 </resources>
