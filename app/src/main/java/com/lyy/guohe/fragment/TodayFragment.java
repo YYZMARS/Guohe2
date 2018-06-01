@@ -10,16 +10,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.ClassRoomActivity;
@@ -38,18 +39,10 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.tencent.mm.opensdk.constants.ConstantsAPI;
-import com.tencent.mm.opensdk.modelbase.BaseReq;
-import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXMiniProgramObject;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -57,9 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
@@ -69,7 +60,6 @@ import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.support.constraint.Constraints.TAG;
 
 public class TodayFragment extends Fragment implements View.OnClickListener {
     //该Fragment的
@@ -86,24 +76,40 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
     private ProgressDialog mProgressDialog;
 
+    private ImageView ivOneImg;
+
+    private TextView tvOneDate;
+
+    private TextView tvImgAuthor;
+
+    private TextView tvOneWord;
+
+    private TextView tvOneWordFrom;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         mContext = getActivity();
         view = inflater.inflate(R.layout.fragment_today, container, false);
+        initView(view);
+        initMess();
+        initTodayKb();
+        initOneContent();
+
+        return view;
+    }
+
+    //加载首页View
+    private void initView(View view) {
         tvKbShow = (TextView) view.findViewById(R.id.tv_kb_show);
         lvKbToday = view.findViewById(R.id.lv_kbToday);
         tvMessage = view.findViewById(R.id.tv_message);
         TextView tvKb = view.findViewById(R.id.tv_Kb);
 
-        tvKb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigateUtil.navigateTo(getActivity(), KbActivity.class);
-            }
-        });
+        tvKb.setOnClickListener(v -> NavigateUtil.navigateTo(getActivity(), KbActivity.class));
         tvKbShow.setText("今天居然没有课~" + "\uD83D\uDE01");
+
 
         LinearLayout navKb = view.findViewById(R.id.nav_kb);
         navKb.setOnClickListener(this);
@@ -125,13 +131,17 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         navGame.setOnClickListener(this);
         LinearLayout navIdea = view.findViewById(R.id.nav_idea);
         navIdea.setOnClickListener(this);
+//        LinearLayout llOne = view.findViewById(R.id.ll_one);
+//        llOne.setOnClickListener(this);
 
-        initMess();
-        initTodayKb();
-
-        return view;
+        ivOneImg = view.findViewById(R.id.iv_one_img);
+        tvImgAuthor = view.findViewById(R.id.tv_img_author);
+        tvOneDate = view.findViewById(R.id.tv_one_date);
+        tvOneWord = view.findViewById(R.id.tv_one_word);
+        tvOneWordFrom = view.findViewById(R.id.tv_one_word_from);
     }
 
+    //加载今日课表
     private void initTodayKb() {
         List<Course> courses = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
@@ -160,9 +170,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                     }
                 }
                 if (courses.size() > 0) {
-                    for (Course c : courses) {
-                        Log.d(TAG, "initTodayKb: " + c.getClassName());
-                    }
                     tvKbShow.setVisibility(View.GONE);
                     lvKbToday.setVisibility(View.VISIBLE);
                     CourseAdapter courseAdapter = new CourseAdapter(getActivity(), R.layout.item_course, courses);
@@ -249,11 +256,64 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 showGameDialog();
                 break;
             case R.id.nav_idea:
-                //跳转至抽奖页面
-//                toTel();
-                toLottery();
+                //跳转至校园热线页面
+                toTel();
+//                toLottery();
                 break;
         }
+    }
+
+    //加载One的内容
+    private void initOneContent() {
+        RequestBody requestBody = new FormBody.Builder()
+                .add("TransCode", "030111")
+                .add("OpenId", "123456789")
+                .add("Body", "")
+                .build();
+        HttpUtil.post(UrlConstant.ONE, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String data = response.body().string();
+                    try {
+                        JSONObject object = new JSONObject(data).getJSONObject("Body");
+                        String date = object.getString("date").split(" ")[0].replaceAll("-", "/");
+                        String imgUrl = object.getString("img_url");
+                        String imgAuthor = object.getString("img_author");
+                        String imgKind = object.getString("img_kind");
+                        String url = object.getString("url");
+                        String word = object.getString("word");
+                        String wordFrom = object.getString("word_from");
+
+                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                            tvOneWord.setText(word);
+                            tvOneWordFrom.setText(wordFrom);
+                            tvOneDate.setText(date);
+                            tvImgAuthor.setText(imgAuthor + " | " + imgKind);
+                            Glide.with(mContext).load(imgUrl).into(ivOneImg);
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    //跳转至One页面
+    private void toOne(String url) {
+        Intent intent = new Intent(getActivity(), BrowserActivity.class);
+        intent.putExtra("url", url);
+        intent.putExtra("title", "One一个");
+        intent.putExtra("isVpn", false);
+        startActivity(intent);
     }
 
     //跳转至四六级查询部分
@@ -268,7 +328,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     //跳转至抽奖页面
     private void toLottery() {
         String username = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.STU_ID);
-        Log.d(TAG, "toLottery: " + UrlConstant.LOTTERY + username);
         Intent intent = new Intent(getActivity(), BrowserActivity.class);
         intent.putExtra("url", UrlConstant.LOTTERY + username);
         intent.putExtra("title", "果核抽奖助手");
@@ -285,22 +344,9 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         startActivity(intent);
     }
 
-    //跳转至果核Lite小程序
-    private void toGuoheLite() {
-        String appId = "wx31c614cef0a3c2b1"; // 填应用AppId
-        IWXAPI api = WXAPIFactory.createWXAPI(mContext, appId, false);
-        api.registerApp(appId);
-
-        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
-        req.userName = "gh_75a1ef8c0da5"; // 填小程序原始id
-//        req.path = "/index";                  //拉起小程序页面的可带参路径，不填默认拉起小程序首页
-        req.miniprogramType = WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE;// 可选打开 开发版，体验版和正式版
-        api.sendReq(req);
-    }
-
     //选择进入哪一个校园系统
     private void showSystemDialog() {
-        final String[] items = {"教务系统", "奥兰系统", "实验系统", "师生服务中心"};
+        final String[] items = {"教务系统", "奥兰系统", "实验系统", "一站式办事大厅"};
         AlertDialog.Builder listDialog =
                 new AlertDialog.Builder(getActivity());
         listDialog.setTitle("选择要进入的系统");
@@ -328,7 +374,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                         break;
                     case 3:
                         intent.putExtra("url", UrlConstant.FUWU_URL);
-                        intent.putExtra("title", "师生服务中心");
+                        intent.putExtra("title", "一站式办事大厅");
                         startActivity(intent);
                         break;
                 }
@@ -342,24 +388,18 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         final AlertDialog.Builder normalDialog = new AlertDialog.Builder(getActivity());
         normalDialog.setMessage("即将到来的车次是：\n" + mess);
         normalDialog.setPositiveButton("显示全部车次",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //...To-do
-                        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-                        intent.putExtra("title", "校车时刻表");
-                        intent.putExtra("url", UrlConstant.SCHOOL_BUS);
-                        intent.putExtra("isVpn", false);
-                        startActivity(intent);
-                    }
+                (dialog, which) -> {
+                    //...To-do
+                    Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                    intent.putExtra("title", "校车时刻表");
+                    intent.putExtra("url", UrlConstant.SCHOOL_BUS);
+                    intent.putExtra("isVpn", false);
+                    startActivity(intent);
                 });
         normalDialog.setNegativeButton("关闭",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //...To-do
-                        dialog.dismiss();
-                    }
+                (dialog, which) -> {
+                    //...To-do
+                    dialog.dismiss();
                 });
         // 显示
         normalDialog.show();

@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_3"
-            android:src="@drawable/ic_menu_message_small" />
+            android:src="@drawable/ic_menu_one" />
 
         <TextView
             android:layout_width="match_parent"
@@ -30,12 +30,53 @@
         android:background="@color/material_blue_grey_200" />
 
     <LinearLayout
+        android:id="@+id/ll_one"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_date"
+            android:id="@+id/tv_one_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/dp_10"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/dp_3"
+            android:text="@string/default_date"
+            android:textSize="@dimen/sp_15"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_one_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/tv_img_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/dp_10"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/dp_3"
+            android:text="@string/default_date"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_one_word"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/dp_10"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/dp_3"
+            android:text="@string/default_date"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_one_word_from"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -40,8 +40,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static android.support.constraint.Constraints.TAG;
-
 /**
  * A simple {@link Fragment} subclass.
  */

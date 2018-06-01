@@ -6,8 +6,8 @@ android {
         applicationId "com.lyy.guohe"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 13
-        versionName "2.3"
+        versionCode 14
+        versionName "2.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             //设置支持的SO库架构
@@ -20,9 +20,21 @@ android {
         ]
     }
     buildTypes {
-        release {
+        //增加构建类型
+        releaseMinifyEnabled {
+            //开启dex字节码压缩，舍去未使用的jar和class文件
             minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard-rules.pro'
+        }
+        //默认release构建类型
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        shrinkResources {
+            //启用res资源过滤，会将项目中未使用到的图片变成1x1的小图，从而减少体积
             shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -41,7 +53,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1183_43604_sharewithdownload_withoutGame_obfs_20180211_105126.jar')
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.9.0'
     implementation 'com.github.bumptech.glide:glide:4.0.0'
     implementation 'com.githang:status-bar-compat:0.6'
@@ -69,6 +80,6 @@ dependencies {
     implementation 'com.umeng.sdk:utdid:1.1.5.3'
     implementation 'com.umeng.sdk:push:4.1.0'
     implementation 'com.umeng.sdk:push-xiaomi:1.0.0'
-    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
-    implementation 'com.github.ppamorim:dragger:1.2'
+//    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+//    implementation 'com.github.ppamorim:dragger:1.2'
 }
