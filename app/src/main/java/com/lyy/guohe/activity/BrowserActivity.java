@@ -464,7 +464,6 @@ public class BrowserActivity extends AppCompatActivity {
         mWebview.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
-                // TODO: 2017-5-6 处理下载事件
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addCategory(Intent.CATEGORY_BROWSABLE);
                 intent.setData(Uri.parse(url));
@@ -474,10 +473,29 @@ public class BrowserActivity extends AppCompatActivity {
 
 
         WebSettings webSettings = mWebview.getSettings();
+
+        // 让WebView能够执行javaScript
         webSettings.setJavaScriptEnabled(true);
+        // 让JavaScript可以自动打开windows
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        // 设置缓存
         webSettings.setAppCacheEnabled(true);
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        // 设置缓存模式,一共有四种模式
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        // 设置缓存路径
+        //webSettings.setAppCachePath("");
+        // 支持缩放(适配到当前屏幕)
+        webSettings.setSupportZoom(true);
+        // 将图片调整到合适的大小
         webSettings.setUseWideViewPort(true);
+        // 支持内容重新布局,一共有四种方式
+        // 默认的是NARROW_COLUMNS
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        // 设置可以被显示的屏幕控制
+        webSettings.setDisplayZoomControls(true);
+        // 设置默认字体大小
+        webSettings.setDefaultFontSize(12);
+
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setAllowFileAccess(true);

@@ -22,10 +22,12 @@ import com.bumptech.glide.Glide;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
+import com.lyy.guohe.activity.LotteryActivity;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
+import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
 
 import org.json.JSONArray;
@@ -178,7 +180,8 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.card1:
                 //抽奖
-                toLottery();
+//                toLottery();
+                NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
                 break;
             case R.id.card2:
                 //表白墙

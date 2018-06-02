@@ -56,6 +56,7 @@ import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
+import com.umeng.message.inapp.IUmengInAppMsgCloseCallback;
 import com.umeng.message.inapp.InAppMessageManager;
 
 import org.litepal.crud.DataSupport;
@@ -112,6 +113,15 @@ public class MainActivity extends AppCompatActivity
         StatService.trackCustomKVEvent(this, "homepage", null);
         //统计应用启动数据
         PushAgent.getInstance(this).onAppStart();
+        //友盟推送插屏消息接口
+        InAppMessageManager.getInstance(this).showCardMessage(this, "main",
+                new IUmengInAppMsgCloseCallback() {
+                    //插屏消息关闭时，会回调该方法
+                    @Override
+                    public void onColse() {
+                        Log.i(TAG, "card message close");
+                    }
+                });
 
         //初始化权限
         initPermission();

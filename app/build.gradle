@@ -24,7 +24,7 @@ android {
         releaseMinifyEnabled {
             //开启dex字节码压缩，舍去未使用的jar和class文件
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         //默认release构建类型
         release {
