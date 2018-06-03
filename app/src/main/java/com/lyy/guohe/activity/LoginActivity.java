@@ -60,8 +60,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         context = this;
         initView();
-        int currentapiVersion=android.os.Build.VERSION.SDK_INT;
-        Log.d(TAG, "onCreate: "+currentapiVersion);
     }
 
     //初始化相关控件
@@ -74,7 +72,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mEtLoginPass = (EditText) findViewById(R.id.et_loginPass);
         mBtnSignIn = (ActionProcessButton) findViewById(R.id.btn_SignIn);
         mBtnSignIn.setOnClickListener(this);
-
 
     }
 

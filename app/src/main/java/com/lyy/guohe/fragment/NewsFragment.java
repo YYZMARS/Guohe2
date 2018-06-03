@@ -87,11 +87,14 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
 
     @Override
     public void OnBannerClick(int position) {
-        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-        intent.putExtra("title", slides.get(position).getTitle());
-        intent.putExtra("url", slides.get(position).getUrl());
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
+        //链接不为空时跳转
+        if (!slides.get(position).getUrl().equals("")) {
+            Intent intent = new Intent(getActivity(), BrowserActivity.class);
+            intent.putExtra("title", slides.get(position).getTitle());
+            intent.putExtra("url", slides.get(position).getUrl());
+            intent.putExtra("isVpn", false);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -114,7 +117,7 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
                 if (response.isSuccessful()) {
                     String data = response.body().string();
                     final Res res = HttpUtil.handleResponse(data);
-                    if (res!=null){
+                    if (res != null) {
                         if (res.getCode() == 200) {
                             try {
                                 Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
@@ -141,7 +144,7 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
                         } else {
                             Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
                         }
-                    }else {
+                    } else {
                         Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
                     }
                 } else {

@@ -374,6 +374,9 @@ public class MainActivity extends AppCompatActivity
                 String versionName = RomUtils.getLocalVersionName(this);
                 Toasty.success(this, "您当前的版本为：" + versionName, Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.nav_feedBack:
+                NavigateUtil.navigateTo(this, FeedBackActivity.class);
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

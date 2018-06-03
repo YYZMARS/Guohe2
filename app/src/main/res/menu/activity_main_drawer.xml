@@ -14,6 +14,10 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/share_app" />
             <item
+                android:id="@+id/nav_feedBack"
+                android:icon="@drawable/ic_menu_feedback"
+                android:title="@string/feedback" />
+            <item
                 android:id="@+id/nav_contactMe"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/contact_me" />
@@ -33,7 +37,7 @@
             <item
                 android:id="@+id/nav_version"
                 android:icon="@drawable/ic_menu_version"
-                android:title="@string/version"/>
+                android:title="@string/version" />
             <item
                 android:id="@+id/nav_checkUpdate"
                 android:icon="@drawable/ic_menu_update"

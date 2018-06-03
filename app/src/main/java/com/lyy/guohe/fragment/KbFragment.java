@@ -94,7 +94,9 @@ public class KbFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_kb, container, false);
-        mContext = getActivity();
+        if (getActivity()!=null){
+            mContext = getActivity();
+        }
         stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
         stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
         //初始化课表的背景
@@ -208,10 +210,14 @@ public class KbFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                                 SpUtils.putString(mContext, SpConstant.SERVER_WEEK, server_week);
-                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> showKb(server_week));
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> showKb(server_week));
+                                }
                             }
                         } else {
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                            }
                         }
 
                     }
@@ -301,10 +307,12 @@ public class KbFragment extends Fragment {
             courseTableView.drawFrame();
             courseTableView.updateCourseViews(list);
 
-            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                if (mProgressDialog.isShowing())
-                    mProgressDialog.dismiss();
-            });
+            if (getActivity()!=null){
+                getActivity().runOnUiThread(() -> {
+                    if (mProgressDialog.isShowing())
+                        mProgressDialog.dismiss();
+                });
+            }
         }
 
     }

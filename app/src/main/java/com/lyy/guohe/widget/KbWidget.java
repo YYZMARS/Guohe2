@@ -63,7 +63,6 @@ public class KbWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         appWidgetManager.updateAppWidget(appWidgetIds, refreshKb(context));
-        Log.d(TAG, "onUpdate: ");
     }
 
     /**
@@ -85,7 +84,6 @@ public class KbWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
-        Log.d(TAG, "onEnabled: ");
     }
 
     public RemoteViews refreshKb(Context context) {
@@ -126,72 +124,73 @@ public class KbWidget extends AppWidgetProvider {
         single_index.add(R.id.widget_single_4);
         single_index.add(R.id.widget_single_5);
 
-        List<DBCourse> courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
-
-        Log.d(TAG, "refreshKb: " + server_week);
-
+        boolean isOpenKb = SpUtils.getBoolean(context, SpConstant.IS_OPEN_KB);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.kb_widget);
         remoteViews.setTextViewText(R.id.widget_week, "第" + server_week + "周");
-        //点击头部跳转到页面内
-        Intent skipIntent = new Intent(context, KbActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(context, 200, skipIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        remoteViews.setOnClickPendingIntent(R.id.ll_kbWidget, pi);
 
-        for (int i = 1; i <= 7; i++) {
-            RemoteViews nestedView = new RemoteViews(context.getPackageName(), R.layout.widget_single_layout);
-            nestedView.removeAllViews(single_list.get(i - 1));
-            for (DBCourse dbCourse : courseList) {
-                if (dbCourse.getDay() == i) {
-                    int jieci = dbCourse.getJieci();
-                    String des = "";
-                    des = dbCourse.getDes();
-                    String courseInfo[] = des.split("@");
-                    String courseClassroom = "";
-                    String courseName = "";
+        if (isOpenKb) {
+            List<DBCourse> courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
 
-                    if (courseInfo.length == 2) {
-                        courseName = courseInfo[1];
-                    }
-                    if (courseInfo.length == 3) {
-                        courseName = courseInfo[1];
-                    }
-                    if (courseInfo.length == 4) {
-                        courseName = courseInfo[1];
-                        courseClassroom = courseInfo[3];
-                    }
+            //点击头部跳转到页面内
+            Intent skipIntent = new Intent(context, KbActivity.class);
+            PendingIntent pi = PendingIntent.getActivity(context, 200, skipIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            remoteViews.setOnClickPendingIntent(R.id.ll_kbWidget, pi);
 
-                    Log.d(TAG, "refreshKb: " + courseName);
-                    Log.d(TAG, "refreshKb: " + jieci);
+            for (int i = 1; i <= 7; i++) {
+                RemoteViews nestedView = new RemoteViews(context.getPackageName(), R.layout.widget_single_layout);
+                nestedView.removeAllViews(single_list.get(i - 1));
+                for (DBCourse dbCourse : courseList) {
+                    if (dbCourse.getDay() == i) {
+                        int jieci = dbCourse.getJieci();
+                        String des = "";
+                        des = dbCourse.getDes();
+                        String courseInfo[] = des.split("@");
+                        String courseClassroom = "";
+                        String courseName = "";
 
-                    String result = courseName + "@" + courseClassroom;
-                    Random random = new Random();
-                    switch (jieci) {
-                        case 1:
-                            nestedView.setTextViewText(single_index.get(0), result);
-                            nestedView.setInt(single_index.get(0), "setBackgroundResource", myImageList.get(random.nextInt(14)));
-                            break;
-                        case 3:
-                            nestedView.setTextViewText(single_index.get(1), result);
-                            nestedView.setInt(single_index.get(1), "setBackgroundResource", myImageList.get(random.nextInt(14)));
-                            break;
-                        case 5:
-                            nestedView.setTextViewText(single_index.get(2), result);
-                            nestedView.setInt(single_index.get(2), "setBackgroundResource", myImageList.get(random.nextInt(14)));
-                            break;
-                        case 7:
-                            nestedView.setTextViewText(single_index.get(3), result);
-                            nestedView.setInt(single_index.get(3), "setBackgroundResource", myImageList.get(random.nextInt(14)));
-                            break;
-                        case 9:
-                            nestedView.setTextViewText(single_index.get(4), result);
-                            nestedView.setInt(single_index.get(4), "setBackgroundResource", myImageList.get(random.nextInt(14)));
-                            break;
+                        if (courseInfo.length == 2) {
+                            courseName = courseInfo[1];
+                        }
+                        if (courseInfo.length == 3) {
+                            courseName = courseInfo[1];
+                        }
+                        if (courseInfo.length == 4) {
+                            courseName = courseInfo[1];
+                            courseClassroom = courseInfo[3];
+                        }
+
+                        Log.d(TAG, "refreshKb: " + courseName);
+                        Log.d(TAG, "refreshKb: " + jieci);
+
+                        String result = courseName + "@" + courseClassroom;
+                        Random random = new Random();
+                        switch (jieci) {
+                            case 1:
+                                nestedView.setTextViewText(single_index.get(0), result);
+                                nestedView.setInt(single_index.get(0), "setBackgroundResource", myImageList.get(random.nextInt(14)));
+                                break;
+                            case 3:
+                                nestedView.setTextViewText(single_index.get(1), result);
+                                nestedView.setInt(single_index.get(1), "setBackgroundResource", myImageList.get(random.nextInt(14)));
+                                break;
+                            case 5:
+                                nestedView.setTextViewText(single_index.get(2), result);
+                                nestedView.setInt(single_index.get(2), "setBackgroundResource", myImageList.get(random.nextInt(14)));
+                                break;
+                            case 7:
+                                nestedView.setTextViewText(single_index.get(3), result);
+                                nestedView.setInt(single_index.get(3), "setBackgroundResource", myImageList.get(random.nextInt(14)));
+                                break;
+                            case 9:
+                                nestedView.setTextViewText(single_index.get(4), result);
+                                nestedView.setInt(single_index.get(4), "setBackgroundResource", myImageList.get(random.nextInt(14)));
+                                break;
+                        }
                     }
                 }
+                remoteViews.addView(single_list.get(i - 1), nestedView);
             }
-            remoteViews.addView(single_list.get(i - 1), nestedView);
         }
-        Log.d(TAG, "refreshKb: " + "已更新课表");
         return remoteViews;
     }
 }
