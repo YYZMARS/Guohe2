@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -21,15 +23,24 @@ import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
+import com.tencent.stat.StatService;
+import com.umeng.analytics.MobclickAgent;
 
 import es.dmoral.toasty.Toasty;
 
 public class LotteryActivity extends AppCompatActivity {
 
+    private static final String TAG = "LotteryActivity";
+
     private Context mContext;
+
+    private WebView mWebview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +55,7 @@ public class LotteryActivity extends AppCompatActivity {
         TextView mTitle = (TextView) findViewById(R.id.title);
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         ProgressBar mProgress = (ProgressBar) findViewById(R.id.progress);
-        WebView mWebview = (WebView) findViewById(R.id.webview);
+        mWebview = (WebView) findViewById(R.id.webview);
 
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -53,6 +64,8 @@ public class LotteryActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
         mTitle.setText("果核抽奖助手");
+
+        Log.d(TAG, "initView: " + mWebview.getX5WebViewExtension());
 
 
         mWebview.setWebChromeClient(new WebChromeClient() {
@@ -107,6 +120,26 @@ public class LotteryActivity extends AppCompatActivity {
             }
         });
 
+        mWebview.setWebViewClient(new WebViewClient() {
+
+            //设置webview是否可以发开外链
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+
+                return super.shouldOverrideUrlLoading(webView, url);
+
+            }
+
+            @Override
+            public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, SslError sslError) {
+                // handler.cancel();// Android默认的处理方式
+                sslErrorHandler.proceed();// 接受所有网站的证书
+                // handleMessage(Message msg);// 进行其他处理
+            }
+
+
+        });
+
         WebSettings webSettings = mWebview.getSettings();
         // 让WebView能够执行javaScript
         webSettings.setJavaScriptEnabled(true);
@@ -133,7 +166,8 @@ public class LotteryActivity extends AppCompatActivity {
         String stu_id = SpUtils.getString(mContext, SpConstant.STU_ID, "");
         if (!stu_id.equals("")) {
             String url = UrlConstant.LOTTERY + stu_id;
-            mWebview.loadUrl(url);
+//            mWebview.loadUrl(url);
+            mWebview.loadUrl("http://soft.imtt.qq.com/browser/tes/feedback.html");
         } else {
             Toasty.error(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show();
         }
@@ -147,5 +181,27 @@ public class LotteryActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && mWebview.canGoBack()) {
+            mWebview.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        StatService.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

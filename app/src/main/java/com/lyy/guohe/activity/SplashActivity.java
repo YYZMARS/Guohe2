@@ -9,6 +9,7 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
+import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.stat.MtaSDkException;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;

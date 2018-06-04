@@ -11,7 +11,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             //设置支持的SO库架构
-            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a','mips'
         }
         manifestPlaceholders = [
                 //腾讯MTA统计配置
@@ -19,6 +19,14 @@ android {
                 MTA_CHANNEL: "tecent"
         ]
     }
+//    android studio默认so文件加载目录为:src/main/jniLibs
+//    如在module的build.gradle按照如下方式,自定义了so文件加载目录请确保对应目录下只有armeabi目录
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
+
     buildTypes {
         //增加构建类型
         releaseMinifyEnabled {
@@ -51,7 +59,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1183_43604_sharewithdownload_withoutGame_obfs_20180211_105126.jar')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.9.0'
     implementation 'com.github.bumptech.glide:glide:4.0.0'
@@ -80,4 +87,5 @@ dependencies {
     implementation 'com.umeng.sdk:utdid:1.1.5.3'
     implementation 'com.umeng.sdk:push:4.1.0'
     implementation 'com.umeng.sdk:push-xiaomi:1.0.0'
+    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1234_43608_sharewithdownload_withoutGame_obfs_20180510_111111.jar')
 }

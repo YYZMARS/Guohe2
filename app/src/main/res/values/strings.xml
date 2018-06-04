@@ -6,7 +6,7 @@
     <string name="nav_header_title">姓名：</string>
     <string name="nav_header_subtitle">学号：</string>
     <string name="login_account">学号</string>
-    <string name="login_pass">密码</string>
+    <string name="login_pass">教务系统密码</string>
     <string name="login">登录</string>
     <string name="login_success">登录成功</string>
     <string name="login_failure">登录失败</string>

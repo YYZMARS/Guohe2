@@ -9,6 +9,7 @@ import android.util.Log;
 import com.tencent.bugly.Bugly;
 import com.tencent.mta.track.StatisticsDataAPI;
 import com.tencent.smtt.sdk.QbSdk;
+import com.tencent.smtt.sdk.TbsListener;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.PushAgent;
@@ -28,6 +29,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+
         LitePalApplication.initialize(context);
 
         initX5WebView();
@@ -64,20 +66,42 @@ public class App extends Application {
 
     //初始化腾讯X5WebView内核
     private void initX5WebView() {
-        //腾讯X5WebView内核
-        QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
+        //搜集本地tbs内核信息并上报服务器，服务器返回结果决定使用哪个内核。
 
-            @Override
-            public void onViewInitFinished(boolean arg0) {
-                //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
-            }
+        Log.d(TAG, "initX5WebView: " + "执行");
 
+        QbSdk.reset(context);
+        QbSdk.setDownloadWithoutWifi(true);
+
+        QbSdk.initX5Environment(context, new QbSdk.PreInitCallback() {
             @Override
             public void onCoreInitFinished() {
+                Log.d(TAG, "onCoreInitFinished: ");
             }
-        };
-        //x5内核初始化接口
-        QbSdk.initX5Environment(getApplicationContext(), cb);
+
+            @Override
+            public void onViewInitFinished(boolean b) {
+                Log.d(TAG, "onViewInitFinished: " + b);
+            }
+        });
+
+        QbSdk.setTbsListener(new TbsListener() {
+            @Override
+            public void onDownloadFinish(int i) {
+                Log.d(TAG, "onDownloadFinish: " + i);
+            }
+
+            @Override
+            public void onInstallFinish(int i) {
+                Log.d(TAG, "onInstallFinish: " + i);
+            }
+
+            @Override
+            public void onDownloadProgress(int i) {
+                Log.d(TAG, "onDownloadProgress: " + i);
+            }
+        });
+        Log.d(TAG, "initX5WebView: " + QbSdk.canLoadX5(context));
     }
 
     /**
