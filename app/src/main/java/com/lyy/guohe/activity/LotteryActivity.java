@@ -166,8 +166,7 @@ public class LotteryActivity extends AppCompatActivity {
         String stu_id = SpUtils.getString(mContext, SpConstant.STU_ID, "");
         if (!stu_id.equals("")) {
             String url = UrlConstant.LOTTERY + stu_id;
-//            mWebview.loadUrl(url);
-            mWebview.loadUrl("http://soft.imtt.qq.com/browser/tes/feedback.html");
+            mWebview.loadUrl(url);
         } else {
             Toasty.error(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show();
         }

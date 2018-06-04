@@ -1,6 +1,7 @@
 package com.lyy.guohe.fragment;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,7 +47,7 @@ import okhttp3.Response;
  */
 public class NewsFragment extends Fragment implements OnBannerListener, AdapterView.OnItemClickListener {
 
-    private static final String TAG = "NewsFragment";
+    private Context mContext;
 
     List<Slide> slides = new ArrayList<>();
     List<String> images = new ArrayList<>();
@@ -67,7 +68,7 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         view = Objects.requireNonNull(getActivity()).getLayoutInflater().inflate(R.layout.fragment_news, null);
-
+        mContext = getActivity();
         banner = (Banner) view.findViewById(R.id.banner);
         banner.setOnBannerListener(this);
 
@@ -109,7 +110,9 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
         HttpUtil.get(UrlConstant.SLIDE, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                }
             }
 
             @Override
@@ -120,35 +123,43 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
                     if (res != null) {
                         if (res.getCode() == 200) {
                             try {
-                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                                    try {
-                                        JSONArray array = new JSONArray(res.getInfo());
-                                        for (int i = 0; i < array.length(); i++) {
-                                            JSONObject object = (JSONObject) array.get(i);
-                                            Slide slide = new Slide(object.getString("describe"), object.getString("img"), object.getString("title"), object.getString("url"));
-                                            slides.add(slide);
-                                        }
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        try {
+                                            JSONArray array = new JSONArray(res.getInfo());
+                                            for (int i = 0; i < array.length(); i++) {
+                                                JSONObject object = array.getJSONObject(i);
+                                                Slide slide = new Slide(object.getString("describe"), object.getString("img"), object.getString("title"), object.getString("url"));
+                                                slides.add(slide);
+                                            }
 
-                                        for (int i = 0; i < slides.size(); i++) {
-                                            images.add(slides.get(i).getImg());
-                                            titles.add(slides.get(i).getDescribe());
+                                            for (int i = 0; i < slides.size(); i++) {
+                                                images.add(slides.get(i).getImg());
+                                                titles.add(slides.get(i).getDescribe());
+                                            }
+                                            initBanner();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
                                         }
-                                        initBanner();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
+                                    });
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                            }
                         }
                     } else {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                        }
                     }
                 } else {
-                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                    }
                 }
             }
         });
@@ -182,15 +193,4 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
         ListViewUtil.setListViewHeightBasedOnChildren(lv_news);
         lv_news.setOnItemClickListener(this);
     }
-
-//    @Override
-//    public void onDestroyView() {
-//        // TODO Auto-generated method stub
-//        super.onDestroyView();
-//        //在销毁视图的时候把父控件remove一下，不然重新加载的时候会异常导致奔溃，提示should remove parent view
-//        ViewGroup mGroup = (ViewGroup) view.getParent();
-//        if (mGroup != null) {
-//            mGroup.removeAllViewsInLayout();
-//        }
-//    }
 }

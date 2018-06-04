@@ -91,7 +91,9 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
         HttpUtil.get(UrlConstant.HEAD_PIC, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                }
             }
 
             @Override
@@ -114,12 +116,16 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
                                 url = object.getString("url");
                                 des = object.getString("describe");
 
-                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Glide.with(mContext).load(img).into(mIvCard0));
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> Glide.with(mContext).load(img).into(mIvCard0));
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toasty.error(getActivity(), "服务器异常", Toast.LENGTH_SHORT).show());
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                            }
                         }
                     }
                 }
@@ -180,7 +186,6 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.card1:
                 //抽奖
-//                toLottery();
                 NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
                 break;
             case R.id.card2:

@@ -175,7 +175,7 @@ public class KbFragment extends Fragment {
 
         //left btn click listener
         dialog.setOnBtnClickL(
-                (OnBtnClickL) () -> dialog.dismiss()
+                (OnBtnClickL) dialog::dismiss
         );
 
     }
@@ -192,6 +192,9 @@ public class KbFragment extends Fragment {
             HttpUtil.post(url, requestBody, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+                    }
                 }
 
                 @Override

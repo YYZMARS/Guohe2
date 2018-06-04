@@ -64,20 +64,22 @@ public class CropViewActivity extends AppCompatActivity implements View.OnClickL
             });
         }
 
-        switch (flag) {
-            case "img_header":
-                cropView.of(uri).asSquare().initialize(CropViewActivity.this);
-                break;
-            case "course":
-                cropView.of(uri)
-                        .withAspect(9, 16)
-                        .initialize(CropViewActivity.this);
-                break;
-            case "memory":
-                cropView.of(uri)
-                        .withAspect(9, 16)
-                        .initialize(CropViewActivity.this);
-                break;
+        if (uri != null) {
+            switch (flag) {
+                case "img_header":
+                    cropView.of(uri).asSquare().initialize(CropViewActivity.this);
+                    break;
+                case "course":
+                    cropView.of(uri)
+                            .withAspect(9, 16)
+                            .initialize(CropViewActivity.this);
+                    break;
+                case "memory":
+                    cropView.of(uri)
+                            .withAspect(9, 16)
+                            .initialize(CropViewActivity.this);
+                    break;
+            }
         }
     }
 

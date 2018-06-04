@@ -20,6 +20,8 @@ public class GlideImageLoader extends ImageLoader {
          */
 
         //Glide 加载图片简单用法
-        Glide.with(context).load(path).into(imageView);
+        if (context != null && path != null) {
+            Glide.with(context).load(path).into(imageView);
+        }
     }
 }

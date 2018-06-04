@@ -105,20 +105,20 @@ public class BrowserActivity extends AppCompatActivity {
                     break;
                 case -1:
                     Log.d(TAG, "handleMessage: " + "vpn被占用");
-                    VpnSource(vpn_ACC[index], vpn_Pass[index]);
-                    if (index < vpn_ACC.length)
+                    if (index < vpn_ACC.length) {
+                        VpnSource(vpn_ACC[index], vpn_Pass[index]);
                         index++;
-                    else
+                    } else
                         index = 0;
                     CheckThread thread1 = new CheckThread();
                     thread1.start();
                     break;
                 case 1:
                     Log.d(TAG, "handleMessage: " + "vpn密码错误");
-                    VpnSource(vpn_ACC[index], vpn_Pass[index]);
-                    if (index < vpn_ACC.length)
+                    if (index < vpn_ACC.length) {
+                        VpnSource(vpn_ACC[index], vpn_Pass[index]);
                         index++;
-                    else
+                    } else
                         index = 0;
                     CheckThread thread = new CheckThread();
                     thread.start();

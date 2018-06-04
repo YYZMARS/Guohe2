@@ -11,7 +11,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             //设置支持的SO库架构
-            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a','mips'
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a','mips'
         }
         manifestPlaceholders = [
                 //腾讯MTA统计配置
@@ -26,6 +26,22 @@ android {
 //            jniLibs.srcDirs = ['libs']
 //        }
 //    }
+
+//    sourceSets.main {
+//        jni.srcDirs = []
+//    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkLibsToJar
+    }
+
+    task ndkLibsToJar(type: Zip, description: 'Create a JAR of the native libs') {
+        destinationDir new File(buildDir, 'libs')
+        baseName 'ndk-libs'
+        extension 'jar'
+        from(new File(buildDir, 'libs')) { include '**/*.so' }
+        into 'lib/'
+    }
 
     buildTypes {
         //增加构建类型
@@ -50,6 +66,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
+
 }
 
 dependencies {

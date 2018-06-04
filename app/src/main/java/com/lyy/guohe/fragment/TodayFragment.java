@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -149,32 +150,40 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
         int[] a = new int[]{0, 7, 1, 2, 3, 4, 5, 6};
 
-        String server_week = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.SERVER_WEEK);
-        if (server_week != null) {
-            List<DBCourse> courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
-            if (courseList.size() != 0) {
-                for (int i = 0; i < courseList.size(); i++) {
-                    if (courseList.get(i).getDes().length() > 5 && courseList.get(i).getDay() == a[weekday]) {
-                        int jieci = courseList.get(i).getJieci();
-                        String courseInfo[] = courseList.get(i).getDes().split("@");
-                        String courseName = "";
-                        String courseClassRoom = "";
-                        if (courseInfo.length == 2 || courseInfo.length == 3) {
-                            courseName = courseInfo[1];
-                        } else if (courseInfo.length == 4) {
-                            courseName = courseInfo[1];
-                            courseClassRoom = courseInfo[3];
-                        }
-                        Course course = new Course(jieci, courseName, courseClassRoom);
-                        courses.add(course);
-                    }
+        if (getActivity() != null) {
+            String server_week = SpUtils.getString(getActivity(), SpConstant.SERVER_WEEK);
+            List<DBCourse> courseList = new ArrayList<>();
+            if (server_week != null) {
+                try {
+                    courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                if (courses.size() > 0) {
-                    tvKbShow.setVisibility(View.GONE);
-                    lvKbToday.setVisibility(View.VISIBLE);
-                    CourseAdapter courseAdapter = new CourseAdapter(getActivity(), R.layout.item_course, courses);
-                    lvKbToday.setAdapter(courseAdapter);
-                    ListViewUtil.setListViewHeightBasedOnChildren(lvKbToday);
+
+                if (courseList.size() != 0) {
+                    for (int i = 0; i < courseList.size(); i++) {
+                        if (courseList.get(i).getDes().length() > 5 && courseList.get(i).getDay() == a[weekday]) {
+                            int jieci = courseList.get(i).getJieci();
+                            String courseInfo[] = courseList.get(i).getDes().split("@");
+                            String courseName = "";
+                            String courseClassRoom = "";
+                            if (courseInfo.length == 2 || courseInfo.length == 3) {
+                                courseName = courseInfo[1];
+                            } else if (courseInfo.length == 4) {
+                                courseName = courseInfo[1];
+                                courseClassRoom = courseInfo[3];
+                            }
+                            Course course = new Course(jieci, courseName, courseClassRoom);
+                            courses.add(course);
+                        }
+                    }
+                    if (courses.size() > 0) {
+                        tvKbShow.setVisibility(View.GONE);
+                        lvKbToday.setVisibility(View.VISIBLE);
+                        CourseAdapter courseAdapter = new CourseAdapter(getActivity(), R.layout.item_course, courses);
+                        lvKbToday.setAdapter(courseAdapter);
+                        ListViewUtil.setListViewHeightBasedOnChildren(lvKbToday);
+                    }
                 }
             }
         }

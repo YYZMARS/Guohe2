@@ -76,29 +76,29 @@ public class App extends Application {
         QbSdk.initX5Environment(context, new QbSdk.PreInitCallback() {
             @Override
             public void onCoreInitFinished() {
-                Log.d(TAG, "onCoreInitFinished: ");
+                Log.d(TAG, "initX5WebView: ");
             }
 
             @Override
             public void onViewInitFinished(boolean b) {
-                Log.d(TAG, "onViewInitFinished: " + b);
+                Log.d(TAG, "initX5WebView: " + b);
             }
         });
 
         QbSdk.setTbsListener(new TbsListener() {
             @Override
             public void onDownloadFinish(int i) {
-                Log.d(TAG, "onDownloadFinish: " + i);
+                Log.d(TAG, "initX5WebView: " + i);
             }
 
             @Override
             public void onInstallFinish(int i) {
-                Log.d(TAG, "onInstallFinish: " + i);
+                Log.d(TAG, "initX5WebView: " + i);
             }
 
             @Override
             public void onDownloadProgress(int i) {
-                Log.d(TAG, "onDownloadProgress: " + i);
+                Log.d(TAG, "initX5WebView: " + i);
             }
         });
         Log.d(TAG, "initX5WebView: " + QbSdk.canLoadX5(context));
