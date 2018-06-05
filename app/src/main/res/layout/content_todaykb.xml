@@ -30,9 +30,9 @@
         android:background="@color/material_blue_grey_200" />
 
     <LinearLayout
-        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
@@ -46,10 +46,10 @@
             android:visibility="visible" />
 
         <ListView
-            android:layout_gravity="center"
             android:id="@+id/lv_kbToday"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:visibility="gone">
 
         </ListView>
@@ -68,7 +68,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dp_3"
         android:gravity="center"
-        android:text="点击查看完整课表"
+        android:text="点我查看完整课表"
         android:textSize="@dimen/sp_12"
         android:visibility="visible" />
 
