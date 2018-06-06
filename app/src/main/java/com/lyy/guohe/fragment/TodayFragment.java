@@ -194,7 +194,9 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         HttpUtil.get(UrlConstant.GET_MSG, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                }
             }
 
             @Override
@@ -205,21 +207,29 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                     if (res != null) {
                         if (res.getCode() == 200) {
                             try {
-                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                                    String s = res.getInfo();
-                                    tvMessage.setText(s.substring(2, s.length() - 2));
-                                });
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        String s = res.getInfo();
+                                        tvMessage.setText(s.substring(2, s.length() - 2));
+                                    });
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                            if (getActivity()!=null){
+                                getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                            }
                         }
                     } else {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                        if (getActivity()!=null){
+                            getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                        }
                     }
                 } else {
-                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                    if (getActivity()!=null){
+                        getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
+                    }
                 }
             }
         });
@@ -300,13 +310,15 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                         String word = object.getString("word");
                         String wordFrom = object.getString("word_from");
 
-                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                            tvOneWord.setText(word);
-                            tvOneWordFrom.setText(wordFrom);
-                            tvOneDate.setText(date);
-                            tvImgAuthor.setText(imgAuthor + " | " + imgKind);
-                            Glide.with(mContext).load(imgUrl).into(ivOneImg);
-                        });
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                tvOneWord.setText(word);
+                                tvOneWordFrom.setText(wordFrom);
+                                tvOneDate.setText(date);
+                                tvImgAuthor.setText(imgAuthor + " | " + imgKind);
+                                Glide.with(mContext).load(imgUrl).into(ivOneImg);
+                            });
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -314,15 +326,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-    }
-
-    //跳转至One页面
-    private void toOne(String url) {
-        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-        intent.putExtra("url", url);
-        intent.putExtra("title", "One一个");
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
     }
 
     //跳转至四六级查询部分

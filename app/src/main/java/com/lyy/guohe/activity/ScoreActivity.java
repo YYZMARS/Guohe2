@@ -179,7 +179,7 @@ public class ScoreActivity extends AppCompatActivity {
          * 若这儿不设置 v.right= 7; 这句话，则图表刚开始就会尽可能的显示所有数据，交互性太差
          */
         Viewport v = new Viewport(lineChart.getMaximumViewport());
-        v.left = 0;
+        v.left = 1;
         v.right = 7;
         lineChart.setCurrentViewport(v);
     }
