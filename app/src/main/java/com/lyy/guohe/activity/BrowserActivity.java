@@ -202,8 +202,7 @@ public class BrowserActivity extends AppCompatActivity {
                                 if (cookie != null) {
                                     CookieManager cookieManager = CookieManager.getInstance();
                                     for (String t : cookie.split(";")) {
-                                        if (t != null)
-                                            cookieManager.setCookie(X5url, t);
+                                        cookieManager.setCookie(X5url, t);
                                     }
                                 }
                                 runOnUiThread(() -> {
@@ -274,8 +273,7 @@ public class BrowserActivity extends AppCompatActivity {
         this.vpn_pwd = vpn_pwd;
 
         requestHeaders = new Headers.Builder()
-                .add("User-Agent",
-                        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
+                .add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36")
                 .build();
         X509TrustManager xtm = new X509TrustManager() {
             @Override
@@ -299,13 +297,7 @@ public class BrowserActivity extends AppCompatActivity {
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             e.printStackTrace();
         }
-        HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-            @SuppressLint("BadHostnameVerifier")
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        };
+        HostnameVerifier DO_NOT_VERIFY = (hostname, session) -> true;
         if (sslContext != null) {
             mOkHttpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory())
                     .hostnameVerifier(DO_NOT_VERIFY)
@@ -313,7 +305,6 @@ public class BrowserActivity extends AppCompatActivity {
                     .followSslRedirects(false)
                     .build();
         }
-
     }
 
     /*
@@ -482,7 +473,7 @@ public class BrowserActivity extends AppCompatActivity {
         // 设置缓存
         webSettings.setAppCacheEnabled(true);
         // 设置缓存模式,一共有四种模式
-        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         // 设置缓存路径
         //webSettings.setAppCachePath("");
         // 支持缩放(适配到当前屏幕)
@@ -529,12 +520,7 @@ public class BrowserActivity extends AppCompatActivity {
                         , R.style.AlertDialogCustom);
                 b.setTitle("提示");
                 b.setMessage(message);
-                b.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.confirm();
-                    }
-                });
+                b.setPositiveButton("确定", (dialog, which) -> result.confirm());
                 b.setCancelable(false);
                 b.create().show();
                 return true;
@@ -546,18 +532,8 @@ public class BrowserActivity extends AppCompatActivity {
                         , R.style.AlertDialogCustom);
                 b.setTitle("确定");
                 b.setMessage(message);
-                b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.confirm();
-                    }
-                });
-                b.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                });
+                b.setPositiveButton(android.R.string.ok, (dialog, which) -> result.confirm());
+                b.setNegativeButton(android.R.string.cancel, (dialog, which) -> result.cancel());
                 b.create().show();
                 return true;
             }
@@ -570,20 +546,12 @@ public class BrowserActivity extends AppCompatActivity {
                         , R.style.AlertDialogCustom);
                 b.setTitle("提示");
                 b.setView(v);
-                b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String value = ((EditText) v.findViewById(R.id.browser_prompt_dialog_et))
-                                .getText().toString();
-                        result.confirm(value);
-                    }
+                b.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String value = ((EditText) v.findViewById(R.id.browser_prompt_dialog_et))
+                            .getText().toString();
+                    result.confirm(value);
                 });
-                b.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                });
+                b.setNegativeButton(android.R.string.cancel, (dialog, which) -> result.cancel());
                 b.create().show();
                 return true;
             }

@@ -133,17 +133,6 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    //跳转至抽奖页面
-    private void toLottery() {
-        String username = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.STU_ID);
-        Log.d(TAG, "toLottery: " + UrlConstant.LOTTERY + username);
-        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-        intent.putExtra("url", UrlConstant.LOTTERY + username);
-        intent.putExtra("title", "果核抽奖助手");
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
-    }
-
     //初始化各控件
     private void initView(View view) {
         mCard0 = (CardView) view.findViewById(R.id.card0);

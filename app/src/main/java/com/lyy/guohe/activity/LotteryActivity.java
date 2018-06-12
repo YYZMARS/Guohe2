@@ -148,7 +148,7 @@ public class LotteryActivity extends AppCompatActivity {
         // 设置缓存
         webSettings.setAppCacheEnabled(true);
         // 设置缓存模式,一共有四种模式
-        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         // 设置缓存路径
         //webSettings.setAppCachePath("");
         // 支持缩放(适配到当前屏幕)

@@ -10,9 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +35,8 @@ import com.flyco.dialog.listener.OnOperItemClickL;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
 import com.githang.statusbar.StatusBarCompat;
+import com.lyy.guohe.R;
+import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Course;
 import com.lyy.guohe.model.DBCourse;
@@ -45,24 +45,20 @@ import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.view.CourseTableView;
-import com.lyy.guohe.R;
-import com.lyy.guohe.constant.SpConstant;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.litepal.crud.DataSupport;
+import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
@@ -519,7 +515,7 @@ public class KbActivity extends AppCompatActivity {
     private void showKb(final String week) {
         List<Course> list = new ArrayList<>();
 
-        List<DBCourse> courseList = DataSupport.where("zhouci = ? ", week).find(DBCourse.class);
+        List<DBCourse> courseList = LitePal.where("zhouci = ? ", week).find(DBCourse.class);
         List<String> stringList = new ArrayList<>();
 
         for (DBCourse dbCourse : courseList) {
@@ -575,7 +571,7 @@ public class KbActivity extends AppCompatActivity {
         String a[] = {"1", "2", "3", "4", "5", "6", "7"};
         String b = "";
         String month = "";
-        List<DBDate> dbDateList = DataSupport.findAll(DBDate.class);
+        List<DBDate> dbDateList = LitePal.findAll(DBDate.class);
         for (DBDate dbDate : dbDateList) {
             if (dbDate.getZhouci() == Integer.parseInt(week)) {
                 month = dbDate.getMonth();
@@ -626,7 +622,7 @@ public class KbActivity extends AppCompatActivity {
                 showWeekChoiceDialog(0);
                 break;
             case R.id.action_update_course:
-                DataSupport.deleteAll(DBCourse.class);
+                LitePal.deleteAll(DBCourse.class);
                 SpUtils.remove(mContext, SpConstant.SERVER_WEEK);
                 SpUtils.remove(mContext, SpConstant.XIAO_LI);
                 SpUtils.remove(mContext, SpConstant.IS_OPEN_KB);
@@ -769,7 +765,7 @@ public class KbActivity extends AppCompatActivity {
                                     mProgressDialog.setMessage("正在切换中,请稍后...");
                                     mProgressDialog.show();
                                     Log.d(TAG, "onClick: " + items[yearChoice]);
-                                    DataSupport.deleteAll(DBCourse.class);
+                                    LitePal.deleteAll(DBCourse.class);
                                     getKbInfo(items[yearChoice]);
                                 }
                             }

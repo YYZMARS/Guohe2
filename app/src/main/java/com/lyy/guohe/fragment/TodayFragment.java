@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ import com.lyy.guohe.activity.ClassRoomActivity;
 import com.lyy.guohe.activity.GameActivity;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.activity.LibraryActivity;
+import com.lyy.guohe.activity.LotteryActivity;
 import com.lyy.guohe.activity.ScoreActivity;
 import com.lyy.guohe.activity.SportActivity;
 import com.lyy.guohe.adapter.CourseAdapter;
@@ -217,17 +217,17 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                                 e.printStackTrace();
                             }
                         } else {
-                            if (getActivity()!=null){
+                            if (getActivity() != null) {
                                 getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
                             }
                         }
                     } else {
-                        if (getActivity()!=null){
+                        if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
                         }
                     }
                 } else {
-                    if (getActivity()!=null){
+                    if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
                     }
                 }
@@ -275,9 +275,9 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 showGameDialog();
                 break;
             case R.id.nav_idea:
-                //跳转至校园热线页面
-                toTel();
-//                toLottery();
+                //跳转至抽奖页面
+//                toTel();
+                NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
                 break;
         }
     }
@@ -333,16 +333,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         Intent intent = new Intent(getActivity(), BrowserActivity.class);
         intent.putExtra("url", UrlConstant.CET);
         intent.putExtra("title", "全国大学英语四六级考试成绩查询");
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
-    }
-
-    //跳转至抽奖页面
-    private void toLottery() {
-        String username = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.STU_ID);
-        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-        intent.putExtra("url", UrlConstant.LOTTERY + username);
-        intent.putExtra("title", "果核抽奖助手");
         intent.putExtra("isVpn", false);
         startActivity(intent);
     }

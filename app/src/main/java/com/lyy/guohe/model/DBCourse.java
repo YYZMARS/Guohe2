@@ -1,12 +1,12 @@
 package com.lyy.guohe.model;
 
-import org.litepal.crud.DataSupport;
+import org.litepal.crud.LitePalSupport;
 
 /**
  * Created by lyy on 2017/11/17.
  */
 
-public class DBCourse extends DataSupport {
+public class DBCourse extends LitePalSupport {
 
     private int day;  //星期几的课
 

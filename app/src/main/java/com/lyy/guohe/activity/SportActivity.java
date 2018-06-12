@@ -179,7 +179,8 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
                                         if (res != null) {
                                             if (res.getCode() == 200) {
                                                 runOnUiThread(() -> {
-                                                    mProgressDialog.dismiss();
+                                                    if (mProgressDialog.isShowing())
+                                                        mProgressDialog.dismiss();
                                                     mProgressDialog = ProgressDialog.show(SportActivity.this, null, "验证成功,请稍后……", true, false);
                                                     mProgressDialog.setCancelable(true);
                                                     mProgressDialog.setCanceledOnTouchOutside(true);

@@ -1,12 +1,12 @@
 package com.lyy.guohe.model;
 
-import org.litepal.crud.DataSupport;
+import org.litepal.crud.LitePalSupport;
 
 /**
  * Created by lyy on 2018/1/16.
  */
 
-public class DBDate extends DataSupport {
+public class DBDate extends LitePalSupport {
 
     public String getMonth() {
         return month;

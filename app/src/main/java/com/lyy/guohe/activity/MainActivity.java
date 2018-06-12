@@ -60,7 +60,7 @@ import com.umeng.message.PushAgent;
 import com.umeng.message.inapp.IUmengInAppMsgCloseCallback;
 import com.umeng.message.inapp.InAppMessageManager;
 
-import org.litepal.crud.DataSupport;
+import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity
             public void onTabSelected(TabLayout.Tab tab) {
                 switch (tab.getPosition()) {
                     case 1:
-                        List<DBCourse> dbCourses = DataSupport.findAll(DBCourse.class);
+                        List<DBCourse> dbCourses = LitePal.findAll(DBCourse.class);
                         if (!(dbCourses.size() > 0)) {
                             Toasty.warning(MainActivity.this, "请导入课表后查看", Toast.LENGTH_SHORT).show();
                         }
@@ -425,7 +425,7 @@ public class MainActivity extends AppCompatActivity
         if (isLogin) {
             SpUtils.clear(getApplicationContext());
 
-            DataSupport.deleteAll(DBCourse.class);
+            LitePal.deleteAll(DBCourse.class);
 
             finish();
 
