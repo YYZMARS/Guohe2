@@ -22,6 +22,7 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.R;
+import com.lyy.guohe.utils.ImageUtil;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
 
@@ -60,61 +61,54 @@ public class UsActivity extends AppCompatActivity {
                 final ActionSheetDialog dialog = new ActionSheetDialog(UsActivity.this, stringItems, null);
                 dialog.isTitleShow(false).show();
 
-                dialog.setOnOperItemClickL(new OnOperItemClickL() {
-                    @Override
-                    public void onOperItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        switch (position) {
-                            case 0:
-                                iv_turing.setDrawingCacheEnabled(true);
-                                Bitmap bitmap = iv_turing.getDrawingCache();//获取imageview中的图像
-                                Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "这是title", "这是description"));
-                                shareImg("果核里的图灵", "我的主题", "我的分享内容", uri);
-                                break;
-                            case 1:
-                                saveImage(iv_turing);
-                                Toasty.success(UsActivity.this, "图片保存成功", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        dialog.dismiss();
+                dialog.setOnOperItemClickL((parent, view1, position, id) -> {
+                    switch (position) {
+                        case 0:
+                            ImageUtil.shareImg(UsActivity.this, iv_turing, "果核里的图灵", "我的主题", "我的分享内容");
+                            break;
+                        case 1:
+                            ImageUtil.saveImage(UsActivity.this, iv_turing);
+                            Toasty.success(UsActivity.this, "图片保存成功", Toast.LENGTH_SHORT).show();
+                            break;
                     }
+                    dialog.dismiss();
                 });
-
                 return true;
             }
         });
     }
 
-    //分享二维码
-    private void shareImg(String dlgTitle, String subject, String content,
-                          Uri uri) {
-        if (uri == null) {
-            return;
-        }
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        if (subject != null && !"".equals(subject)) {
-            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        }
-        if (content != null && !"".equals(content)) {
-            intent.putExtra(Intent.EXTRA_TEXT, content);
-        }
-
-        // 设置弹出框标题
-        if (dlgTitle != null && !"".equals(dlgTitle)) { // 自定义标题
-            startActivity(Intent.createChooser(intent, dlgTitle));
-        } else { // 系统默认标题
-            startActivity(intent);
-        }
-    }
-
-    //将图像保存到本地
-    private void saveImage(ImageView imageView) {
-        imageView.setDrawingCacheEnabled(true);//开启catch，开启之后才能获取ImageView中的bitmap
-        Bitmap bitmap = imageView.getDrawingCache();//获取imageview中的图像
-        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "这是title", "这是description");
-        imageView.setDrawingCacheEnabled(false);//关闭catch
-    }
+//    //分享二维码
+//    private void shareImg(String dlgTitle, String subject, String content,
+//                          Uri uri) {
+//        if (uri == null) {
+//            return;
+//        }
+//        Intent intent = new Intent(Intent.ACTION_SEND);
+//        intent.setType("image/*");
+//        intent.putExtra(Intent.EXTRA_STREAM, uri);
+//        if (subject != null && !"".equals(subject)) {
+//            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+//        }
+//        if (content != null && !"".equals(content)) {
+//            intent.putExtra(Intent.EXTRA_TEXT, content);
+//        }
+//
+//        // 设置弹出框标题
+//        if (dlgTitle != null && !"".equals(dlgTitle)) { // 自定义标题
+//            startActivity(Intent.createChooser(intent, dlgTitle));
+//        } else { // 系统默认标题
+//            startActivity(intent);
+//        }
+//    }
+//
+//    //将图像保存到本地
+//    private void saveImage(ImageView imageView) {
+//        imageView.setDrawingCacheEnabled(true);//开启catch，开启之后才能获取ImageView中的bitmap
+//        Bitmap bitmap = imageView.getDrawingCache();//获取imageview中的图像
+//        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "这是title", "这是description");
+//        imageView.setDrawingCacheEnabled(false);//关闭catch
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

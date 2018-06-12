@@ -360,8 +360,9 @@ public class ScoreActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 if (mProgressDialog.isShowing() && !isFinishing())
                                     mProgressDialog.dismiss();
+                                showGPA(res.getInfo());
                             });
-                            showGPA(res.getInfo());
+
                         } else {
                             runOnUiThread(() -> {
                                 if (mProgressDialog.isShowing() && !isFinishing())

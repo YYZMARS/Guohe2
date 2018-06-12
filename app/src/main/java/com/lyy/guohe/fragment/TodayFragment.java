@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.ClassRoomActivity;
@@ -30,6 +31,7 @@ import com.lyy.guohe.activity.LibraryActivity;
 import com.lyy.guohe.activity.LotteryActivity;
 import com.lyy.guohe.activity.ScoreActivity;
 import com.lyy.guohe.activity.SportActivity;
+import com.lyy.guohe.activity.UsActivity;
 import com.lyy.guohe.adapter.CourseAdapter;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
@@ -37,6 +39,7 @@ import com.lyy.guohe.model.Course;
 import com.lyy.guohe.model.DBCourse;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
+import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
@@ -140,6 +143,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         tvOneDate = view.findViewById(R.id.tv_one_date);
         tvOneWord = view.findViewById(R.id.tv_one_word);
         tvOneWordFrom = view.findViewById(R.id.tv_one_word_from);
+        ivOneImg.setOnClickListener(this);
     }
 
     //加载今日课表
@@ -279,6 +283,28 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 //                toTel();
                 NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
                 break;
+            case R.id.iv_one_img:
+                if (getActivity() != null) {
+                    final String[] stringItems = {"分享", "下载到本地"};
+                    final ActionSheetDialog dialog = new ActionSheetDialog(getActivity(), stringItems, null);
+                    dialog.isTitleShow(false).show();
+
+                    dialog.setOnOperItemClickL((parent, view1, position, id) -> {
+                        switch (position) {
+                            case 0:
+//                                shareImg("果核里的图灵", "我的主题", "我的分享内容", uri);
+                                ImageUtil.shareImg(getActivity(), ivOneImg, "果核", "我的主题", "我的分享内容");
+                                break;
+                            case 1:
+                                ImageUtil.saveImage(getActivity(), ivOneImg);
+//                                saveImage(iv_turing);
+                                Toasty.success(getActivity(), "图片保存成功", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        dialog.dismiss();
+                    });
+                }
+                break;
         }
     }
 
@@ -316,7 +342,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                                 tvOneWordFrom.setText(wordFrom);
                                 tvOneDate.setText(date);
                                 tvImgAuthor.setText(imgAuthor + " | " + imgKind);
-                                Glide.with(mContext).load(imgUrl).into(ivOneImg);
+                                Glide.with(getActivity()).load(imgUrl).into(ivOneImg);
                             });
                         }
 

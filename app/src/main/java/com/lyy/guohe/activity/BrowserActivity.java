@@ -202,7 +202,8 @@ public class BrowserActivity extends AppCompatActivity {
                                 if (cookie != null) {
                                     CookieManager cookieManager = CookieManager.getInstance();
                                     for (String t : cookie.split(";")) {
-                                        cookieManager.setCookie(X5url, t);
+                                        if (t != null)
+                                            cookieManager.setCookie(X5url, t);
                                     }
                                 }
                                 runOnUiThread(() -> {
