@@ -35,11 +35,11 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/material_white_1000"
-            app:tabIndicatorColor="@color/material_blue_500"
+            android:background="@color/colorPrimary"
+            app:tabIndicatorColor="@color/material_white_1000"
             app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/material_black_1000"
-            app:tabTextColor="@color/material_blue_grey_300">
+            app:tabSelectedTextColor="@color/material_white_1000"
+            app:tabTextColor="#F5F5F5">
 
         </android.support.design.widget.TabLayout>
 

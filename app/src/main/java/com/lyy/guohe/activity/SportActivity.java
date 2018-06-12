@@ -3,6 +3,7 @@ package com.lyy.guohe.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -27,11 +28,13 @@ import com.bumptech.glide.Glide;
 import com.flyco.animation.BounceEnter.BounceBottomEnter;
 import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.widget.MaterialDialog;
+import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.adapter.SportAdapter;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.model.Sport;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.utils.HttpUtil;
+import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.R;
 import com.tencent.stat.StatService;
@@ -86,6 +89,8 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sport);
 
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(255, 255, 255));
+
         mContext = this;
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
@@ -93,6 +98,7 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
 
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.sport_toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -102,6 +108,8 @@ public class SportActivity extends AppCompatActivity implements View.OnClickList
 
         ImageView sport_iv = (ImageView) findViewById(R.id.sport_iv);
         Glide.with(SportActivity.this).load(R.drawable.bg_sport).into(sport_iv);
+        //将图片变暗
+        ImageUtil.changeImageView(sport_iv);
         FloatingActionButton sport_floating_btn = (FloatingActionButton) findViewById(R.id.sport_floating_btn);
         sport_floating_btn.setOnClickListener(this);
 

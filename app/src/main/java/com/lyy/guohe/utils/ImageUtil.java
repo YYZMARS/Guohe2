@@ -3,6 +3,8 @@ package com.lyy.guohe.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.widget.ImageView;
@@ -43,6 +45,15 @@ public class ImageUtil {
         } else { // 系统默认标题
             context.startActivity(intent);
         }
+    }
+
+    //将图片变暗
+    public static void changeImageView(ImageView imageView) {
+        int brightness = -80; //RGB偏移量，变暗为负数
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.set(new float[]{1, 0, 0, 0, brightness, 0, 1, 0, 0, brightness, 0, 0, 1, 0, brightness, 0, 0, 0, 1, 0});
+        ColorMatrixColorFilter cmcf = new ColorMatrixColorFilter(matrix);
+        imageView.setColorFilter(cmcf); //imageView为显示图片的View。
     }
 
 

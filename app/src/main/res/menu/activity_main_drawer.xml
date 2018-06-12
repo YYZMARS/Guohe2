@@ -3,50 +3,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item android:title="@string/app_name">
-        <menu>
-            <item
-                android:id="@+id/nav_aboutUs"
-                android:icon="@drawable/ic_menu_us"
-                android:title="@string/about_us" />
-            <item
-                android:id="@+id/nav_shareApp"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/share_app" />
-            <item
-                android:id="@+id/nav_feedBack"
-                android:icon="@drawable/ic_menu_feedback"
-                android:title="@string/feedback" />
-            <item
-                android:id="@+id/nav_contactMe"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/contact_me" />
-            <item
-                android:id="@+id/nav_joinUs"
-                android:icon="@drawable/ic_menu_join_us"
-                android:title="@string/joinUs" />
-        </menu>
-    </item>
+    <item
+        android:id="@+id/nav_aboutUs"
+        android:icon="@drawable/ic_menu_us"
+        android:title="@string/about_us" />
+    <item
+        android:id="@+id/nav_shareApp"
+        android:icon="@drawable/ic_menu_share"
+        android:title="@string/share_app" />
+    <item
+        android:id="@+id/nav_feedBack"
+        android:icon="@drawable/ic_menu_feedback"
+        android:title="@string/feedback" />
+    <item
+        android:id="@+id/nav_contactMe"
+        android:icon="@drawable/ic_menu_send"
+        android:title="@string/contact_me" />
+    <item
+        android:id="@+id/nav_joinUs"
+        android:icon="@drawable/ic_menu_join_us"
+        android:title="@string/joinUs" />
 
-    <item android:title="@string/setting">
-        <menu>
-            <item
-                android:id="@+id/nav_changeAccount"
-                android:icon="@drawable/ic_menu_change"
-                android:title="@string/changeAccount" />
-            <item
-                android:id="@+id/nav_version"
-                android:icon="@drawable/ic_menu_version"
-                android:title="@string/version" />
-            <item
-                android:id="@+id/nav_checkUpdate"
-                android:icon="@drawable/ic_menu_update"
-                android:title="@string/checkUpdate" />
-            <item
-                android:id="@+id/nav_updateInfo"
-                android:icon="@drawable/ic_menu_info"
-                android:title="@string/updateInfo" />
-        </menu>
-    </item>
+
+    <item
+        android:id="@+id/nav_changeAccount"
+        android:icon="@drawable/ic_menu_change"
+        android:title="@string/changeAccount" />
+    <!--<item-->
+        <!--android:id="@+id/nav_version"-->
+        <!--android:icon="@drawable/ic_menu_version"-->
+        <!--android:title="@string/version" />-->
+    <item
+        android:id="@+id/nav_checkUpdate"
+        android:icon="@drawable/ic_menu_update"
+        android:title="@string/checkUpdate" />
+    <item
+        android:id="@+id/nav_updateInfo"
+        android:icon="@drawable/ic_menu_info"
+        android:title="@string/updateInfo" />
+
 
 </menu>

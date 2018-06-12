@@ -91,7 +91,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_class_room);
 
         mContext = this;
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(119, 136, 213));
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.classroom_toolbar);
         setSupportActionBar(toolbar);

@@ -46,7 +46,7 @@ public class LotteryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lottery);
-        StatusBarCompat.setStatusBarColor(this, Color.parseColor("#2196F3"));
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(119, 136, 213));
         mContext = this;
         initView();
     }

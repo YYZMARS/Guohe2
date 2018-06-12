@@ -41,6 +41,7 @@ import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.listener.OnOperItemClickL;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
+import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
@@ -65,6 +66,7 @@ import org.litepal.LitePal;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
@@ -93,10 +95,6 @@ public class MainActivity extends AppCompatActivity
     private String imageBase64;
 
     private CircleImageView civ_header;
-    /**
-     * 果核
-     */
-    private TextView mTvTitle;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -105,26 +103,12 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //设置状态栏透明
-        if (Build.VERSION.SDK_INT >= 21) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
-
-        // 进入首页事件,统计用户进入首页的次数
-        StatService.trackCustomKVEvent(this, "homepage", null);
-        //统计应用启动数据
-        PushAgent.getInstance(this).onAppStart();
-        //友盟推送插屏消息接口
-        InAppMessageManager.getInstance(this).showCardMessage(this, "main",
-                new IUmengInAppMsgCloseCallback() {
-                    //插屏消息关闭时，会回调该方法
-                    @Override
-                    public void onColse() {
-                        Log.i(TAG, "card message close");
-                    }
-                });
+//        //设置状态栏透明
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            View decorView = getWindow().getDecorView();
+//            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+//            getWindow().setStatusBarColor(Color.TRANSPARENT);
+//        }
 
         //初始化权限
         initPermission();
@@ -134,13 +118,28 @@ public class MainActivity extends AppCompatActivity
         initFragment();
         //更新小部件
         updateWidget();
+        //初始化相关第三方服务
+        initApp();
+    }
 
+    //初始化统计
+    private void initApp() {
+        // MTA进入首页事件,统计用户进入首页的次数
+        Properties prop = new Properties();
+        prop.setProperty("name", "homepage");
+        StatService.trackCustomKVEvent(this, "homepage", prop);
+        //统计应用启动数据
+        PushAgent.getInstance(this).onAppStart();
+        //友盟推送插屏消息接口
         //插屏消息关闭时，会回调该方法
         InAppMessageManager.getInstance(this).showCardMessage(this, "main",
                 () -> Log.i(TAG, "card message close"));
+        MobclickAgent.onEvent(this, "homepage");
     }
 
+    //初始化布局
     private void initView() {
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(255, 255, 255));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -181,43 +180,18 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        TextView tvName = navigationView.getHeaderView(0).findViewById(R.id.tvName);
+        TextView tvStuName = navigationView.getHeaderView(0).findViewById(R.id.tvStuName);
         TextView tvStuId = navigationView.getHeaderView(0).findViewById(R.id.tvStuId);
-        civ_header = navigationView.getHeaderView(0).findViewById(R.id.civ_header);
-        civ_header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String[] stringItems = {"更换头像"};
-                final ActionSheetDialog dialog = new ActionSheetDialog(MainActivity.this, stringItems, null);
-                dialog.isTitleShow(false).show();
-
-                dialog.setOnOperItemClickL(new OnOperItemClickL() {
-                    @Override
-                    public void onOperItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        switch (position) {
-                            case 0:
-                                choosePhotoFromGallery();
-                                break;
-                        }
-                        dialog.dismiss();
-                    }
-                });
-            }
-        });
-        if (imageBase64 != null) {
-            byte[] byte64 = Base64.decode(imageBase64, 0);
-            ByteArrayInputStream bais = new ByteArrayInputStream(byte64);
-            Bitmap bitmap = BitmapFactory.decodeStream(bais);
-            civ_header.setImageBitmap(bitmap);
-        }
-
-        String name = SpUtils.getString(getApplicationContext(), SpConstant.STU_NAME);
+        TextView tvStuAcademy = navigationView.getHeaderView(0).findViewById(R.id.tvStuAcademy);
+        String stuName = SpUtils.getString(getApplicationContext(), SpConstant.STU_NAME);
         String stuId = SpUtils.getString(getApplicationContext(), SpConstant.STU_ID);
-        tvName.setText("姓名：" + name);
-        tvStuId.setText("学号：" + stuId);
+        String stuAcademy = SpUtils.getString(getApplicationContext(), SpConstant.STU_ACADEMY);
+        tvStuName.setText(stuName);
+        tvStuId.setText(stuId);
+        tvStuAcademy.setText(stuAcademy);
 
-        mTvTitle = (TextView) findViewById(R.id.tv_title);
-
+        //果核的彩蛋
+        TextView mTvTitle = (TextView) findViewById(R.id.tv_title);
         mTvTitle.setOnClickListener(new View.OnClickListener() {
             final static int COUNTS = 5;//点击次数
             final static long DURATION = 3 * 1000;//规定有效时间
@@ -248,6 +222,30 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+        civ_header = navigationView.getHeaderView(0).findViewById(R.id.civ_header);
+        civ_header.setOnClickListener(v -> {
+            final String[] stringItems = {"更换头像"};
+            final ActionSheetDialog dialog = new ActionSheetDialog(MainActivity.this, stringItems, null);
+            dialog.isTitleShow(false).show();
+
+            dialog.setOnOperItemClickL((parent, view, position, id) -> {
+                switch (position) {
+                    case 0:
+                        choosePhotoFromGallery();
+                        break;
+                }
+                dialog.dismiss();
+            });
+        });
+        if (imageBase64 != null) {
+            byte[] byte64 = Base64.decode(imageBase64, 0);
+            ByteArrayInputStream bais = new ByteArrayInputStream(byte64);
+            Bitmap bitmap = BitmapFactory.decodeStream(bais);
+            civ_header.setImageBitmap(bitmap);
+        }
+
+
     }
 
     //初始化相应的fragment
@@ -373,10 +371,10 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("isVpn", false);
                 startActivity(intent);
                 break;
-            case R.id.nav_version:
-                String versionName = RomUtils.getLocalVersionName(this);
-                Toasty.success(this, "您当前的版本为：" + versionName, Toast.LENGTH_SHORT).show();
-                break;
+//            case R.id.nav_version:
+//                String versionName = RomUtils.getLocalVersionName(this);
+//                Toasty.success(this, "您当前的版本为：" + versionName, Toast.LENGTH_SHORT).show();
+//                break;
             case R.id.nav_feedBack:
                 NavigateUtil.navigateTo(this, FeedBackActivity.class);
                 break;

@@ -68,7 +68,7 @@ public class UsActivity extends AppCompatActivity {
                             break;
                         case 1:
                             ImageUtil.saveImage(UsActivity.this, iv_turing);
-                            Toasty.success(UsActivity.this, "图片保存成功", Toast.LENGTH_SHORT).show();
+                            Toasty.success(UsActivity.this, "图片已保存至Picture文件夹", Toast.LENGTH_SHORT).show();
                             break;
                     }
                     dialog.dismiss();
@@ -77,38 +77,6 @@ public class UsActivity extends AppCompatActivity {
             }
         });
     }
-
-//    //分享二维码
-//    private void shareImg(String dlgTitle, String subject, String content,
-//                          Uri uri) {
-//        if (uri == null) {
-//            return;
-//        }
-//        Intent intent = new Intent(Intent.ACTION_SEND);
-//        intent.setType("image/*");
-//        intent.putExtra(Intent.EXTRA_STREAM, uri);
-//        if (subject != null && !"".equals(subject)) {
-//            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-//        }
-//        if (content != null && !"".equals(content)) {
-//            intent.putExtra(Intent.EXTRA_TEXT, content);
-//        }
-//
-//        // 设置弹出框标题
-//        if (dlgTitle != null && !"".equals(dlgTitle)) { // 自定义标题
-//            startActivity(Intent.createChooser(intent, dlgTitle));
-//        } else { // 系统默认标题
-//            startActivity(intent);
-//        }
-//    }
-//
-//    //将图像保存到本地
-//    private void saveImage(ImageView imageView) {
-//        imageView.setDrawingCacheEnabled(true);//开启catch，开启之后才能获取ImageView中的bitmap
-//        Bitmap bitmap = imageView.getDrawingCache();//获取imageview中的图像
-//        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "这是title", "这是description");
-//        imageView.setDrawingCacheEnabled(false);//关闭catch
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -169,7 +169,7 @@ public class KbActivity extends AppCompatActivity {
 
     //加载界面
     private void initView() {
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(119, 136, 213));
 
         //设置和toolbar相关的
         Toolbar toolbar = (Toolbar) findViewById(R.id.course_toolbar);
