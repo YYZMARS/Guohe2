@@ -146,6 +146,7 @@ public class CourseTableView extends RelativeLayout {
         updateCourseViews();
     }
 
+    // 绘制下面的东西,整个下面是一个ScrollView
     private void addBottomRestView() {
         ScrollView sv = new ScrollView(getContext());
         LayoutParams rlp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -319,7 +320,8 @@ public class CourseTableView extends RelativeLayout {
         LayoutParams rlp = new LayoutParams(firstColumnWidth, firstRowHeight);
         firstTv.setBackgroundResource(R.drawable.bg_kb);
         firstTv.setText(preMonth);
-        firstTv.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        firstTv.setTextColor(Color.parseColor("#2196F3"));
+        firstTv.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
         firstTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         firstTv.setPadding(oneW, twoW, oneW, twoW);
         firstTv.setLayoutParams(rlp);

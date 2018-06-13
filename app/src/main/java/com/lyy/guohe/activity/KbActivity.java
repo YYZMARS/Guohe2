@@ -636,20 +636,17 @@ public class KbActivity extends AppCompatActivity {
                 final ActionSheetDialog dialog = new ActionSheetDialog(KbActivity.this, stringItems, null);
                 dialog.isTitleShow(false).show();
 
-                dialog.setOnOperItemClickL(new OnOperItemClickL() {
-                    @Override
-                    public void onOperItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        switch (position) {
-                            case 0:
-                                choosePhotoFromGallery();
-                                break;
-                            case 1:
-                                Glide.with(mContext).load(R.drawable.bg_kb_default).into(iv_course_table);
-                                SpUtils.remove(mContext, SpConstant.BG_COURSE_64);
-                                break;
-                        }
-                        dialog.dismiss();
+                dialog.setOnOperItemClickL((parent, view, position, id) -> {
+                    switch (position) {
+                        case 0:
+                            choosePhotoFromGallery();
+                            break;
+                        case 1:
+                            Glide.with(mContext).load(R.drawable.bg_kb_default).into(iv_course_table);
+                            SpUtils.remove(mContext, SpConstant.BG_COURSE_64);
+                            break;
                     }
+                    dialog.dismiss();
                 });
                 break;
             case android.R.id.home:
@@ -751,23 +748,15 @@ public class KbActivity extends AppCompatActivity {
                 singleChoiceDialog.setTitle("选择学年");
                 // 第二个参数是默认选项，此处设置为0
                 singleChoiceDialog.setSingleChoiceItems(items, 0,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                yearChoice = which;
-                            }
-                        });
+                        (dialog, which) -> yearChoice = which);
                 singleChoiceDialog.setPositiveButton("确定",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface radio_dialog, int which) {
-                                if (yearChoice != -1) {
-                                    mProgressDialog.setMessage("正在切换中,请稍后...");
-                                    mProgressDialog.show();
-                                    Log.d(TAG, "onClick: " + items[yearChoice]);
-                                    LitePal.deleteAll(DBCourse.class);
-                                    getKbInfo(items[yearChoice]);
-                                }
+                        (radio_dialog, which) -> {
+                            if (yearChoice != -1) {
+                                mProgressDialog.setMessage("正在切换中,请稍后...");
+                                mProgressDialog.show();
+                                Log.d(TAG, "onClick: " + items[yearChoice]);
+                                LitePal.deleteAll(DBCourse.class);
+                                getKbInfo(items[yearChoice]);
                             }
                         });
                 singleChoiceDialog.show();
@@ -793,41 +782,33 @@ public class KbActivity extends AppCompatActivity {
         singleChoiceDialog.setTitle("请选择周次");
         // 第二个参数是默认选项，此处设置为0
         singleChoiceDialog.setSingleChoiceItems(items, weekChoice - 1,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        weekChoice = which;
-                    }
-                });
+                (dialog, which) -> weekChoice = which);
         singleChoiceDialog.setPositiveButton("确定",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (weekChoice != -1) {
-                            if (code == 0) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (Integer.parseInt(server_week) != (weekChoice + 1)) {
-                                            tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周(非本周)");
-                                        } else {
-                                            tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周");
-                                        }
-                                        showKb((weekChoice + 1) + "");
-                                    }
-                                });
-                            } else if (code == 1) {
-                                SpUtils.putString(mContext, SpConstant.SERVER_WEEK, (weekChoice + 1) + "");
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
+                (dialog, which) -> {
+                    if (weekChoice != -1) {
+                        if (code == 0) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (Integer.parseInt(server_week) != (weekChoice + 1)) {
+                                        tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周(非本周)");
+                                    } else {
                                         tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周");
                                     }
-                                });
-                                showKb((weekChoice + 1) + "");
-                            }
-
+                                    showKb((weekChoice + 1) + "");
+                                }
+                            });
+                        } else if (code == 1) {
+                            SpUtils.putString(mContext, SpConstant.SERVER_WEEK, (weekChoice + 1) + "");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周");
+                                }
+                            });
+                            showKb((weekChoice + 1) + "");
                         }
+
                     }
                 });
         AlertDialog dialog = singleChoiceDialog.create();
