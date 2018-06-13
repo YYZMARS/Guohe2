@@ -24,20 +24,17 @@ import com.bumptech.glide.Glide;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
-import com.lyy.guohe.activity.ClassRoomActivity;
 import com.lyy.guohe.activity.GameActivity;
 import com.lyy.guohe.activity.KbActivity;
-import com.lyy.guohe.activity.LibraryActivity;
-import com.lyy.guohe.activity.LotteryActivity;
 import com.lyy.guohe.activity.ScoreActivity;
 import com.lyy.guohe.activity.SportActivity;
-import com.lyy.guohe.activity.UsActivity;
 import com.lyy.guohe.adapter.CourseAdapter;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Course;
 import com.lyy.guohe.model.DBCourse;
 import com.lyy.guohe.model.Res;
+import com.lyy.guohe.utils.BusUtil;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.ListViewUtil;
@@ -50,10 +47,8 @@ import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -96,6 +91,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
         mContext = getActivity();
         view = inflater.inflate(R.layout.fragment_today, container, false);
+
         initView(view);
         initMess();
         initTodayKb();
@@ -106,6 +102,44 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
     //加载首页View
     private void initView(View view) {
+
+        //加载头部
+        initHeader(view);
+
+        //加载中间
+        initContent(view);
+
+    }
+
+
+    //加载首页头部
+    private void initHeader(View view) {
+        LinearLayout navKb = view.findViewById(R.id.nav_kb);
+        navKb.setOnClickListener(this);
+        LinearLayout navGrade = view.findViewById(R.id.nav_grade);
+        navGrade.setOnClickListener(this);
+//        LinearLayout navLibrary = view.findViewById(R.id.nav_library);
+//        navLibrary.setOnClickListener(this);
+        LinearLayout navBus = view.findViewById(R.id.nav_bus);
+        navBus.setOnClickListener(this);
+//        LinearLayout navClassroom = view.findViewById(R.id.nav_classroom);
+//        navClassroom.setOnClickListener(this);
+        LinearLayout navSystem = view.findViewById(R.id.nav_system);
+        navSystem.setOnClickListener(this);
+//        LinearLayout navCet = view.findViewById(R.id.nav_cet);
+//        navCet.setOnClickListener(this);
+        LinearLayout navPE = view.findViewById(R.id.nav_pe);
+        navPE.setOnClickListener(this);
+        LinearLayout navMore = view.findViewById(R.id.nav_more);
+        navMore.setOnClickListener(this);
+//        LinearLayout navGame = view.findViewById(R.id.nav_game);
+//        navGame.setOnClickListener(this);
+//        LinearLayout navIdea = view.findViewById(R.id.nav_idea);
+//        navIdea.setOnClickListener(this);
+    }
+
+    //加载首页中间
+    private void initContent(View view) {
         tvKbShow = (TextView) view.findViewById(R.id.tv_kb_show);
         lvKbToday = view.findViewById(R.id.lv_kbToday);
         tvMessage = view.findViewById(R.id.tv_message);
@@ -115,35 +149,15 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         tvKbShow.setText("今天居然没有课~" + "\uD83D\uDE01");
 
 
-        LinearLayout navKb = view.findViewById(R.id.nav_kb);
-        navKb.setOnClickListener(this);
-        LinearLayout navGrade = view.findViewById(R.id.nav_grade);
-        navGrade.setOnClickListener(this);
-        LinearLayout navLibrary = view.findViewById(R.id.nav_library);
-        navLibrary.setOnClickListener(this);
-        LinearLayout navBus = view.findViewById(R.id.nav_bus);
-        navBus.setOnClickListener(this);
-        LinearLayout navClassroom = view.findViewById(R.id.nav_classroom);
-        navClassroom.setOnClickListener(this);
-        LinearLayout navSystem = view.findViewById(R.id.nav_system);
-        navSystem.setOnClickListener(this);
-        LinearLayout navCet = view.findViewById(R.id.nav_cet);
-        navCet.setOnClickListener(this);
-        LinearLayout navPE = view.findViewById(R.id.nav_pe);
-        navPE.setOnClickListener(this);
-        LinearLayout navGame = view.findViewById(R.id.nav_game);
-        navGame.setOnClickListener(this);
-        LinearLayout navIdea = view.findViewById(R.id.nav_idea);
-        navIdea.setOnClickListener(this);
-//        LinearLayout llOne = view.findViewById(R.id.ll_one);
-//        llOne.setOnClickListener(this);
-
         ivOneImg = view.findViewById(R.id.iv_one_img);
         tvImgAuthor = view.findViewById(R.id.tv_img_author);
         tvOneDate = view.findViewById(R.id.tv_one_date);
         tvOneWord = view.findViewById(R.id.tv_one_word);
         tvOneWordFrom = view.findViewById(R.id.tv_one_word_from);
         ivOneImg.setOnClickListener(this);
+
+        LinearLayout llOne = view.findViewById(R.id.ll_one);
+        llOne.setOnClickListener(this);
     }
 
     //加载今日课表
@@ -242,6 +256,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+//            case R.id.nav_more:
+//                break;
             case R.id.nav_kb:
                 //跳转至课表
                 NavigateUtil.navigateTo(getActivity(), KbActivity.class);
@@ -250,22 +266,22 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 //跳转至成绩查询界面
                 NavigateUtil.navigateTo(getActivity(), ScoreActivity.class);
                 break;
-            case R.id.nav_library:
-                //跳转至图书馆藏查询
-                NavigateUtil.navigateTo(getActivity(), LibraryActivity.class);
-                break;
+//            case R.id.nav_library:
+//                //跳转至图书馆藏查询
+//                NavigateUtil.navigateTo(getActivity(), LibraryActivity.class);
+//                break;
             case R.id.nav_bus:
                 //显示即将到来的校车
-                showBusDialog(hasSchoolBus());
+                showBusDialog(BusUtil.hasSchoolBus());
                 break;
-            case R.id.nav_cet:
-                //跳转至四六级查询
-                toCET();
-                break;
-            case R.id.nav_classroom:
-                //跳转至查询空教室
-                NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
-                break;
+//            case R.id.nav_cet:
+//                //跳转至四六级查询
+//                toCET();
+//                break;
+//            case R.id.nav_classroom:
+//                //跳转至查询空教室
+//                NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
+//                break;
             case R.id.nav_pe:
                 //显示可以进入的体育系统
                 showPEDialog();
@@ -274,36 +290,18 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 //显示可以进入的校园系统
                 showSystemDialog();
                 break;
-            case R.id.nav_game:
-                //显示可以玩的小游戏
-                showGameDialog();
-                break;
-            case R.id.nav_idea:
-                //跳转至抽奖页面
-//                toTel();
-                NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
-                break;
+//            case R.id.nav_game:
+//                //显示可以玩的小游戏
+//                showGameDialog();
+//                break;
+//            case R.id.nav_idea:
+//                //跳转至抽奖页面
+////                toTel();
+//                NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
+//                break;
             case R.id.iv_one_img:
-                if (getActivity() != null) {
-                    final String[] stringItems = {"分享", "下载到本地"};
-                    final ActionSheetDialog dialog = new ActionSheetDialog(getActivity(), stringItems, null);
-                    dialog.isTitleShow(false).show();
-
-                    dialog.setOnOperItemClickL((parent, view1, position, id) -> {
-                        switch (position) {
-                            case 0:
-//                                shareImg("果核里的图灵", "我的主题", "我的分享内容", uri);
-                                ImageUtil.shareImg(getActivity(), ivOneImg, "果核", "我的主题", "我的分享内容");
-                                break;
-                            case 1:
-                                ImageUtil.saveImage(getActivity(), ivOneImg);
-//                                saveImage(iv_turing);
-                                Toasty.success(getActivity(), "图片保存成功", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        dialog.dismiss();
-                    });
-                }
+                //显示One模块的对话框
+                showOneDialog();
                 break;
         }
     }
@@ -372,6 +370,28 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         startActivity(intent);
     }
 
+    //显示One模块的对话框
+    private void showOneDialog() {
+        if (getActivity() != null) {
+            final String[] stringItems = {"分享", "下载到本地"};
+            final ActionSheetDialog dialog = new ActionSheetDialog(getActivity(), stringItems, null);
+            dialog.isTitleShow(false).show();
+
+            dialog.setOnOperItemClickL((parent, view1, position, id) -> {
+                switch (position) {
+                    case 0:
+                        ImageUtil.shareImg(getActivity(), ivOneImg, "果核", "我的主题", "我的分享内容");
+                        break;
+                    case 1:
+                        ImageUtil.saveImage(getActivity(), ivOneImg);
+                        Toasty.success(getActivity(), "图片保存成功", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                dialog.dismiss();
+            });
+        }
+    }
+
     //选择进入哪一个校园系统
     private void showSystemDialog() {
         final String[] items = {"教务系统", "奥兰系统", "实验系统", "一站式办事大厅"};
@@ -431,114 +451,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 });
         // 显示
         normalDialog.show();
-    }
-
-    //判断当前时刻有没有校车
-    private String hasSchoolBus() {
-        Calendar calendar = Calendar.getInstance();
-        //星期天从0开始
-        int week = calendar.get(Calendar.DAY_OF_WEEK);
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat f = new SimpleDateFormat("HH:mm");
-        Date c = new Date(System.currentTimeMillis());
-        String checi = "";
-        try {
-            String str1 = f.format(c);
-            //当前时间,格式为HH：mm
-            Date d1 = f.parse(str1);
-            if (f.parse("21:55").compareTo(d1) == -1) {
-                //没有车了
-                checi = "目前没有车了";
-            } else if (f.parse("21:05").compareTo(d1) == -1) {
-                //16车次
-                checi = "车次16\n";
-                checi += "21:45 西->21：55 南->东";
-            } else if (f.parse("19:40").compareTo(d1) == -1) {
-                if (week == 6 || week == 0) {
-                    //14
-                    //有些车周末周六不开，这种情况跳到下一班车
-                    checi = "车次14\n";
-                    checi += "19:30 西->19:40 南->东";
-                } else {
-                    //15
-                    checi = "车次15\n";
-                    checi += "20:55 西->21：05 南->东";
-                }
-            } else if (f.parse("18:40").compareTo(d1) == -1) {
-                if (week == 0) {
-                    //13
-                    checi = "车次13\n";
-                    checi += "18:30 东->18:40 南->西";
-                } else {
-                    //14
-                    checi = "车次14\n";
-                    checi += "19:30 西->19:40 南->东";
-                }
-            } else if (f.parse("17:50").compareTo(d1) == -1) {
-                //13
-                checi = "车次13\n";
-                checi += "18:30 东->18:40 南->西";
-            } else if (f.parse("16:05").compareTo(d1) == -1) {
-                //12,11
-                checi = "车次11和12\n";
-                checi += "17：40 东->17:50 南->西\n";
-                checi += "17:40 西->17：50 南->东";
-            } else if (f.parse("15:25").compareTo(d1) == -1) {
-                if (week == 0) {
-                    //9
-                    checi = "车次9\n";
-                    checi += "15：15 东->15：25 南->西";
-                } else {
-                    //10
-                    checi = "车次10\n";
-                    checi += "15：55 西->16：05 南->东";
-                }
-            } else if (f.parse("13:45").compareTo(d1) == -1) {
-                if (week == 0) {
-                    //7,8
-                    checi = "车次7和8\n";
-                    checi += "13:35 东->13：45 南->西\n";
-                    checi += "13:35 西->13:45 南->东";
-                } else {
-                    //9
-                    checi = "车次9\n";
-                    checi += "15：15 东->15：25 南->西";
-                }
-            } else if (f.parse("12:00").compareTo(d1) == -1) {
-                //7,8
-                checi = "车次7和8\n";
-                checi += "13:35 东->13：45 南->西\n";
-                checi += "13:35 西->13:45 南->东";
-            } else if (f.parse("10:05").compareTo(d1) == -1) {
-                //5,6
-                checi = "车次5和6\n";
-                checi += "11:50 东->12:00 南->西\n";
-                checi += "11:50 西->12:00 南->东";
-            } else if (f.parse("9:30").compareTo(d1) == -1) {
-                if (week == 0) {
-                    //3
-                    checi = "车次3\n";
-                    checi += "9:20 东->9:30 南->西\n";
-                } else {
-                    //4
-                    checi = "车次4\n";
-                    checi += "9:55 东->10:05 南->西\n";
-                }
-            } else if (f.parse("7:45").compareTo(d1) == -1) {
-                //3
-                checi = "车次3\n";
-                checi += "9:20 东->9:30 南->西\n";
-
-            } else {
-                //2,1
-                checi = "车次1和2\n";
-                checi += "7:35 东->7:45 南->西\n";
-                checi += "7:35 西->7:45 南->东";
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return checi;
     }
 
     //选择进入哪一个体育系统

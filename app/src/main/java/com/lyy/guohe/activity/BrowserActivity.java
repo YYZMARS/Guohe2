@@ -235,7 +235,7 @@ public class BrowserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_browser);
 
         mContext = this;
-        StatusBarCompat.setStatusBarColor(this, Color.rgb(33, 150, 243));
+        StatusBarCompat.setStatusBarColor(this, Color.rgb(119, 136, 213));
         Intent intent = getIntent();
         X5url = intent.getStringExtra("url");
         title = intent.getStringExtra("title");

@@ -38,7 +38,7 @@ public class CourseTableView extends RelativeLayout {
 
     private List<? extends Course> coursesData;
 
-    private String[] DAYS = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
+    private String[] DAYS = {"一", "二", "三", "四", "五", "六", "日"};
 
     /**
      * 和中国星期对应上
@@ -295,11 +295,11 @@ public class CourseTableView extends RelativeLayout {
             if (i == 1) {
                 ds = toDayCal.get(Calendar.DAY_OF_MONTH);
                 temp[i - 1] = toDayCal.get(Calendar.DAY_OF_MONTH) + "";
-                preMonth = (toDayCal.get(Calendar.MONTH) + 1) + "月";
+                preMonth = (toDayCal.get(Calendar.MONTH) + 1) + "\n月";
             }
             toDayCal.add(Calendar.DATE, 1);
             if (toDayCal.get(Calendar.DAY_OF_MONTH) < ds) {
-                temp[i] = (toDayCal.get(Calendar.MONTH) + 1) + "月";
+                temp[i] = (toDayCal.get(Calendar.MONTH) + 1) + "\n月";
                 ds = toDayCal.get(Calendar.DAY_OF_MONTH);
             } else {
                 temp[i] = toDayCal.get(Calendar.DAY_OF_MONTH) + "";
@@ -320,9 +320,9 @@ public class CourseTableView extends RelativeLayout {
         LayoutParams rlp = new LayoutParams(firstColumnWidth, firstRowHeight);
         firstTv.setBackgroundResource(R.drawable.bg_kb);
         firstTv.setText(preMonth);
-        firstTv.setTextColor(Color.parseColor("#2196F3"));
+        firstTv.setTextColor(Color.parseColor("#1E88E5"));
         firstTv.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
-        firstTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        firstTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         firstTv.setPadding(oneW, twoW, oneW, twoW);
         firstTv.setLayoutParams(rlp);
         addView(firstTv);
@@ -347,29 +347,33 @@ public class CourseTableView extends RelativeLayout {
                 rlp.addRule(RelativeLayout.RIGHT_OF, FIRST_ROW_TV_QZ + i - 1);
             linearLayout.setBackgroundResource(R.drawable.bg_kb);
             linearLayout.setLayoutParams(rlp);
+            //添加星期几这一行
             llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
+            tvDay = new TextView(getContext());
+            tvDay.setLayoutParams(llp);
+            tvDay.setText(DAYS[i]);
+            tvDay.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+            tvDay.setTextColor(Color.parseColor("#1E88E5"));
+            tvDay.setPadding(twoW, 0, twoW, twoW * 2);
+            tvDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            linearLayout.addView(tvDay);
 
+            //添加日期这一行
+            llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             tvDate = new TextView(getContext());
             tvDate.setText(datesOfMonth[i]);
             tvDate.setLayoutParams(llp);
             tvDate.setGravity(Gravity.CENTER);
             tvDate.setPadding(twoW, twoW, twoW, twoW);
-            tvDate.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+            tvDate.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             linearLayout.addView(tvDate);
-            llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            tvDay = new TextView(getContext());
-            tvDay.setLayoutParams(llp);
-            tvDay.setText(DAYS[i]);
-            tvDay.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+
             if (US_DAYS_NUMS[todayNum] - 1 == i) {
-                linearLayout.setBackgroundColor(0x77069ee9);
+                linearLayout.setBackgroundColor(Color.parseColor("#1E88E5"));
                 tvDay.setTextColor(Color.WHITE);
                 tvDate.setTextColor(Color.WHITE);
             }
-            tvDay.setPadding(twoW, 0, twoW, twoW * 2);
-            tvDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            linearLayout.addView(tvDay);
             addView(linearLayout);
         }
     }
