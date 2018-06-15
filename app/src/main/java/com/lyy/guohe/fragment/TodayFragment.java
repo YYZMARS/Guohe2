@@ -40,6 +40,7 @@ import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
+import com.lyy.guohe.view.MoreDialog;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
@@ -303,7 +304,21 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
                 //显示One模块的对话框
                 showOneDialog();
                 break;
+            case R.id.nav_more:
+                //显示更多对话框
+                showMoreDialog();
+                break;
         }
+    }
+
+    //显示更多对话框
+    private void showMoreDialog() {
+        MoreDialog moreDialog = new MoreDialog(getActivity());
+        moreDialog.onCreateView();
+        moreDialog.setUiBeforShow();
+        moreDialog.setCanceledOnTouchOutside(true);
+        moreDialog.setCancelable(true);
+        moreDialog.show();
     }
 
     //加载One的内容

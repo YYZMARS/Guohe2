@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_dialog_more"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,7 +14,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/nav_kb"
+            android:id="@+id/nav_library"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_10"
@@ -26,7 +27,7 @@
                 android:layout_width="@dimen/dp_60"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:src="@drawable/ic_menu_kb"
+                android:src="@drawable/ic_menu_library"
                 tools:ignore="NestedWeights" />
 
             <TextView
@@ -34,13 +35,13 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="查课表"
+                android:text="查馆藏"
                 android:textSize="@dimen/sp_14" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_grade"
+            android:id="@+id/nav_classroom"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_10"
@@ -53,20 +54,20 @@
                 android:layout_width="@dimen/dp_60"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:src="@drawable/ic_menu_score" />
+                android:src="@drawable/ic_menu_classroom" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="查成绩"
+                android:text="空教室"
                 android:textSize="@dimen/sp_14" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_bus"
+            android:id="@+id/nav_cet"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_10"
@@ -79,14 +80,14 @@
                 android:layout_width="@dimen/dp_60"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:src="@drawable/ic_menu_bus" />
+                android:src="@drawable/ic_menu_cet" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="查校车"
+                android:text="四六级"
                 android:textSize="@dimen/sp_14" />
 
         </LinearLayout>
@@ -101,7 +102,7 @@
         android:layout_marginRight="@dimen/dp_10">
 
         <LinearLayout
-            android:id="@+id/nav_system"
+            android:id="@+id/nav_game"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_10"
@@ -114,20 +115,20 @@
                 android:layout_width="@dimen/dp_60"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:src="@drawable/ic_menu_system" />
+                android:src="@drawable/ic_menu_game" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="校园系统"
+                android:text="休闲游戏"
                 android:textSize="@dimen/sp_14" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_pe"
+            android:id="@+id/nav_tel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_10"
@@ -140,20 +141,20 @@
                 android:layout_width="@dimen/dp_60"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:src="@drawable/ic_menu_pe" />
+                android:src="@drawable/ic_menu_tel" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="体育查询"
+                android:text="校园热线"
                 android:textSize="@dimen/sp_14" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_more"
+            android:id="@+id/nav_pj"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_10"
@@ -163,7 +164,6 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/iv_more"
                 android:layout_width="@dimen/dp_60"
                 android:layout_height="0dp"
                 android:layout_weight="4"
@@ -174,7 +174,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="更多"
+                android:text="一键评教"
                 android:textSize="@dimen/sp_14" />
 
         </LinearLayout>
