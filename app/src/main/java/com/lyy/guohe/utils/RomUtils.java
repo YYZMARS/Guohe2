@@ -1,6 +1,7 @@
 package com.lyy.guohe.utils;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -12,11 +13,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * 判断当前手机rom版本
+ * 判断手机系统的相关信息
  */
 public class RomUtils {
 
     private static final String TAG = "RomUtils";
+
+    //检测手机上是否安装某应用
+    public static boolean checkApkExist(Context context, String packageName) {
+        if (packageName == null || "".equals(packageName))
+            return false;
+        try {
+            ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName,
+                    PackageManager.GET_UNINSTALLED_PACKAGES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
 
     //获取本地软件版本号名称
     public static String getLocalVersionName(Context ctx) {
@@ -70,7 +84,6 @@ public class RomUtils {
     public static boolean isMiuiRom() {
         return !TextUtils.isEmpty(getSystemProperty("ro.miui.ui.version.name"));
     }
-
 
     /**
      * "ro.build.user" -> "flyme"

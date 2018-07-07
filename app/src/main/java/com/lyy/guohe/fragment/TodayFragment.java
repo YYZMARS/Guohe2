@@ -1,16 +1,24 @@
 package com.lyy.guohe.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -21,11 +29,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
-import com.lyy.guohe.activity.GameActivity;
 import com.lyy.guohe.activity.KbActivity;
+import com.lyy.guohe.activity.MainActivity;
 import com.lyy.guohe.activity.ScoreActivity;
 import com.lyy.guohe.activity.SportActivity;
 import com.lyy.guohe.adapter.CourseAdapter;
@@ -35,12 +42,11 @@ import com.lyy.guohe.model.Course;
 import com.lyy.guohe.model.DBCourse;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.BusUtil;
+import com.lyy.guohe.utils.DialogUtils;
 import com.lyy.guohe.utils.HttpUtil;
-import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.lyy.guohe.view.MoreDialog;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
@@ -61,9 +67,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class TodayFragment extends Fragment implements View.OnClickListener {
-    //该Fragment的
-    private View view;
+public class TodayFragment extends Fragment implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = "TodayFragment";
 
     //今日没课时显示的TextView
     private TextView tvKbShow;
@@ -72,7 +78,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     //显示今日课程的ListView
     private ListView lvKbToday;
 
-    private Context mContext;
+    private Activity mContext;
 
     private ProgressDialog mProgressDialog;
 
@@ -86,12 +92,13 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
     private TextView tvOneWordFrom;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         mContext = getActivity();
-        view = inflater.inflate(R.layout.fragment_today, container, false);
+        View view = inflater.inflate(R.layout.fragment_today, container, false);
 
         initView(view);
         initMess();
@@ -104,6 +111,9 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     //加载首页View
     private void initView(View view) {
 
+        //加载toolbar
+        initToolBar(view);
+
         //加载头部
         initHeader(view);
 
@@ -112,31 +122,64 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    //加载toolbar
+    private void initToolBar(View view) {
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_today);
+        toolbar.setTitle("");
+        if (getActivity() != null) {
+            setHasOptionsMenu(true);
+            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_back);
+            }
+
+            //果核的彩蛋
+            TextView mTvTitle = (TextView) view.findViewById(R.id.tv_title);
+            mTvTitle.setOnClickListener(new View.OnClickListener() {
+                final static int COUNTS = 5;//点击次数
+                final static long DURATION = 3 * 1000;//规定有效时间
+                long[] mHits = new long[COUNTS];
+                int index = 0;
+
+                @Override
+                public void onClick(View v) {
+                    /**
+                     * 实现双击方法
+                     * src 拷贝的源数组
+                     * srcPos 从源数组的那个位置开始拷贝.
+                     * dst 目标数组
+                     * dstPos 从目标数组的那个位子开始写数据
+                     * length 拷贝的元素的个数
+                     */
+                    index++;
+                    System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                    //实现左移，然后最后一个位置更新距离开机的时间，如果最后一个时间和最开始时间小于DURATION，即连续5次点击
+                    mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                    if (index == 3) {
+                        Toast.makeText(mContext, "哈哈哈，就快发现彩蛋了！", Toast.LENGTH_SHORT).show();
+                    }
+                    if (mHits[0] >= (SystemClock.uptimeMillis() - DURATION)) {
+                        DialogUtils.showEggDialog(getActivity());
+                        index = 0;
+                    }
+                }
+            });
+        }
+
+    }
 
     //加载首页头部
     private void initHeader(View view) {
-        LinearLayout navKb = view.findViewById(R.id.nav_kb);
-        navKb.setOnClickListener(this);
         LinearLayout navGrade = view.findViewById(R.id.nav_grade);
         navGrade.setOnClickListener(this);
-//        LinearLayout navLibrary = view.findViewById(R.id.nav_library);
-//        navLibrary.setOnClickListener(this);
         LinearLayout navBus = view.findViewById(R.id.nav_bus);
         navBus.setOnClickListener(this);
-//        LinearLayout navClassroom = view.findViewById(R.id.nav_classroom);
-//        navClassroom.setOnClickListener(this);
-        LinearLayout navSystem = view.findViewById(R.id.nav_system);
-        navSystem.setOnClickListener(this);
-//        LinearLayout navCet = view.findViewById(R.id.nav_cet);
-//        navCet.setOnClickListener(this);
         LinearLayout navPE = view.findViewById(R.id.nav_pe);
         navPE.setOnClickListener(this);
         LinearLayout navMore = view.findViewById(R.id.nav_more);
         navMore.setOnClickListener(this);
-//        LinearLayout navGame = view.findViewById(R.id.nav_game);
-//        navGame.setOnClickListener(this);
-//        LinearLayout navIdea = view.findViewById(R.id.nav_idea);
-//        navIdea.setOnClickListener(this);
     }
 
     //加载首页中间
@@ -257,68 +300,27 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.nav_more:
-//                break;
-            case R.id.nav_kb:
-                //跳转至课表
-                NavigateUtil.navigateTo(getActivity(), KbActivity.class);
-                break;
             case R.id.nav_grade:
                 //跳转至成绩查询界面
                 NavigateUtil.navigateTo(getActivity(), ScoreActivity.class);
                 break;
-//            case R.id.nav_library:
-//                //跳转至图书馆藏查询
-//                NavigateUtil.navigateTo(getActivity(), LibraryActivity.class);
-//                break;
             case R.id.nav_bus:
                 //显示即将到来的校车
-                showBusDialog(BusUtil.hasSchoolBus());
+                DialogUtils.showBusDialog(mContext, BusUtil.hasSchoolBus());
                 break;
-//            case R.id.nav_cet:
-//                //跳转至四六级查询
-//                toCET();
-//                break;
-//            case R.id.nav_classroom:
-//                //跳转至查询空教室
-//                NavigateUtil.navigateTo(getActivity(), ClassRoomActivity.class);
-//                break;
             case R.id.nav_pe:
                 //显示可以进入的体育系统
                 showPEDialog();
                 break;
-            case R.id.nav_system:
-                //显示可以进入的校园系统
-                showSystemDialog();
-                break;
-//            case R.id.nav_game:
-//                //显示可以玩的小游戏
-//                showGameDialog();
-//                break;
-//            case R.id.nav_idea:
-//                //跳转至抽奖页面
-////                toTel();
-//                NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
-//                break;
             case R.id.iv_one_img:
                 //显示One模块的对话框
-                showOneDialog();
+                DialogUtils.showOneDialog(mContext, ivOneImg);
                 break;
             case R.id.nav_more:
                 //显示更多对话框
-                showMoreDialog();
+                DialogUtils.showMoreDialog(mContext);
                 break;
         }
-    }
-
-    //显示更多对话框
-    private void showMoreDialog() {
-        MoreDialog moreDialog = new MoreDialog(getActivity());
-        moreDialog.onCreateView();
-        moreDialog.setUiBeforShow();
-        moreDialog.setCanceledOnTouchOutside(true);
-        moreDialog.setCancelable(true);
-        moreDialog.show();
     }
 
     //加载One的内容
@@ -383,89 +385,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         intent.putExtra("title", "校园热线");
         intent.putExtra("isVpn", false);
         startActivity(intent);
-    }
-
-    //显示One模块的对话框
-    private void showOneDialog() {
-        if (getActivity() != null) {
-            final String[] stringItems = {"分享", "下载到本地"};
-            final ActionSheetDialog dialog = new ActionSheetDialog(getActivity(), stringItems, null);
-            dialog.isTitleShow(false).show();
-
-            dialog.setOnOperItemClickL((parent, view1, position, id) -> {
-                switch (position) {
-                    case 0:
-                        ImageUtil.shareImg(getActivity(), ivOneImg, "果核", "我的主题", "我的分享内容");
-                        break;
-                    case 1:
-                        ImageUtil.saveImage(getActivity(), ivOneImg);
-                        Toasty.success(getActivity(), "图片保存成功", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                dialog.dismiss();
-            });
-        }
-    }
-
-    //选择进入哪一个校园系统
-    private void showSystemDialog() {
-        final String[] items = {"教务系统", "奥兰系统", "实验系统", "一站式办事大厅"};
-        AlertDialog.Builder listDialog =
-                new AlertDialog.Builder(getActivity());
-        listDialog.setTitle("选择要进入的系统");
-        listDialog.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // which 下标从0开始
-
-                Intent intent = new Intent(getActivity(), BrowserActivity.class);
-                switch (which) {
-                    case 0:
-                        intent.putExtra("url", UrlConstant.JIAOWU_URL);
-                        intent.putExtra("title", "强智教务");
-                        startActivity(intent);
-                        break;
-                    case 1:
-                        intent.putExtra("url", UrlConstant.AOLAN_URL);
-                        intent.putExtra("title", "奥兰系统");
-                        startActivity(intent);
-                        break;
-                    case 2:
-                        intent.putExtra("url", UrlConstant.LAB_URL);
-                        intent.putExtra("title", "实验系统");
-                        startActivity(intent);
-                        break;
-                    case 3:
-                        intent.putExtra("url", UrlConstant.FUWU_URL);
-                        intent.putExtra("title", "一站式办事大厅");
-                        startActivity(intent);
-                        break;
-                }
-            }
-        });
-        listDialog.show();
-    }
-
-    //显示校车对话框
-    private void showBusDialog(String mess) {
-        final AlertDialog.Builder normalDialog = new AlertDialog.Builder(getActivity());
-        normalDialog.setMessage("即将到来的车次是：\n" + mess);
-        normalDialog.setPositiveButton("显示全部车次",
-                (dialog, which) -> {
-                    //...To-do
-                    Intent intent = new Intent(getActivity(), BrowserActivity.class);
-                    intent.putExtra("title", "校车时刻表");
-                    intent.putExtra("url", UrlConstant.SCHOOL_BUS);
-                    intent.putExtra("isVpn", false);
-                    startActivity(intent);
-                });
-        normalDialog.setNegativeButton("关闭",
-                (dialog, which) -> {
-                    //...To-do
-                    dialog.dismiss();
-                });
-        // 显示
-        normalDialog.show();
     }
 
     //选择进入哪一个体育系统
@@ -579,20 +498,32 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    //弹出选择小游戏对话框
-    private void showGameDialog() {
-        final String[] items = {"六角消除", "2048", "六角拼拼", "无尽之旅", "彩虹穿越", "西部枪手"};
-        AlertDialog.Builder listDialog = new AlertDialog.Builder(getActivity());
-        listDialog.setTitle("请选择你要进入的游戏");
-        listDialog.setItems(items, (dialog, which) -> {
-            // which 下标从0开始
-            // ...To-do
-            Intent intent = new Intent(getActivity(), GameActivity.class);
-            intent.putExtra("which", which);
-            startActivity(intent);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.e(TAG, "onCreateOptionsMenu()");
+        menu.clear();
+        inflater.inflate(R.menu.main, menu);
+    }
 
-        });
-        listDialog.show();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_donate:
+                DialogUtils.showDonateDialog(getActivity());
+                break;
+            case android.R.id.home:
+                if (getActivity() != null) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.drawer.openDrawer(GravityCompat.START);
+                }
+                break;
+        }
+
+        return true;
     }
 
     @Override
@@ -600,11 +531,17 @@ public class TodayFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         initTodayKb();
         MobclickAgent.onPageStart("MainScreen"); //统计页面("MainScreen"为页面名称，可自定义)
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("MainScreen");
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 }

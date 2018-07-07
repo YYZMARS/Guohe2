@@ -24,6 +24,9 @@ import com.lyy.guohe.model.Slide;
 import com.lyy.guohe.utils.GlideImageLoader;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
+import com.mob.bbssdk.gui.views.MainViewInterface;
+import com.mob.bbssdk.theme0.BBSTheme0;
+import com.mob.tools.utils.ResHelper;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.listener.OnBannerListener;
@@ -45,18 +48,18 @@ import okhttp3.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NewsFragment extends Fragment implements OnBannerListener, AdapterView.OnItemClickListener {
+public class NewsFragment extends Fragment {
 
     private Context mContext;
 
-    List<Slide> slides = new ArrayList<>();
-    List<String> images = new ArrayList<>();
-    List<String> titles = new ArrayList<>();
-    List<News> newsList = new ArrayList<>();
-
-    private Banner banner;
-
-    private ListView lv_news;
+//    List<Slide> slides = new ArrayList<>();
+//    List<String> images = new ArrayList<>();
+//    List<String> titles = new ArrayList<>();
+//    List<News> newsList = new ArrayList<>();
+//
+//    private Banner banner;
+//
+//    private ListView lv_news;
 
     private View view;
 
@@ -69,128 +72,132 @@ public class NewsFragment extends Fragment implements OnBannerListener, AdapterV
         super.onCreate(savedInstanceState);
         view = Objects.requireNonNull(getActivity()).getLayoutInflater().inflate(R.layout.fragment_news, null);
         mContext = getActivity();
-        banner = (Banner) view.findViewById(R.id.banner);
-        banner.setOnBannerListener(this);
-
-        lv_news = view.findViewById(R.id.lv_news);
-
-        getSlide();
-        initNews();
+//        banner = (Banner) view.findViewById(R.id.banner);
+//        banner.setOnBannerListener(this);
+//
+//        lv_news = view.findViewById(R.id.lv_news);
+//
+//        getSlide();
+//        initNews();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        BBSTheme0.init();
+        MainViewInterface mainView = (MainViewInterface) view.findViewById(ResHelper.getIdRes(mContext, "mainView"));
+
+        mainView.loadData();
 
         return view;
     }
 
-    @Override
-    public void OnBannerClick(int position) {
-        //链接不为空时跳转
-        if (!slides.get(position).getUrl().equals("")) {
-            Intent intent = new Intent(getActivity(), BrowserActivity.class);
-            intent.putExtra("title", slides.get(position).getTitle());
-            intent.putExtra("url", slides.get(position).getUrl());
-            intent.putExtra("isVpn", false);
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-        Toasty.success(Objects.requireNonNull(getActivity()), "暂无内容，欢迎投稿", Toast.LENGTH_SHORT).show();
-
-    }
-
-    //获取轮播图
-    private void getSlide() {
-        HttpUtil.get(UrlConstant.SLIDE, new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
-                }
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String data = response.body().string();
-                    final Res res = HttpUtil.handleResponse(data);
-                    if (res != null) {
-                        if (res.getCode() == 200) {
-                            try {
-                                if (getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> {
-                                        try {
-                                            JSONArray array = new JSONArray(res.getInfo());
-                                            for (int i = 0; i < array.length(); i++) {
-                                                JSONObject object = array.getJSONObject(i);
-                                                Slide slide = new Slide(object.getString("describe"), object.getString("img"), object.getString("title"), object.getString("url"));
-                                                slides.add(slide);
-                                            }
-
-                                            for (int i = 0; i < slides.size(); i++) {
-                                                images.add(slides.get(i).getImg());
-                                                titles.add(slides.get(i).getDescribe());
-                                            }
-                                            initBanner();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
-                            }
-                        }
-                    } else {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
-                        }
-                    }
-                } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
-                    }
-                }
-            }
-        });
-    }
-
-    //初始化Banner
-    private void initBanner() {
-        banner.setBannerStyle(BannerConfig.NUM_INDICATOR_TITLE);
-        //设置图片加载器
-        banner.setImageLoader(new GlideImageLoader());
-        //设置图片集合
-        banner.setImages(images);
-        //设置标题集合
-        banner.setBannerTitles(titles);
-        //banner设置方法全部调用完毕时最后调用
-        banner.start();
-    }
-
-    private void initNews() {
-        News news1 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
-        newsList.add(news1);
-        News news2 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
-        newsList.add(news2);
-//        News news3 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
-//        newsList.add(news3);
-//        News news4 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
-//        newsList.add(news4);
-
-        NewsAdapter newsAdapter = new NewsAdapter(getActivity(), R.layout.item_news, newsList);
-        lv_news.setAdapter(newsAdapter);
-        ListViewUtil.setListViewHeightBasedOnChildren(lv_news);
-        lv_news.setOnItemClickListener(this);
-    }
+//    @Override
+//    public void OnBannerClick(int position) {
+//        //链接不为空时跳转
+//        if (!slides.get(position).getUrl().equals("")) {
+//            Intent intent = new Intent(getActivity(), BrowserActivity.class);
+//            intent.putExtra("title", slides.get(position).getTitle());
+//            intent.putExtra("url", slides.get(position).getUrl());
+//            intent.putExtra("isVpn", false);
+//            startActivity(intent);
+//        }
+//    }
+//
+//    @Override
+//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//        Toasty.success(Objects.requireNonNull(getActivity()), "暂无内容，欢迎投稿", Toast.LENGTH_SHORT).show();
+//
+//    }
+//
+//    //获取轮播图
+//    private void getSlide() {
+//        HttpUtil.get(UrlConstant.SLIDE, new Callback() {
+//            @Override
+//            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+//                if (getActivity() != null) {
+//                    getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+//                }
+//            }
+//
+//            @Override
+//            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+//                if (response.isSuccessful()) {
+//                    String data = response.body().string();
+//                    final Res res = HttpUtil.handleResponse(data);
+//                    if (res != null) {
+//                        if (res.getCode() == 200) {
+//                            try {
+//                                if (getActivity() != null) {
+//                                    getActivity().runOnUiThread(() -> {
+//                                        try {
+//                                            JSONArray array = new JSONArray(res.getInfo());
+//                                            for (int i = 0; i < array.length(); i++) {
+//                                                JSONObject object = array.getJSONObject(i);
+//                                                Slide slide = new Slide(object.getString("describe"), object.getString("img"), object.getString("title"), object.getString("url"));
+//                                                slides.add(slide);
+//                                            }
+//
+//                                            for (int i = 0; i < slides.size(); i++) {
+//                                                images.add(slides.get(i).getImg());
+//                                                titles.add(slides.get(i).getDescribe());
+//                                            }
+//                                            initBanner();
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    });
+//                                }
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        } else {
+//                            if (getActivity() != null) {
+//                                getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+//                            }
+//                        }
+//                    } else {
+//                        if (getActivity() != null) {
+//                            getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+//                        }
+//                    }
+//                } else {
+//                    if (getActivity() != null) {
+//                        getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
+//                    }
+//                }
+//            }
+//        });
+//    }
+//
+//    //初始化Banner
+//    private void initBanner() {
+//        banner.setBannerStyle(BannerConfig.NUM_INDICATOR_TITLE);
+//        //设置图片加载器
+//        banner.setImageLoader(new GlideImageLoader());
+//        //设置图片集合
+//        banner.setImages(images);
+//        //设置标题集合
+//        banner.setBannerTitles(titles);
+//        //banner设置方法全部调用完毕时最后调用
+//        banner.start();
+//    }
+//
+//    private void initNews() {
+//        News news1 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
+//        newsList.add(news1);
+//        News news2 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
+//        newsList.add(news2);
+////        News news3 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
+////        newsList.add(news3);
+////        News news4 = new News("http://p7gzvzwe4.bkt.clouddn.com/test.jpg", "暂无内容，欢迎投稿", "");
+////        newsList.add(news4);
+//
+//        NewsAdapter newsAdapter = new NewsAdapter(getActivity(), R.layout.item_news, newsList);
+//        lv_news.setAdapter(newsAdapter);
+//        ListViewUtil.setListViewHeightBasedOnChildren(lv_news);
+//        lv_news.setOnItemClickListener(this);
+//    }
 }

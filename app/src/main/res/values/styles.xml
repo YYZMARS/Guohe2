@@ -82,4 +82,14 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_menu_back</item>
     </style>
 
+    <!--样式-->
+    <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">?attr/colorAccent</item>
+        <item name="tabIndicatorHeight">0dp</item>
+        <item name="tabPaddingStart">0dp</item>
+        <item name="tabTextColor">#aaa</item>
+        <item name="tabPaddingEnd">0dp</item>
+        <item name="tabSelectedTextColor">#f00</item>
+    </style>
+
 </resources>

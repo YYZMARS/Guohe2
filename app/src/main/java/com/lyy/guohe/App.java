@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Process;
 import android.util.Log;
 
+import com.mob.MobSDK;
 import com.tencent.bugly.Bugly;
 import com.tencent.mta.track.StatisticsDataAPI;
 import com.tencent.smtt.sdk.QbSdk;
@@ -15,7 +16,7 @@ import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.PushAgent;
 
 import org.android.agoo.xiaomi.MiPushRegistar;
-import org.litepal.LitePalApplication;
+import org.litepal.LitePal;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class App extends Application {
         super.onCreate();
         context = getApplicationContext();
 
-        LitePalApplication.initialize(context);
+        LitePal.initialize(context);
 
         initX5WebView();
 
@@ -40,6 +41,8 @@ public class App extends Application {
         StatisticsDataAPI.instance(this);
         //初始化Bugly
         Bugly.init(getApplicationContext(), "1f3d59d6cb", false);
+
+        MobSDK.init(this);
 
     }
 

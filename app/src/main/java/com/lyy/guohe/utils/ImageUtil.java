@@ -1,5 +1,6 @@
 package com.lyy.guohe.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,13 @@ import android.provider.MediaStore;
 import android.widget.ImageView;
 
 public class ImageUtil {
+
+    //从相册中选择图片
+    public static void choosePhotoFromGallery(Activity activity, int flag) {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        activity.startActivityForResult(intent, flag); // 打开相册
+    }
 
     //将图像保存到本地
     public static void saveImage(Context context, ImageView imageView) {

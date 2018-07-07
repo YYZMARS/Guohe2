@@ -263,13 +263,10 @@ public class KbActivity extends AppCompatActivity {
             HttpUtil.post(url, requestBody, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mProgressDialog.isShowing())
-                                mProgressDialog.dismiss();
-                            Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
+                    runOnUiThread(() -> {
+                        if (mProgressDialog.isShowing())
+                            mProgressDialog.dismiss();
+                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
 
@@ -787,16 +784,13 @@ public class KbActivity extends AppCompatActivity {
                 (dialog, which) -> {
                     if (weekChoice != -1) {
                         if (code == 0) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (Integer.parseInt(server_week) != (weekChoice + 1)) {
-                                        tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周(非本周)");
-                                    } else {
-                                        tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周");
-                                    }
-                                    showKb((weekChoice + 1) + "");
+                            runOnUiThread(() -> {
+                                if (Integer.parseInt(server_week) != (weekChoice + 1)) {
+                                    tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周(非本周)");
+                                } else {
+                                    tv_course_table_toolbar.setText("第" + (weekChoice + 1) + "周");
                                 }
+                                showKb((weekChoice + 1) + "");
                             });
                         } else if (code == 1) {
                             SpUtils.putString(mContext, SpConstant.SERVER_WEEK, (weekChoice + 1) + "");

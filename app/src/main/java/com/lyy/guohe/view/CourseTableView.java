@@ -185,7 +185,7 @@ public class CourseTableView extends RelativeLayout {
             FrameLayout fl = new FrameLayout(getContext());
             FrameLayout.LayoutParams flp = new FrameLayout.LayoutParams(notFirstEveryColumnsWidth,
                     notFirstEveryRowHeight);
-            fl.setBackgroundResource(R.drawable.bg_kb);
+            fl.setBackgroundResource(R.drawable.bg_kb_course);
             flp.setMargins(col * notFirstEveryColumnsWidth, row * notFirstEveryRowHeight, 0, 0);
             fl.setLayoutParams(flp);
             flCourseContent.addView(fl);
@@ -249,7 +249,7 @@ public class CourseTableView extends RelativeLayout {
         for (int i = 0; i < totalJC; i++) {
             textView = new TextView(getContext());
             textView.setLayoutParams(rlp);
-            textView.setBackgroundResource(R.drawable.bg_kb);
+            textView.setBackgroundResource(R.drawable.bg_kb_head);
             textView.setText("" + (i + 1));
             textView.setGravity(Gravity.CENTER);
             textView.setTextColor(Color.GRAY);
@@ -318,9 +318,9 @@ public class CourseTableView extends RelativeLayout {
         firstTv = new TextView(getContext());
         firstTv.setId(FIRST_TV);
         LayoutParams rlp = new LayoutParams(firstColumnWidth, firstRowHeight);
-        firstTv.setBackgroundResource(R.drawable.bg_kb);
+        firstTv.setBackgroundResource(R.drawable.bg_kb_head);
         firstTv.setText(preMonth);
-        firstTv.setTextColor(Color.parseColor("#1E88E5"));
+        firstTv.setTextColor(Color.rgb(1, 1, 1));
         firstTv.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
         firstTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         firstTv.setPadding(oneW, twoW, oneW, twoW);
@@ -345,7 +345,7 @@ public class CourseTableView extends RelativeLayout {
                 rlp.addRule(RelativeLayout.RIGHT_OF, firstTv.getId());
             else
                 rlp.addRule(RelativeLayout.RIGHT_OF, FIRST_ROW_TV_QZ + i - 1);
-            linearLayout.setBackgroundResource(R.drawable.bg_kb);
+            linearLayout.setBackgroundResource(R.drawable.bg_kb_head);
             linearLayout.setLayoutParams(rlp);
             //添加星期几这一行
             llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -354,7 +354,7 @@ public class CourseTableView extends RelativeLayout {
             tvDay.setLayoutParams(llp);
             tvDay.setText(DAYS[i]);
             tvDay.setGravity(Gravity.CENTER | Gravity.BOTTOM);
-            tvDay.setTextColor(Color.parseColor("#1E88E5"));
+            tvDay.setTextColor(Color.rgb(1, 1, 1));
             tvDay.setPadding(twoW, 0, twoW, twoW * 2);
             tvDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             linearLayout.addView(tvDay);
@@ -370,9 +370,10 @@ public class CourseTableView extends RelativeLayout {
             linearLayout.addView(tvDate);
 
             if (US_DAYS_NUMS[todayNum] - 1 == i) {
-                linearLayout.setBackgroundColor(Color.parseColor("#1E88E5"));
-                tvDay.setTextColor(Color.WHITE);
-                tvDate.setTextColor(Color.WHITE);
+                //当前日期的背景颜色
+                linearLayout.setBackgroundColor(Color.parseColor("#40000000"));
+                tvDay.setTextColor(Color.BLACK);
+                tvDate.setTextColor(Color.BLACK);
             }
             addView(linearLayout);
         }
