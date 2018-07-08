@@ -10,25 +10,19 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.flyco.dialog.widget.ActionSheetDialog;
-import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.CropViewActivity;
 import com.lyy.guohe.constant.Constant;
@@ -40,9 +34,9 @@ import com.lyy.guohe.model.DBDate;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.DialogUtils;
 import com.lyy.guohe.utils.HttpUtil;
-import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.view.CourseTableView;
+import com.lyy.guohe.view.Fab;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -173,12 +167,19 @@ public class KbFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-        FloatingActionButton mFab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
-        mFab1.setOnClickListener(this);
-        FloatingActionButton mFab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
-        mFab2.setOnClickListener(this);
-        FloatingActionButton mFab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
-        mFab3.setOnClickListener(this);
+//        FloatingActionButton mFab1 = (FloatingActionButton) view.findViewById(R.id.fab1);
+//        mFab1.setOnClickListener(this);
+//        FloatingActionButton mFab2 = (FloatingActionButton) view.findViewById(R.id.fab2);
+//        mFab2.setOnClickListener(this);
+//        FloatingActionButton mFab3 = (FloatingActionButton) view.findViewById(R.id.fab3);
+//        mFab3.setOnClickListener(this);
+
+        Fab fab = view.findViewById(R.id.fab);
+        View sheetView = view.findViewById(R.id.fab_sheet);
+        View overlay = view.findViewById(R.id.overlay);
+        int sheetColor = getResources().getColor(R.color.material_white_1000);
+        int fabColor = getResources().getColor(R.color.material_white_1000);
+        MaterialSheetFab materialSheetFab = new MaterialSheetFab(fab, sheetView, overlay, sheetColor, fabColor);
 
     }
 
@@ -568,22 +569,22 @@ public class KbFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fab1:
-                //更新课表
-                LitePal.deleteAll(DBCourse.class);
-                SpUtils.remove(mContext, SpConstant.SERVER_WEEK);
-                SpUtils.remove(mContext, SpConstant.XIAO_LI);
-                SpUtils.remove(mContext, SpConstant.IS_OPEN_KB);
-                getXiaoLi();
-                break;
-            case R.id.fab2:
-                //更改学期
-                showSchoolYearChoiceDialog();
-                break;
-            case R.id.fab3:
-                //更改周次
-                showKbBgDialog(iv_course_table);
-                break;
+//            case R.id.fab1:
+//                //更新课表
+//                LitePal.deleteAll(DBCourse.class);
+//                SpUtils.remove(mContext, SpConstant.SERVER_WEEK);
+//                SpUtils.remove(mContext, SpConstant.XIAO_LI);
+//                SpUtils.remove(mContext, SpConstant.IS_OPEN_KB);
+//                getXiaoLi();
+//                break;
+//            case R.id.fab2:
+//                //更改学期
+//                showSchoolYearChoiceDialog();
+//                break;
+//            case R.id.fab3:
+//                //更改周次
+//                showKbBgDialog(iv_course_table);
+//                break;
         }
     }
 
@@ -641,4 +642,5 @@ public class KbFragment extends Fragment implements View.OnClickListener {
         Intent intent = new Intent(WIDGET_UPDATE);
         mContext.sendBroadcast(intent);
     }
+
 }

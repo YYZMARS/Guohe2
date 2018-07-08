@@ -132,7 +132,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
             android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_back);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_left);
             }
 
             //果核的彩蛋

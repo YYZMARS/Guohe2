@@ -47,18 +47,8 @@ android {
                 MTA_APPKEY : "A28UBH2TE8IT",
                 MTA_CHANNEL: "tecent"
         ]
+        multiDexEnabled true
     }
-//    android studio默认so文件加载目录为:src/main/jniLibs
-//    如在module的build.gradle按照如下方式,自定义了so文件加载目录请确保对应目录下只有armeabi目录
-//    sourceSets {
-//        main {
-//            jniLibs.srcDirs = ['libs']
-//        }
-//    }
-
-//    sourceSets.main {
-//        jni.srcDirs = []
-//    }
 
     tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn ndkLibsToJar
@@ -134,6 +124,6 @@ dependencies {
     implementation 'com.umeng.sdk:utdid:1.1.5.3'
     implementation 'com.umeng.sdk:push:4.1.0'
     implementation 'com.umeng.sdk:push-xiaomi:1.0.0'
-    implementation 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'com.gordonwong:material-sheet-fab:1.2.1'
     implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1234_43608_sharewithdownload_withoutGame_obfs_20180510_111111.jar')
 }
