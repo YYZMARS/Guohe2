@@ -5,8 +5,8 @@ apply plugin: 'com.mob.sdk'
 
 // 在MobSDK的扩展中注册BBSSDK的相关信息
 MobSDK {
-    appKey "26bb06e6acf55"
-    appSecret "e94e30bc1944664f130198e7be88d6c2"
+    appKey "26e3cf11f8337"
+    appSecret "fc73188f8d2c5395c221a9163abbf011"
 
     BBSSDK{
         theme 'theme1'
@@ -15,17 +15,18 @@ MobSDK {
     // BBSSDK依赖于ShareSDK和MobLink，故还需要引入这两个SDK
     ShareSDK {
         devInfo {
-//            Wechat {
-//                appId "wx31c614cef0a3c2b1"
-//                appSecret "feb318147c72f454ea58c025176aeb26"
-//            }
-//            QQ {
-//                appId "1106603990"
-//                appKey "bXlzQJgj8KzBze7W"
-//            }
+            Wechat {
+                appId "wx31c614cef0a3c2b1"
+                appSecret "feb318147c72f454ea58c025176aeb26"
+            }
+            QQ {
+                appId "1106603990"
+                appKey "bXlzQJgj8KzBze7W"
+            }
         }
     }
     MobLink {}
+    AnalySDK {}
 }
 
 android {
@@ -84,7 +85,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
-
 
 }
 

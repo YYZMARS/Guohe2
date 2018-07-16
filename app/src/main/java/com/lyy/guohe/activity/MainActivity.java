@@ -46,6 +46,7 @@ import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.RomUtils;
 import com.lyy.guohe.utils.SpUtils;
+import com.mob.analysdk.AnalySDK;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
@@ -56,6 +57,7 @@ import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -121,6 +123,10 @@ public class MainActivity extends AppCompatActivity
         InAppMessageManager.getInstance(this).showCardMessage(this, "main",
                 () -> Log.i(TAG, "card message close"));
         MobclickAgent.onEvent(this, "homepage");
+
+        HashMap<String, Object> eventParams = new HashMap<String, Object>();
+        eventParams.put("page", "Main Page");
+        AnalySDK.trackEvent("page-jump", eventParams);
     }
 
     //初始化布局

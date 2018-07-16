@@ -27,6 +27,10 @@
         tools:replace="android:name">
 
         <meta-data
+            android:name="AnalySDK_Channel"
+            android:value="Mob" />
+
+        <meta-data
             android:name="android.max_aspect"
             android:value="ratio_float" />
 
