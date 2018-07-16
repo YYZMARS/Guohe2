@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.ClassRoomAdapter;
+import com.lyy.guohe.constant.Constant;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.ClassRoom;
@@ -47,11 +48,7 @@ import okhttp3.Response;
 
 public class ClassRoomActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "ClassRoomActivity";
-
     private Context mContext;
-
-    private Button btn_classroom_search;
 
     private NiceSpinner niceSpinner1, niceSpinner2, niceSpinner3, niceSpinner4;
 
@@ -103,7 +100,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
 
         lv_classroom = (ListView) findViewById(R.id.lv_classroom);
 
-        btn_classroom_search = (Button) findViewById(R.id.btn_classroom_search);
+        Button btn_classroom_search = (Button) findViewById(R.id.btn_classroom_search);
         btn_classroom_search.setOnClickListener(this);
         initSpinner();
         initSwipeRefresh();
@@ -342,7 +339,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         final RequestBody requestBody = new FormBody.Builder()
                 .add("username", user)
                 .add("password", pass)
-                .add("school_year", SpConstant.THIS_YEAR)
+                .add("school_year", Constant.THIS_YEAR)
                 .add("area_id", area_id)
                 .add("building_id", building_id)
                 .add("zc1", zc1)
@@ -351,17 +348,9 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         HttpUtil.post(url, requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                runOnUiThread(() -> {
+                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+                    Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -389,12 +378,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
                                     ClassRoomAdapter classRoomAdapter = new ClassRoomAdapter(ClassRoomActivity.this, R.layout.item_classroom, classRoomList);
                                     lv_classroom.setAdapter(classRoomAdapter);
                                     lv_classroom.setVisibility(View.VISIBLE);
-                                    swipeRefreshLayout.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            swipeRefreshLayout.setRefreshing(false);
-                                        }
-                                    });
+                                    swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
                                 });
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -422,7 +406,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initSwipeRefresh() {
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.classroom_refresh);
+        swipeRefreshLayout = findViewById(R.id.classroom_refresh);
 
         // 设置颜色属性的时候一定要注意是引用了资源文件还是直接设置16进制的颜色，因为都是int值容易搞混
         // 设置下拉进度的背景颜色，默认就是白色的
@@ -430,10 +414,8 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
         // 设置下拉进度的主题颜色
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
 
-        listener = () -> {
-            //TODO
-            getClassroom();
-        };
+        //TODO
+        listener = this::getClassroom;
 
         swipeRefreshLayout.setOnRefreshListener(listener);
     }
@@ -454,12 +436,7 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
             case R.id.btn_classroom_search:
                 classRoomList.clear();
 
-                swipeRefreshLayout.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(true);
-                    }
-                });
+                swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(true));
                 listener.onRefresh();
                 break;
         }

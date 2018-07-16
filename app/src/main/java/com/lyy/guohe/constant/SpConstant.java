@@ -41,7 +41,4 @@ public class SpConstant {
     //记录体育课密码
     public static final String PE_PASS = "pe_pass";
 
-    //记录当前学年
-    public static final String THIS_YEAR = "2017-2018-2";
-
 }

@@ -69,28 +69,26 @@ public class MoreDialog extends BaseDialog<MoreDialog> implements View.OnClickLi
         switch (v.getId()) {
             case R.id.nav_library:
                 NavigateUtil.navigateTo((Activity) context, LibraryActivity.class);
-                dismiss();
                 break;
             case R.id.nav_classroom:
                 NavigateUtil.navigateTo((Activity) context, ClassRoomActivity.class);
-                dismiss();
                 break;
             case R.id.nav_cet:
+                //跳转至四六级查询部分
                 toCET();
-                dismiss();
                 break;
             case R.id.nav_game:
                 showGameDialog();
                 break;
             case R.id.nav_tel:
+                //跳转至校园热线页面
                 toTel();
-                dismiss();
                 break;
             case R.id.nav_pj:
                 Toast.makeText(context, "敬请期待", Toast.LENGTH_SHORT).show();
-                dismiss();
                 break;
         }
+        dismiss();
     }
 
     //跳转至校园热线页面

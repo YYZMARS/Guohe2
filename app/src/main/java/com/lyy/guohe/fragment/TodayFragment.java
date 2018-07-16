@@ -51,6 +51,7 @@ import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
 
     //加载toolbar
     private void initToolBar(View view) {
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_today);
+        Toolbar toolbar = view.findViewById(R.id.toolbar_today);
         toolbar.setTitle("");
         if (getActivity() != null) {
             setHasOptionsMenu(true);
@@ -134,38 +135,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_left);
             }
-
-            //果核的彩蛋
-            TextView mTvTitle = (TextView) view.findViewById(R.id.tv_title);
-            mTvTitle.setOnClickListener(new View.OnClickListener() {
-                final static int COUNTS = 5;//点击次数
-                final static long DURATION = 3 * 1000;//规定有效时间
-                long[] mHits = new long[COUNTS];
-                int index = 0;
-
-                @Override
-                public void onClick(View v) {
-                    /**
-                     * 实现双击方法
-                     * src 拷贝的源数组
-                     * srcPos 从源数组的那个位置开始拷贝.
-                     * dst 目标数组
-                     * dstPos 从目标数组的那个位子开始写数据
-                     * length 拷贝的元素的个数
-                     */
-                    index++;
-                    System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
-                    //实现左移，然后最后一个位置更新距离开机的时间，如果最后一个时间和最开始时间小于DURATION，即连续5次点击
-                    mHits[mHits.length - 1] = SystemClock.uptimeMillis();
-                    if (index == 3) {
-                        Toast.makeText(mContext, "哈哈哈，就快发现彩蛋了！", Toast.LENGTH_SHORT).show();
-                    }
-                    if (mHits[0] >= (SystemClock.uptimeMillis() - DURATION)) {
-                        DialogUtils.showEggDialog(getActivity());
-                        index = 0;
-                    }
-                }
-            });
+            //显示果核的彩蛋
+            showEgg(view);
         }
 
     }
@@ -180,6 +151,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         navPE.setOnClickListener(this);
         LinearLayout navMore = view.findViewById(R.id.nav_more);
         navMore.setOnClickListener(this);
+        LinearLayout navSystem = view.findViewById(R.id.nav_system);
+        navSystem.setOnClickListener(this);
     }
 
     //加载首页中间
@@ -217,7 +190,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
             List<DBCourse> courseList = new ArrayList<>();
             if (server_week != null) {
                 try {
-                    courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
+                    courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourse.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -297,6 +270,41 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         });
     }
 
+    //显示果核的彩蛋
+    private void showEgg(View view) {
+        //果核的彩蛋
+        TextView mTvTitle = (TextView) view.findViewById(R.id.tv_title);
+        mTvTitle.setOnClickListener(new View.OnClickListener() {
+            final static int COUNTS = 5;//点击次数
+            final static long DURATION = 3 * 1000;//规定有效时间
+            long[] mHits = new long[COUNTS];
+            int index = 0;
+
+            @Override
+            public void onClick(View v) {
+                /**
+                 * 实现双击方法
+                 * src 拷贝的源数组
+                 * srcPos 从源数组的那个位置开始拷贝.
+                 * dst 目标数组
+                 * dstPos 从目标数组的那个位子开始写数据
+                 * length 拷贝的元素的个数
+                 */
+                index++;
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                //实现左移，然后最后一个位置更新距离开机的时间，如果最后一个时间和最开始时间小于DURATION，即连续5次点击
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                if (index == 3) {
+                    Toast.makeText(mContext, "哈哈哈，就快发现彩蛋了！", Toast.LENGTH_SHORT).show();
+                }
+                if (mHits[0] >= (SystemClock.uptimeMillis() - DURATION)) {
+                    DialogUtils.showEggDialog(getActivity());
+                    index = 0;
+                }
+            }
+        });
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -311,6 +319,9 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
             case R.id.nav_pe:
                 //显示可以进入的体育系统
                 showPEDialog();
+                break;
+            case R.id.nav_system:
+                DialogUtils.showSystemDialog(mContext);
                 break;
             case R.id.iv_one_img:
                 //显示One模块的对话框
@@ -369,24 +380,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         });
     }
 
-    //跳转至四六级查询部分
-    private void toCET() {
-        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-        intent.putExtra("url", UrlConstant.CET);
-        intent.putExtra("title", "全国大学英语四六级考试成绩查询");
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
-    }
-
-    //跳转至校园热线页面
-    private void toTel() {
-        Intent intent = new Intent(getActivity(), BrowserActivity.class);
-        intent.putExtra("url", UrlConstant.SCHOOL_TEL);
-        intent.putExtra("title", "校园热线");
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
-    }
-
     //选择进入哪一个体育系统
     private void showPEDialog() {
         final String[] items = {"俱乐部查询", "早操出勤查询", "体育成绩查询"};
@@ -409,7 +402,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                     startActivity(intent);
                     break;
                 case 2:
-//                    Toasty.success(getActivity(), "敬请期待", Toast.LENGTH_SHORT).show();
                     showPePassDialog();
                     break;
             }
@@ -418,7 +410,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     }
 
     private void showPePassDialog() {
-        String pePass = SpUtils.getString(Objects.requireNonNull(getActivity()), SpConstant.PE_PASS);
+        String pePass = SpUtils.getString(mContext, SpConstant.PE_PASS);
         if (pePass == null) {
             final EditText editText = new EditText(getActivity());
             AlertDialog.Builder inputDialog =
@@ -439,11 +431,13 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                             HttpUtil.post(UrlConstant.CLUB_SCORE, requestBody, new Callback() {
                                 @Override
                                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                                        if (mProgressDialog.isShowing())
-                                            mProgressDialog.dismiss();
-                                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                                    });
+                                    if (getActivity() != null) {
+                                        getActivity().runOnUiThread(() -> {
+                                            if (mProgressDialog.isShowing())
+                                                mProgressDialog.dismiss();
+                                            Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
                                 }
 
                                 @Override
@@ -485,9 +479,9 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                                 }
                             });
                         } else {
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                                Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show();
-                            });
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show());
+                            }
                         }
                     }).show();
         } else {
@@ -500,7 +494,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.e(TAG, "onCreateOptionsMenu()");
         menu.clear();
         inflater.inflate(R.menu.main, menu);
     }
@@ -530,14 +523,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     public void onResume() {
         super.onResume();
         initTodayKb();
-        MobclickAgent.onPageStart("MainScreen"); //统计页面("MainScreen"为页面名称，可自定义)
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPageEnd("MainScreen");
     }
 
     @Override

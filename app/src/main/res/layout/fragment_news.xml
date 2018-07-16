@@ -18,7 +18,7 @@
             android:layout_margin="@dimen/dp_1"
             android:orientation="vertical">
 
-            <com.mob.bbssdk.theme0.view.Theme0MainView
+            <com.mob.bbssdk.theme1.view.Theme1MainView
                 android:id="@+id/mainView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

@@ -26,6 +26,7 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.mob.bbssdk.gui.views.MainViewInterface;
 import com.mob.bbssdk.theme0.BBSTheme0;
+import com.mob.bbssdk.theme1.BBSTheme1;
 import com.mob.tools.utils.ResHelper;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
@@ -70,8 +71,11 @@ public class NewsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = Objects.requireNonNull(getActivity()).getLayoutInflater().inflate(R.layout.fragment_news, null);
-        mContext = getActivity();
+        if (getActivity() != null) {
+            mContext = getActivity();
+            view = getActivity().getLayoutInflater().inflate(R.layout.fragment_news, null);
+        }
+
 //        banner = (Banner) view.findViewById(R.id.banner);
 //        banner.setOnBannerListener(this);
 //
@@ -85,7 +89,7 @@ public class NewsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        BBSTheme0.init();
+        BBSTheme1.init();
         MainViewInterface mainView = (MainViewInterface) view.findViewById(ResHelper.getIdRes(mContext, "mainView"));
 
         mainView.loadData();
