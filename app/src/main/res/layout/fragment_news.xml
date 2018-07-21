@@ -5,9 +5,6 @@
     android:layout_height="match_parent"
     tools:context="com.lyy.guohe.fragment.NewsFragment">
 
-    <com.mob.bbssdk.theme1.view.Theme1MainView
-        android:id="@+id/mainView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
 
 </LinearLayout>

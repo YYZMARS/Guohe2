@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
+import com.lyy.guohe.activity.BBSActivity;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.LotteryActivity;
 import com.lyy.guohe.constant.SpConstant;
@@ -75,7 +76,8 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mContext = getActivity();
+        if (getActivity() != null)
+            mContext = getActivity();
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_play, container, false);
@@ -180,6 +182,7 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
             case R.id.card2:
                 //表白墙
                 Toasty.success(Objects.requireNonNull(getActivity()), "敬请期待", Toast.LENGTH_SHORT).show();
+                NavigateUtil.navigateTo(getActivity(), BBSActivity.class);
                 break;
             case R.id.card3:
                 //二手市场

@@ -92,4 +92,8 @@
         <item name="tabSelectedTextColor">#f00</item>
     </style>
 
+    <style name="FloatingStyle" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#e0c9c4c4</item>
+    </style>
+
 </resources>

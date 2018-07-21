@@ -91,13 +91,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mContext = this;
 
-//        //设置状态栏透明
-//        if (Build.VERSION.SDK_INT >= 21) {
-//            View decorView = getWindow().getDecorView();
-//            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-//            getWindow().setStatusBarColor(Color.TRANSPARENT);
-//        }
-
         //初始化权限
         initPermission();
         //初始化布局
@@ -210,8 +203,8 @@ public class MainActivity extends AppCompatActivity
         fragments.add(fragment1);
         KbFragment fragment2 = new KbFragment();
         fragments.add(fragment2);
-        NewsFragment fragment3 = new NewsFragment();
-        fragments.add(fragment3);
+//        NewsFragment fragment3 = new NewsFragment();
+//        fragments.add(fragment3);
         PlayFragment fragment4 = new PlayFragment();
         fragments.add(fragment4);
 
@@ -234,9 +227,9 @@ public class MainActivity extends AppCompatActivity
                 case 2:
                     d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
                     break;
-                case 3:
-                    d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
-                    break;
+//                case 3:
+//                    d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
+//                    break;
             }
             if (tab != null)
                 tab.setIcon(d);

@@ -41,10 +41,7 @@ public class NewsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        BBSTheme1.init();
-        MainViewInterface mainView = (MainViewInterface) view.findViewById(ResHelper.getIdRes(mContext, "mainView"));
 
-        mainView.loadData();
 
         return view;
     }
