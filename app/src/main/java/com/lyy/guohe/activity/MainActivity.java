@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
 
     //初始化相应的fragment
     private void initFragment() {
-        String[] titles = new String[]{"今日", "课表", "广播", "操场"};
+        String[] titles = new String[]{"今日", "课表", "操场", "广播"};
 
         List<Fragment> fragments = new ArrayList<>();
 

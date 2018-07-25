@@ -73,8 +73,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_margin="@dimen/dp_16"
-            android:backgroundTint="@color/material_blue_200"
-            android:src="@drawable/ic_menu_back"
+            android:backgroundTint="@color/material_white_1000"
+            android:src="@drawable/ic_menu_tools"
             app:borderWidth="0dp"
             tools:ignore="RtlHardcoded" />
 
@@ -94,7 +94,7 @@
             <!-- Sheet that contains your items -->
             <android.support.v7.widget.CardView
                 android:id="@+id/fab_sheet"
-                android:layout_width="@dimen/dp_200"
+                android:layout_width="@dimen/dp_180"
                 android:layout_height="@dimen/dp_250">
 
                 <!-- TODO: Put your sheet items here -->

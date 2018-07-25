@@ -68,9 +68,10 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_login"
-            android:layout_width="@dimen/dp_60"
-            android:layout_height="@dimen/dp_60"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
             android:backgroundTint="@color/material_white_1000"
+            android:src="@drawable/ic_menu_login"
             app:borderWidth="0dp"
             app:elevation="@dimen/dp_10"
             app:layout_anchor="@id/ll_login"

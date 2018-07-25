@@ -72,6 +72,10 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <service
+            android:name=".service.InitializeService"
+            android:exported="false" />
+
         <activity
             android:name=".activity.AdActivity"
             android:screenOrientation="portrait"
@@ -136,7 +140,8 @@
         <activity
             android:name=".activity.BBSActivity"
             android:label="@string/title_activity_bbs"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

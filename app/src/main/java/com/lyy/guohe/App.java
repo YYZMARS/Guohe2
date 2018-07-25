@@ -3,9 +3,11 @@ package com.lyy.guohe;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.os.Debug;
 import android.os.Process;
 import android.util.Log;
 
+import com.lyy.guohe.service.InitializeService;
 import com.mob.MobSDK;
 import com.tencent.bugly.Bugly;
 import com.tencent.mta.track.StatisticsDataAPI;
@@ -29,21 +31,15 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Debug.startMethodTracing("Guohe");
+
         context = getApplicationContext();
 
-        LitePal.initialize(context);
-
-        initX5WebView();
+        InitializeService.start(this);
 
         initUMApp();
 
-        //腾讯MTA可视化埋点
-        StatisticsDataAPI.instance(this);
-        //初始化Bugly
-        Bugly.init(getApplicationContext(), "1f3d59d6cb", false);
-
-        MobSDK.init(this);
-
+        Debug.stopMethodTracing();
     }
 
     //初始化友盟
@@ -65,46 +61,6 @@ public class App extends Application {
             public void onFailure(String s, String s1) {
             }
         });
-    }
-
-    //初始化腾讯X5WebView内核
-    private void initX5WebView() {
-        //搜集本地tbs内核信息并上报服务器，服务器返回结果决定使用哪个内核。
-
-        Log.d(TAG, "initX5WebView: " + "执行");
-
-        QbSdk.reset(context);
-        QbSdk.setDownloadWithoutWifi(true);
-
-        QbSdk.initX5Environment(context, new QbSdk.PreInitCallback() {
-            @Override
-            public void onCoreInitFinished() {
-                Log.d(TAG, "initX5WebView: ");
-            }
-
-            @Override
-            public void onViewInitFinished(boolean b) {
-                Log.d(TAG, "initX5WebView: " + b);
-            }
-        });
-
-        QbSdk.setTbsListener(new TbsListener() {
-            @Override
-            public void onDownloadFinish(int i) {
-                Log.d(TAG, "initX5WebView: " + i);
-            }
-
-            @Override
-            public void onInstallFinish(int i) {
-                Log.d(TAG, "initX5WebView: " + i);
-            }
-
-            @Override
-            public void onDownloadProgress(int i) {
-                Log.d(TAG, "initX5WebView: " + i);
-            }
-        });
-        Log.d(TAG, "initX5WebView: " + QbSdk.canLoadX5(context));
     }
 
     /**

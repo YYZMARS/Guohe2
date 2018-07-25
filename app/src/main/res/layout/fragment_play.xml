@@ -18,6 +18,32 @@
             android:gravity="center"
             android:orientation="vertical">
 
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/course_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:id="@+id/ll_week"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="操场"
+                        android:textColor="@color/material_white_1000"
+                        android:textSize="@dimen/sp_20" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.Toolbar>
+
             <include layout="@layout/playground_header" />
 
             <include

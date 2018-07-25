@@ -4,118 +4,108 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/dp_8"
+    android:gravity="center"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/ll_kb_update"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="@dimen/dp_8"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:src="@drawable/ic_menu_refresh"
-            tools:ignore="NestedWeights" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="4"
+            android:gravity="center"
             android:text="更新课表"
             android:textSize="@dimen/sp_15" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_kb_week_change"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_margin="@dimen/dp_8"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:src="@drawable/ic_menu_refresh"
-            tools:ignore="NestedWeights" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="4"
+            android:gravity="center"
             android:text="更改周次"
             android:textSize="@dimen/sp_15" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_kb_year_change"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_margin="@dimen/dp_8"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:src="@drawable/ic_menu_refresh"
-            tools:ignore="NestedWeights" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="4"
+            android:gravity="center"
             android:text="更改学期"
             android:textSize="@dimen/sp_15" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_kb_bg_change"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_margin="@dimen/dp_8"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:src="@drawable/ic_menu_refresh"
-            tools:ignore="NestedWeights" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="4"
+            android:gravity="center"
             android:text="更换背景"
             android:textSize="@dimen/sp_15" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_kb_current_change"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_margin="@dimen/dp_8"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:src="@drawable/ic_menu_refresh"
-            tools:ignore="NestedWeights" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="4"
+            android:gravity="center"
             android:text="更改当前周"
             android:textSize="@dimen/sp_15" />
 
