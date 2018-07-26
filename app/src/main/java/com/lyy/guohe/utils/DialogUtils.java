@@ -3,7 +3,10 @@ package com.lyy.guohe.utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -13,6 +16,9 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.GameActivity;
+import com.lyy.guohe.activity.KbActivity;
+import com.lyy.guohe.constant.Constant;
+import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.view.EggDialog;
 import com.lyy.guohe.view.MoreDialog;
@@ -87,16 +93,16 @@ public class DialogUtils {
             courseNum = courseInfo[0];
             courseName = courseInfo[1];
         }
-        if (courseInfo.length == 3) {
+        if (courseInfo.length == 3 || courseInfo.length == 4) {
             courseNum = courseInfo[0];
             courseName = courseInfo[1];
             courseTeacher = courseInfo[2];
         }
-        if (courseInfo.length == 4) {
+        if (courseInfo.length == 5) {
             courseNum = courseInfo[0];
             courseName = courseInfo[1];
             courseTeacher = courseInfo[2];
-            courseClassroom = courseInfo[3];
+            courseClassroom = courseInfo[4];
         }
 
         final MaterialDialog dialog = new MaterialDialog(activity);
@@ -160,7 +166,7 @@ public class DialogUtils {
     }
 
     //显示校车对话框
-    public static void showBusDialog(Activity activity,String mess) {
+    public static void showBusDialog(Activity activity, String mess) {
         final AlertDialog.Builder normalDialog = new AlertDialog.Builder(activity);
         normalDialog.setMessage("即将到来的车次是：\n" + mess);
         normalDialog.setPositiveButton("显示全部车次",
@@ -218,4 +224,6 @@ public class DialogUtils {
             });
         }
     }
+
+
 }

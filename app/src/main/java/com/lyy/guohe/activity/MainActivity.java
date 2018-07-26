@@ -1,6 +1,7 @@
 package com.lyy.guohe.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,6 +28,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +44,14 @@ import com.lyy.guohe.fragment.NewsFragment;
 import com.lyy.guohe.fragment.PlayFragment;
 import com.lyy.guohe.fragment.TodayFragment;
 import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.model.DBCourseNew;
+import com.lyy.guohe.model.Res;
+import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.RomUtils;
 import com.lyy.guohe.utils.SpUtils;
+import com.lyy.guohe.utils.StuUtils;
 import com.mob.analysdk.AnalySDK;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
@@ -53,9 +59,13 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
 import com.umeng.message.inapp.InAppMessageManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +73,11 @@ import java.util.Properties;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -83,7 +98,6 @@ public class MainActivity extends AppCompatActivity
     //首页头像的base64编码
     private String imageBase64;
 
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +105,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mContext = this;
 
+        //获取该学生的学年信息
+        StuUtils.getAllYear();
         //初始化权限
         initPermission();
         //初始化布局
@@ -128,6 +144,15 @@ public class MainActivity extends AppCompatActivity
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        //初始化NavigationView
+        initNavigationView();
+        //初始化tabLayout
+        initTabLayout();
+
+    }
+
+    //初始化NavigationView
+    private void initNavigationView() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -141,6 +166,12 @@ public class MainActivity extends AppCompatActivity
         tvStuId.setText(stuId);
         tvStuAcademy.setText(stuAcademy);
 
+        //初始化头像
+        initHeaderImage(navigationView);
+    }
+
+    //初始化头像
+    private void initHeaderImage(NavigationView navigationView) {
         civ_header = navigationView.getHeaderView(0).findViewById(R.id.civ_header);
         civ_header.setOnClickListener(v -> {
             final String[] stringItems = {"更换头像"};
@@ -162,18 +193,21 @@ public class MainActivity extends AppCompatActivity
             Bitmap bitmap = BitmapFactory.decodeStream(bais);
             civ_header.setImageBitmap(bitmap);
         }
+    }
 
+    //初始化TabLayout
+    private void initTabLayout() {
         mViewPager = (ViewPager) findViewById(R.id.vp_view);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         //设置tablayout滑动监听
-        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 switch (tab.getPosition()) {
                     case 1:
-                        List<DBCourse> dbCourses = LitePal.findAll(DBCourse.class);
+                        List<DBCourseNew> dbCourses = LitePal.findAll(DBCourseNew.class);
                         if (!(dbCourses.size() > 0)) {
-                            Toasty.warning(MainActivity.this, "请导入课表后查看", Toast.LENGTH_SHORT).show();
+                            Toasty.warning(MainActivity.this, "请点击右下角导入课表后查看", Toast.LENGTH_SHORT).show();
                         }
                         break;
                 }
@@ -189,13 +223,11 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
-
     }
 
     //初始化相应的fragment
     private void initFragment() {
-        String[] titles = new String[]{"今日", "课表", "操场", "广播"};
+        String[] titles = new String[]{"今日", "课表", "操场"};
 
         List<Fragment> fragments = new ArrayList<>();
 
@@ -203,10 +235,8 @@ public class MainActivity extends AppCompatActivity
         fragments.add(fragment1);
         KbFragment fragment2 = new KbFragment();
         fragments.add(fragment2);
-//        NewsFragment fragment3 = new NewsFragment();
-//        fragments.add(fragment3);
-        PlayFragment fragment4 = new PlayFragment();
-        fragments.add(fragment4);
+        PlayFragment fragment3 = new PlayFragment();
+        fragments.add(fragment3);
 
         //设置适配器
         TitleFragmentPagerAdapter adapter = new TitleFragmentPagerAdapter(getSupportFragmentManager(), fragments, titles);
@@ -227,41 +257,10 @@ public class MainActivity extends AppCompatActivity
                 case 2:
                     d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
                     break;
-//                case 3:
-//                    d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
-//                    break;
             }
             if (tab != null)
                 tab.setIcon(d);
         }
-
-//        //mTabLayout.setTabMode(TabLayout.SCROLL_AXIS_HORIZONTAL);//设置tab模式，当前为系统默认模式
-//        for (int i = 0; i < listTitles.size(); i++) {
-//            mTabLayout.addTab(mTabLayout.newTab().setText(listTitles.get(i)));//添加tab选项
-//        }
-//
-//        FragmentPagerAdapter mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-//            @Override
-//            public Fragment getItem(int position) {
-//                return fragments.get(position);
-//            }
-//
-//            @Override
-//            public int getCount() {
-//                return fragments.size();
-//            }
-//
-//            //ViewPager与TabLayout绑定后，这里获取到PageTitle就是Tab的Text
-//            @Override
-//            public CharSequence getPageTitle(int position) {
-//                return listTitles.get(position);
-//            }
-//        };
-//        mViewPager.setAdapter(mAdapter);
-//
-//        mTabLayout.setupWithViewPager(mViewPager);//将TabLayout和ViewPager关联起来。
-//        mTabLayout.setTabsFromPagerAdapter(mAdapter);//给Tabs设置适配器
-
     }
 
     @Override
@@ -284,7 +283,6 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_aboutUs:
@@ -365,7 +363,7 @@ public class MainActivity extends AppCompatActivity
         if (isLogin) {
             SpUtils.clear(getApplicationContext());
 
-            LitePal.deleteAll(DBCourse.class);
+            LitePal.deleteAll(DBCourseNew.class);
 
             finish();
 

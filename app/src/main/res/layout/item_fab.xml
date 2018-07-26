@@ -26,26 +26,26 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_kb_week_change"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/dp_8"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/ll_kb_week_change"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="@dimen/dp_8"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="center"-->
+        <!--android:orientation="horizontal">-->
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="4"
-            android:gravity="center"
-            android:text="更改周次"
-            android:textSize="@dimen/sp_15" />
+        <!--<TextView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_weight="4"-->
+            <!--android:gravity="center"-->
+            <!--android:text="更改周次"-->
+            <!--android:textSize="@dimen/sp_15" />-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/ll_kb_year_change"

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
-    <dbname value="GuoHe"></dbname>
-    <version value="10"></version>
+    <dbname value="GuoHe" />
+    <version value="11" />
 
     <list>
-        <mapping class="com.lyy.guohe.model.DBCourse"></mapping>
-        <mapping class="com.lyy.guohe.model.DBDate"></mapping>
+        <mapping class="com.lyy.guohe.model.DBCourse" />
+        <mapping class="com.lyy.guohe.model.DBDate" />
+        <mapping class="com.lyy.guohe.model.DBCourseNew" />
     </list>
 </litepal>

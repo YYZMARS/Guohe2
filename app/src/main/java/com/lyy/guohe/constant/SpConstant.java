@@ -38,7 +38,13 @@ public class SpConstant {
     //记录校历信息
     public static final String XIAO_LI = "xiao_li";
 
+    //记录该学生的所有学年
+    public static final String ALL_YEAR = "all_year";
+
     //记录体育课密码
     public static final String PE_PASS = "pe_pass";
+
+    //判断是否已经有校历信息，默认false表示没有导入校历信息
+    public static final String IS_HAVE_XIAOLI = "is_have_xiaoli";
 
 }

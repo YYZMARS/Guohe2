@@ -141,12 +141,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 SpUtils.putBoolean(getApplicationContext(), SpConstant.IS_LOGIN, true);
 
                                 runOnUiThread(() -> {
-                                    if (loadingView.isVisible())
-                                        loadingView.dismiss();
+                                    loadingView.dismiss();
                                     Toasty.success(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
+                                    NavigateUtil.navigateTo(LoginActivity.this, MainActivity.class);
+                                    LoginActivity.this.finish();
                                 });
-                                NavigateUtil.navigateTo(LoginActivity.this, MainActivity.class);
-                                finish();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

@@ -7,6 +7,7 @@ import android.os.Debug;
 import android.os.Process;
 import android.util.Log;
 
+import com.facebook.stetho.Stetho;
 import com.lyy.guohe.service.InitializeService;
 import com.mob.MobSDK;
 import com.tencent.bugly.Bugly;
@@ -24,7 +25,11 @@ import java.util.List;
 
 public class App extends Application {
 
-    private Context context;
+    public static Context getContext() {
+        return context;
+    }
+
+    private static Context context;
 
     private static final String TAG = "App";
 
@@ -38,9 +43,12 @@ public class App extends Application {
         InitializeService.start(this);
 
         initUMApp();
+        Stetho.initializeWithDefaults(this);
 
         Debug.stopMethodTracing();
     }
+
+
 
     //初始化友盟
     private void initUMApp() {

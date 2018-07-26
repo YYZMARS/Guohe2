@@ -50,8 +50,6 @@ public class InitializeService extends IntentService {
 
         initX5WebView();
 
-
-
         //腾讯MTA可视化埋点
         StatisticsDataAPI.instance(this.getApplicationContext());
         //初始化Bugly

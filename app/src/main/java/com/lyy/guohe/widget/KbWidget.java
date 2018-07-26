@@ -13,9 +13,11 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.model.DBCourseNew;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.stat.StatService;
 
+import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
@@ -129,7 +131,7 @@ public class KbWidget extends AppWidgetProvider {
         remoteViews.setTextViewText(R.id.widget_week, "第" + server_week + "周");
 
         if (isOpenKb) {
-            List<DBCourse> courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
+            List<DBCourseNew> courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourseNew.class);
 
             //点击头部跳转到页面内
             Intent skipIntent = new Intent(context, KbActivity.class);
@@ -139,7 +141,7 @@ public class KbWidget extends AppWidgetProvider {
             for (int i = 1; i <= 7; i++) {
                 RemoteViews nestedView = new RemoteViews(context.getPackageName(), R.layout.widget_single_layout);
                 nestedView.removeAllViews(single_list.get(i - 1));
-                for (DBCourse dbCourse : courseList) {
+                for (DBCourseNew dbCourse : courseList) {
                     if (dbCourse.getDay() == i) {
                         int jieci = dbCourse.getJieci();
                         String des = "";
@@ -158,9 +160,6 @@ public class KbWidget extends AppWidgetProvider {
                             courseName = courseInfo[1];
                             courseClassroom = courseInfo[3];
                         }
-
-                        Log.d(TAG, "refreshKb: " + courseName);
-                        Log.d(TAG, "refreshKb: " + jieci);
 
                         String result = courseName + "@" + courseClassroom;
                         Random random = new Random();

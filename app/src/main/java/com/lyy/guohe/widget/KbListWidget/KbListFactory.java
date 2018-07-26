@@ -73,7 +73,7 @@ public class KbListFactory implements RemoteViewsService.RemoteViewsFactory {
         final RemoteViews rv = new RemoteViews(mContext.getPackageName(),
                 R.layout.item_kb_list);
 
-        Log.d(TAG, "getViewAt: "+content);
+        Log.d(TAG, "getViewAt: " + content);
         String courseInfo[] = content.split("@");
         String jieci = "";
         String name = "";

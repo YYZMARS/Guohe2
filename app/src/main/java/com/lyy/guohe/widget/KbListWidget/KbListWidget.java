@@ -16,12 +16,12 @@ import android.widget.Toast;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.constant.SpConstant;
-import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.model.DBCourseNew;
 import com.lyy.guohe.service.KbListService;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.stat.StatService;
 
-import org.litepal.crud.DataSupport;
+import org.litepal.LitePal;
 
 import java.util.Calendar;
 import java.util.List;
@@ -114,7 +114,7 @@ public class KbListWidget extends AppWidgetProvider {
 
                 String server_week = SpUtils.getString(context, SpConstant.SERVER_WEEK);
                 if (server_week != null) {
-                    List<DBCourse> courseList = DataSupport.where("zhouci = ? ", server_week).find(DBCourse.class);
+                    List<DBCourseNew> courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourseNew.class);
                     if (courseList.size() > 0) {
                         for (int i = 0; i < courseList.size(); i++) {
                             if (courseList.get(i).getDes().length() > 5 && courseList.get(i).getDay() == a[weekday]) {

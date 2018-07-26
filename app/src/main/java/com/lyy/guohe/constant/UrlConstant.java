@@ -18,6 +18,7 @@ public class UrlConstant {
     //查询所有课表的信息
     public static final String ALL_COURSE = "https://guohe3.com/api/kb";
     //查询所有课表（新接口）
+//    public static final String ALL_COURSE_NEW = "http://119.23.212.45/test.json";
     public static final String ALL_COURSE_NEW = "http://120.25.88.41/get_all_kb";
     //奥兰系统url
     public static final String AOLAN_URL = "https://vpn.just.edu.cn/,DanaInfo=202.195.195.238,Port=866+LOGIN.ASPX";

@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,17 +25,16 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.flyco.animation.BounceEnter.BounceBottomEnter;
-import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.widget.MaterialDialog;
 import com.githang.statusbar.StatusBarCompat;
+import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.SportAdapter;
+import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.model.Sport;
-import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.lyy.guohe.R;
 import com.tencent.stat.StatService;
 import com.umeng.analytics.MobclickAgent;
 

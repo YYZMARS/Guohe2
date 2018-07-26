@@ -91,6 +91,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1234_43608_sharewithdownload_withoutGame_obfs_20180510_111111.jar')
 
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:design:27.1.1'
@@ -123,5 +124,5 @@ dependencies {
     implementation 'com.umeng.sdk:push-xiaomi:1.0.0'
     implementation 'com.gordonwong:material-sheet-fab:1.2.1'
     implementation 'com.roger.catloadinglibrary:catloadinglibrary:1.0.4'
-    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1234_43608_sharewithdownload_withoutGame_obfs_20180510_111111.jar')
+    implementation 'com.facebook.stetho:stetho:1.5.0'
 }
