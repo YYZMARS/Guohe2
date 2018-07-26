@@ -42,8 +42,6 @@ public class EggDialog extends BaseDialog<EggDialog> {
         iv_egg = (ImageView) inflate.findViewById(R.id.iv_egg);
         //用来加载网络图片，填充iv_ad控件，注意要添加网络权限，和Picasso的依赖和混淆
         Glide.with(context).load(UrlConstant.EGG).apply(options).into(iv_egg);
-//        Glide.with(context).load(R.drawable.ic_menu_update).into(iv_back);
-
         return inflate;
     }
 
@@ -52,7 +50,6 @@ public class EggDialog extends BaseDialog<EggDialog> {
     public void setUiBeforShow() {
         //点击弹窗相应位置，处理相关逻辑。
         iv_egg.setOnClickListener(v -> {
-//            Toast.makeText(context, "哈哈", Toast.LENGTH_SHORT).show();
             //处理完逻辑关闭弹框的代码
             dismiss();
         });

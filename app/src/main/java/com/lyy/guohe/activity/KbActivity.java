@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,9 +19,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,7 +28,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.flyco.animation.BounceEnter.BounceBottomEnter;
 import com.flyco.dialog.listener.OnBtnClickL;
-import com.flyco.dialog.listener.OnOperItemClickL;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
 import com.githang.statusbar.StatusBarCompat;
@@ -632,7 +628,6 @@ public class KbActivity extends AppCompatActivity {
                 final String[] stringItems = {"从相册中选择", "重置为默认"};
                 final ActionSheetDialog dialog = new ActionSheetDialog(KbActivity.this, stringItems, null);
                 dialog.isTitleShow(false).show();
-
                 dialog.setOnOperItemClickL((parent, view, position, id) -> {
                     switch (position) {
                         case 0:
@@ -802,7 +797,6 @@ public class KbActivity extends AppCompatActivity {
                             });
                             showKb((weekChoice + 1) + "");
                         }
-
                     }
                 });
         AlertDialog dialog = singleChoiceDialog.create();

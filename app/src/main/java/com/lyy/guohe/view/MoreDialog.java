@@ -8,10 +8,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.flyco.animation.Attention.Flash;
-import com.flyco.animation.Attention.Swing;
-import com.flyco.animation.Attention.Tada;
-import com.flyco.animation.BounceEnter.BounceBottomEnter;
 import com.flyco.animation.ZoomEnter.ZoomInEnter;
 import com.flyco.dialog.widget.base.BaseDialog;
 import com.lyy.guohe.R;
@@ -20,6 +16,7 @@ import com.lyy.guohe.activity.ClassRoomActivity;
 import com.lyy.guohe.activity.GameActivity;
 import com.lyy.guohe.activity.LibraryActivity;
 import com.lyy.guohe.constant.UrlConstant;
+import com.lyy.guohe.utils.DialogUtils;
 import com.lyy.guohe.utils.NavigateUtil;
 
 public class MoreDialog extends BaseDialog<MoreDialog> implements View.OnClickListener {
@@ -78,7 +75,7 @@ public class MoreDialog extends BaseDialog<MoreDialog> implements View.OnClickLi
                 toCET();
                 break;
             case R.id.nav_game:
-                showGameDialog();
+                DialogUtils.showGameDialog((Activity) context);
                 break;
             case R.id.nav_tel:
                 //跳转至校园热线页面
@@ -107,21 +104,5 @@ public class MoreDialog extends BaseDialog<MoreDialog> implements View.OnClickLi
         intent.putExtra("title", "全国大学英语四六级考试成绩查询");
         intent.putExtra("isVpn", false);
         context.startActivity(intent);
-    }
-
-    //弹出选择小游戏对话框
-    private void showGameDialog() {
-        final String[] items = {"六角消除", "2048", "六角拼拼", "无尽之旅", "彩虹穿越", "西部枪手"};
-        AlertDialog.Builder listDialog = new AlertDialog.Builder((Activity) context);
-        listDialog.setTitle("请选择你要进入的游戏");
-        listDialog.setItems(items, (dialog, which) -> {
-            // which 下标从0开始
-            // ...To-do
-            Intent intent = new Intent(context, GameActivity.class);
-            intent.putExtra("which", which);
-            context.startActivity(intent);
-
-        });
-        listDialog.show();
     }
 }

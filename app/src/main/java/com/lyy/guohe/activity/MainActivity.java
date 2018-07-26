@@ -2,6 +2,7 @@ package com.lyy.guohe.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity
 
     private long exitTime = 0;
 
-    private TabLayout mTabLayout;
+    public TabLayout mTabLayout;
     private ViewPager mViewPager;
 
     private CircleImageView civ_header;
@@ -97,6 +98,12 @@ public class MainActivity extends AppCompatActivity
 
     //首页头像的base64编码
     private String imageBase64;
+
+    private FragmentSkipInterface mFragmentSkipInterface;
+
+    public void setFragmentSkipInterface(FragmentSkipInterface fragmentSkipInterface) {
+        mFragmentSkipInterface = fragmentSkipInterface;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -181,7 +188,7 @@ public class MainActivity extends AppCompatActivity
             dialog.setOnOperItemClickL((parent, view1, position, id) -> {
                 switch (position) {
                     case 0:
-                        ImageUtil.choosePhotoFromGallery(MainActivity.this, Constant.CHOOSE_PHOTO_FOR_HEADER);
+                        ImageUtil.choosePhotoFromGallery(MainActivity.this, ImageUtil.CHOOSE_PHOTO_FOR_HEADER);
                         break;
                 }
                 dialog.dismiss();
@@ -261,6 +268,7 @@ public class MainActivity extends AppCompatActivity
             if (tab != null)
                 tab.setIcon(d);
         }
+
     }
 
     @Override
@@ -452,14 +460,27 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case Constant.CHOOSE_PHOTO_FOR_HEADER:
+            case ImageUtil.CHOOSE_PHOTO_FOR_HEADER:
                 if (resultCode == RESULT_OK) {
                     // 4.4及以上系统使用这个方法处理图片
                     Uri uri = data.getData();
-                    Intent cropIntent = new Intent(MainActivity.this, CropViewActivity.class);
+                    Intent cropIntent = new Intent(mContext, CropViewActivity.class);
                     cropIntent.putExtra("flag", "img_header");
                     cropIntent.putExtra("uri", uri.toString());
                     startActivity(cropIntent);
+                }
+                break;
+
+            case ImageUtil.CHOOSE_PHOTO_FOR_KB:
+                if (resultCode == RESULT_OK) {
+                    // 4.4及以上系统使用这个方法处理图片
+                    Uri uri = data.getData();
+                    Intent cropIntent = new Intent(mContext, CropViewActivity.class);
+                    if (uri != null) {
+                        cropIntent.putExtra("uri", uri.toString());
+                        cropIntent.putExtra("flag", "course");
+                        startActivity(cropIntent);
+                    }
                 }
                 break;
             default:
@@ -482,4 +503,15 @@ public class MainActivity extends AppCompatActivity
         return super.onKeyDown(keyCode, event);
     }
 
+    /** Fragment跳转 */
+    public void skipToFragment(){
+        if(mFragmentSkipInterface != null){
+            mFragmentSkipInterface.gotoFragment(mViewPager);
+        }
+    }
+
+    public interface FragmentSkipInterface {
+        /** ViewPager中子Fragment之间跳转的实现方法 */
+        void gotoFragment(ViewPager viewPager);
+    }
 }

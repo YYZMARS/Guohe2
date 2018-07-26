@@ -11,25 +11,25 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/course_toolbar"
+            android:id="@+id/tb_kb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:gravity="center">
 
             <LinearLayout
-                android:id="@+id/ll_week"
+                android:id="@+id/ll_kb_bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_course_table_toolbar"
+                    android:id="@+id/tv_kb_week"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="课 程 表"
+                    android:text="第 1 周"
                     android:textColor="@color/material_white_1000"
                     android:textSize="@dimen/sp_20" />
 
@@ -37,6 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_menu_down" />
+
             </LinearLayout>
 
         </android.support.v7.widget.Toolbar>

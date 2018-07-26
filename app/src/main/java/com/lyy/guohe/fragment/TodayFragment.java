@@ -31,7 +31,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.lyy.guohe.R;
 import com.lyy.guohe.activity.BrowserActivity;
-import com.lyy.guohe.activity.KbActivity;
 import com.lyy.guohe.activity.MainActivity;
 import com.lyy.guohe.activity.ScoreActivity;
 import com.lyy.guohe.activity.SportActivity;
@@ -39,7 +38,7 @@ import com.lyy.guohe.adapter.CourseAdapter;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Course;
-import com.lyy.guohe.model.DBCourse;
+import com.lyy.guohe.model.DBCourseNew;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.BusUtil;
 import com.lyy.guohe.utils.DialogUtils;
@@ -47,12 +46,10 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
-import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,7 +89,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     private TextView tvOneWord;
 
     private TextView tvOneWordFrom;
-
 
     @Nullable
     @Override
@@ -156,22 +152,29 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     }
 
     //加载首页中间
+    @SuppressLint("SetTextI18n")
     private void initContent(View view) {
         tvKbShow = (TextView) view.findViewById(R.id.tv_kb_show);
         lvKbToday = view.findViewById(R.id.lv_kbToday);
         tvMessage = view.findViewById(R.id.tv_message);
         TextView tvKb = view.findViewById(R.id.tv_Kb);
 
-        tvKb.setOnClickListener(v -> NavigateUtil.navigateTo(getActivity(), KbActivity.class));
+        //点击跳转至第二个fragment
+        tvKb.setOnClickListener(v -> {
+            final MainActivity mainActivity = (MainActivity) mContext;
+            mainActivity.setFragmentSkipInterface(viewPager -> viewPager.setCurrentItem(1));
+            /** 进行跳转 */
+            mainActivity.skipToFragment();
+        });
         tvKbShow.setText("今天居然没有课~" + "\uD83D\uDE01");
 
-
         ivOneImg = view.findViewById(R.id.iv_one_img);
+        ivOneImg.setDrawingCacheEnabled(true);
+        ivOneImg.setOnClickListener(this);
         tvImgAuthor = view.findViewById(R.id.tv_img_author);
         tvOneDate = view.findViewById(R.id.tv_one_date);
         tvOneWord = view.findViewById(R.id.tv_one_word);
         tvOneWordFrom = view.findViewById(R.id.tv_one_word_from);
-        ivOneImg.setOnClickListener(this);
 
         LinearLayout llOne = view.findViewById(R.id.ll_one);
         llOne.setOnClickListener(this);
@@ -187,10 +190,10 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
 
         if (getActivity() != null) {
             String server_week = SpUtils.getString(getActivity(), SpConstant.SERVER_WEEK);
-            List<DBCourse> courseList = new ArrayList<>();
+            List<DBCourseNew> courseList = new ArrayList<>();
             if (server_week != null) {
                 try {
-                    courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourse.class);
+                    courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourseNew.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -199,15 +202,17 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                     for (int i = 0; i < courseList.size(); i++) {
                         if (courseList.get(i).getDes().length() > 5 && courseList.get(i).getDay() == a[weekday]) {
                             int jieci = courseList.get(i).getJieci();
+                            Log.d(TAG, "initTodayKb: " + courseList.get(i).getDes());
                             String courseInfo[] = courseList.get(i).getDes().split("@");
                             String courseName = "";
                             String courseClassRoom = "";
-                            if (courseInfo.length == 2 || courseInfo.length == 3) {
+                            if (courseInfo.length > 2) {
                                 courseName = courseInfo[1];
-                            } else if (courseInfo.length == 4) {
-                                courseName = courseInfo[1];
-                                courseClassRoom = courseInfo[3];
+                                if (courseInfo.length == 5) {
+                                    courseClassRoom = courseInfo[4];
+                                }
                             }
+
                             Course course = new Course(jieci, courseName, courseClassRoom);
                             courses.add(course);
                         }
@@ -325,7 +330,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                 break;
             case R.id.iv_one_img:
                 //显示One模块的对话框
-                DialogUtils.showOneDialog(mContext, ivOneImg);
+                DialogUtils.showPopImageDialog(mContext, ivOneImg);
                 break;
             case R.id.nav_more:
                 //显示更多对话框

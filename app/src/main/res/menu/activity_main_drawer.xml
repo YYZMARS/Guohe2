@@ -24,7 +24,6 @@
         android:icon="@drawable/ic_menu_join_us"
         android:title="@string/joinUs" />
 
-
     <item
         android:id="@+id/nav_changeAccount"
         android:icon="@drawable/ic_menu_change"

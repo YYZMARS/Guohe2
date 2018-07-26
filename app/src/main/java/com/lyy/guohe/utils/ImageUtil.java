@@ -12,6 +12,12 @@ import android.widget.ImageView;
 
 public class ImageUtil {
 
+    //选头像的的flag
+    public static final int CHOOSE_PHOTO_FOR_HEADER = 1;
+
+    //选课表背景的flag
+    public static final int CHOOSE_PHOTO_FOR_KB = 2;
+
     //从相册中选择图片
     public static void choosePhotoFromGallery(Activity activity, int flag) {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");

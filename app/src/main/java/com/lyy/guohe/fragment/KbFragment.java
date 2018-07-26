@@ -4,10 +4,16 @@ package com.lyy.guohe.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -16,12 +22,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.flyco.dialog.widget.ActionSheetDialog;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.lyy.guohe.App;
 import com.lyy.guohe.R;
+import com.lyy.guohe.activity.CropViewActivity;
 import com.lyy.guohe.constant.Constant;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
@@ -30,6 +39,7 @@ import com.lyy.guohe.model.DBCourseNew;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.DialogUtils;
 import com.lyy.guohe.utils.HttpUtil;
+import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.utils.StuUtils;
 import com.lyy.guohe.view.CourseTableView;
@@ -40,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,6 +62,8 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 public class KbFragment extends Fragment implements View.OnClickListener {
 
@@ -89,16 +102,28 @@ public class KbFragment extends Fragment implements View.OnClickListener {
     //底部Fab
     private MaterialSheetFab materialSheetFab;
 
+    //导入课表的加载对话框
     private ProgressDialog mProgressDialog;
 
+    //课表界面
     private CourseTableView courseTableView;
 
+    //课表的背景
     private ImageView iv_bg_kb;
 
+    //周次
     private String weekNum;
 
+    //背景图片的base64编码
+    private String bg_course_64;
+
     //该学生所有的学年数组
-    String[] years;
+    private String[] years;
+
+    //toolbar中的相关控件
+    private LinearLayout ll_kb_bar;
+    private TextView tv_kb_week;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -116,6 +141,7 @@ public class KbFragment extends Fragment implements View.OnClickListener {
 
     //初始化界面
     private void initView(View view) {
+        initToolBar(view);  //初始化Toolbar
         initFab(view);      //初始化底部Fab
         initKbView(view);   //初始化课表界面
         initKbData();       //初始化课表数据
@@ -132,7 +158,15 @@ public class KbFragment extends Fragment implements View.OnClickListener {
     //初始化课表界面
     private void initKbView(View view) {
         iv_bg_kb = view.findViewById(R.id.iv_bg_kb);
-        Glide.with(this).load(R.drawable.bg_kb_default).into(iv_bg_kb);
+        bg_course_64 = SpUtils.getString(mContext, SpConstant.BG_COURSE_64);
+        if (bg_course_64 != null) {
+            byte[] byte64 = Base64.decode(bg_course_64, 0);
+            ByteArrayInputStream bais = new ByteArrayInputStream(byte64);
+            Bitmap bitmap = BitmapFactory.decodeStream(bais);
+            iv_bg_kb.setImageBitmap(bitmap);
+        } else {
+            Glide.with(mContext).load(R.drawable.bg_kb_default).into(iv_bg_kb);
+        }
 
         //构造课表界面
         courseTableView = view.findViewById(R.id.ctv_fragment);
@@ -149,8 +183,6 @@ public class KbFragment extends Fragment implements View.OnClickListener {
         materialSheetFab = new MaterialSheetFab(fab, sheetView, overlay, sheetColor, fabColor);
         LinearLayout ll_kb_update = view.findViewById(R.id.ll_kb_update);
         ll_kb_update.setOnClickListener(this);
-//        LinearLayout ll_kb_week_change = view.findViewById(R.id.ll_kb_week_change);
-//        ll_kb_week_change.setOnClickListener(this);
         LinearLayout ll_kb_year_change = view.findViewById(R.id.ll_kb_year_change);
         ll_kb_year_change.setOnClickListener(this);
         LinearLayout ll_kb_bg_change = view.findViewById(R.id.ll_kb_bg_change);
@@ -167,6 +199,13 @@ public class KbFragment extends Fragment implements View.OnClickListener {
         } else {
             getKb(years[0]);
         }
+    }
+
+    //初始化Toolbar
+    private void initToolBar(View view) {
+        ll_kb_bar = view.findViewById(R.id.ll_kb_bar);
+        tv_kb_week = view.findViewById(R.id.tv_kb_week);
+        ll_kb_bar.setOnClickListener(this);
     }
 
     //获取学生的所有学年信息
@@ -298,64 +337,20 @@ public class KbFragment extends Fragment implements View.OnClickListener {
                     mContext.runOnUiThread(() -> {
                         if (mProgressDialog.isShowing())
                             mProgressDialog.dismiss();
-                        Log.d(TAG, "onResponse: 这里出现了异常");
                         Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
         });
-//        HttpUtil.get(UrlConstant.ALL_COURSE_NEW, new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                if (response.isSuccessful()) {
-//                    String data = response.body().string();
-//                    Res res = HttpUtil.handleResponse(data);
-//                    if (res != null) {
-//                        if (res.getCode() == 200) {
-//                            try {
-//                                JSONArray array = new JSONArray(res.getInfo());
-//                                for (int i = 0; i < array.length(); i++) {
-//                                    JSONObject object = array.getJSONObject(i);
-//                                    setCourse((2 * i) + 1, object);
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        } else {
-//                            mContext.runOnUiThread(() -> {
-//                                if (mProgressDialog.isShowing())
-//                                    mProgressDialog.dismiss();
-//                                Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
-//                            });
-//                        }
-//                    } else {
-//                        mContext.runOnUiThread(() -> {
-//                            if (mProgressDialog.isShowing())
-//                                mProgressDialog.dismiss();
-//                            Toasty.error(mContext, "课表获取失败，请稍后重试", Toast.LENGTH_SHORT).show();
-//                        });
-//                    }
-//                } else {
-//                    mContext.runOnUiThread(() -> {
-//                        if (mProgressDialog.isShowing())
-//                            mProgressDialog.dismiss();
-//                        Log.d(TAG, "onResponse: 这里出现了异常");
-//                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-//                    });
-//                }
-//            }
-//        });
     }
 
     //显示课表
     private void showKb(String week) {
         if (Integer.parseInt(week) > 20)
             week = "1";
+
+        String finalWeek = week;
+        mContext.runOnUiThread(() -> tv_kb_week.setText("第 " + finalWeek + " 周"));
 
         List<Course> list = new ArrayList<>();
 
@@ -420,19 +415,24 @@ public class KbFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_kb_update:
-                updateKb();     //更新课表
+                //更新课表
+                updateKb();
                 break;
-//            case R.id.ll_kb_week_change:
-//                changeWeek();   //更改周次
-//                break;
             case R.id.ll_kb_year_change:
-                changYear();    //更改学年
+                //更改学年
+                changYear();
                 break;
             case R.id.ll_kb_bg_change:
-                changKbBg();    //更改课表背景
+                //更改课表背景
+                changKbBg();
                 break;
             case R.id.ll_kb_current_change:
-                changeCurrentWeek();        //更改当前周
+                //更改当前周
+                changeCurrentWeek();
+                break;
+            case R.id.ll_kb_bar:
+                //更换周次
+                showWeeksDialog(2);
                 break;
         }
         if (materialSheetFab.isSheetVisible())
@@ -442,18 +442,22 @@ public class KbFragment extends Fragment implements View.OnClickListener {
     //更改当前周
     private void changeCurrentWeek() {
         //弹出选择周次的对话框
-        showWeeksDialog();
+        showWeeksDialog(1);
     }
 
-
     //弹出选择周次的对话框
-    public void showWeeksDialog() {
+    public void showWeeksDialog(int flag) {
         final String[] items = {"第1周", "第2周", "第3周", "第4周", "第5周", "第6周", "第7周", "第8周", "第9周", "第10周", "第11周", "第12周", "第13周", "第14周", "第15周", "第16周", "第17周", "第18周", "第19周", "第20周"};
         AlertDialog.Builder listDialog = new AlertDialog.Builder(mContext);
         listDialog.setItems(items, (dialog, which) -> {
-
-            SpUtils.putString(mContext, SpConstant.SERVER_WEEK, which + 1 + "");
-            showKb(which + 1 + "");
+            //flag为1表示更换当前周,为2表示更换周
+            if (flag == 1) {
+                SpUtils.putString(mContext, SpConstant.SERVER_WEEK, which + 1 + "");
+                showKb((which + 1) + "");
+            } else if (flag == 2) {
+                showKb((which + 1) + "");
+            }
+            mContext.runOnUiThread(() -> tv_kb_week.setText("第 " + (which + 1) + " 周"));
             dialog.dismiss();
         });
 
@@ -472,13 +476,33 @@ public class KbFragment extends Fragment implements View.OnClickListener {
 
     //更改课表背景
     private void changKbBg() {
-        Toast.makeText(mContext, "更改课表背景", Toast.LENGTH_SHORT).show();
+        final String[] stringItems = {"从相册中选择", "重置为默认"};
+        final ActionSheetDialog dialog = new ActionSheetDialog(mContext, stringItems, null);
+        dialog.isTitleShow(false).show();
+        dialog.setOnOperItemClickL((parent, view, position, id) -> {
+            switch (position) {
+                case 0:
+                    ImageUtil.choosePhotoFromGallery(mContext, ImageUtil.CHOOSE_PHOTO_FOR_KB);
+                    break;
+                case 1:
+                    Glide.with(mContext).load(R.drawable.bg_kb_default).into(iv_bg_kb);
+                    SpUtils.remove(mContext, SpConstant.BG_COURSE_64);
+                    break;
+            }
+            dialog.dismiss();
+        });
     }
 
     //更改学年
     private void changYear() {
-
-        Toast.makeText(mContext, "更改学年", Toast.LENGTH_SHORT).show();
+        years = SpUtils.getString(mContext, SpConstant.ALL_YEAR, "").split("@");
+        AlertDialog.Builder listDialog = new AlertDialog.Builder(mContext);
+        listDialog.setTitle("请选择学年");
+        listDialog.setItems(years, (dialog, which) -> {
+            LitePal.deleteAll(DBCourseNew.class);
+            getKb(years[which]);
+        });
+        listDialog.show();
     }
 
     //更新课表
@@ -489,5 +513,17 @@ public class KbFragment extends Fragment implements View.OnClickListener {
         }
         SpUtils.remove(mContext, SpConstant.ALL_YEAR);
         initYearList();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bg_course_64 = SpUtils.getString(mContext, SpConstant.BG_COURSE_64);
+        if (bg_course_64 != null) {
+            byte[] byte64 = Base64.decode(bg_course_64, 0);
+            ByteArrayInputStream bais = new ByteArrayInputStream(byte64);
+            Bitmap bitmap = BitmapFactory.decodeStream(bais);
+            iv_bg_kb.setImageBitmap(bitmap);
+        }
     }
 }

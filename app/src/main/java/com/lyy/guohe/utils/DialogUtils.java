@@ -3,10 +3,7 @@ package com.lyy.guohe.utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.view.Display;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -16,12 +13,10 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.GameActivity;
-import com.lyy.guohe.activity.KbActivity;
-import com.lyy.guohe.constant.Constant;
-import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.view.EggDialog;
 import com.lyy.guohe.view.MoreDialog;
+import com.lyy.guohe.view.PopImageDialog;
 
 import es.dmoral.toasty.Toasty;
 
@@ -193,8 +188,6 @@ public class DialogUtils {
         AlertDialog.Builder listDialog = new AlertDialog.Builder(activity);
         listDialog.setTitle("请选择你要进入的游戏");
         listDialog.setItems(items, (dialog, which) -> {
-            // which 下标从0开始
-            // ...To-do
             Intent intent = new Intent(activity, GameActivity.class);
             intent.putExtra("which", which);
             activity.startActivity(intent);
@@ -223,6 +216,17 @@ public class DialogUtils {
                 dialog.dismiss();
             });
         }
+    }
+
+    //点击弹出Imageview的大图
+    public static void showPopImageDialog(Activity activity, ImageView imageView) {
+        imageView.setDrawingCacheEnabled(true);
+        PopImageDialog popImageDialog = new PopImageDialog(activity, imageView.getDrawingCache());
+        popImageDialog.onCreateView();
+        popImageDialog.setUiBeforShow();
+        popImageDialog.setCanceledOnTouchOutside(true);
+        popImageDialog.setCancelable(true);
+        popImageDialog.show();
     }
 
 
