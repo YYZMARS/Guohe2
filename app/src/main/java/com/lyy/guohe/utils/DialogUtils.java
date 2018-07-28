@@ -57,7 +57,7 @@ public class DialogUtils {
             Intent intent = Intent.parseUri(intentFullUrl, Intent.URI_INTENT_SCHEME);
             context.startActivity(intent);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("本机不支持使用支付宝");
         }
     }
 

@@ -1,8 +1,6 @@
 package com.lyy.guohe.activity;
 
 import android.Manifest;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,7 +27,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,17 +34,12 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.TitleFragmentPagerAdapter;
-import com.lyy.guohe.constant.Constant;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.fragment.KbFragment;
-import com.lyy.guohe.fragment.NewsFragment;
 import com.lyy.guohe.fragment.PlayFragment;
 import com.lyy.guohe.fragment.TodayFragment;
-import com.lyy.guohe.model.DBCourse;
 import com.lyy.guohe.model.DBCourseNew;
-import com.lyy.guohe.model.Res;
-import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.RomUtils;
@@ -60,13 +52,9 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
 import com.umeng.message.inapp.InAppMessageManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,11 +62,6 @@ import java.util.Properties;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -337,7 +320,12 @@ public class MainActivity extends AppCompatActivity
     private void contactMe() {
         //跳转进qq
         if (RomUtils.checkApkExist(this, "com.tencent.mobileqq")) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=" + "420326369" + "&version=1")));
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=" + "420326369" + "&version=1")));
+            } catch (Exception e) {
+                // 未安装手Q或安装的版本不支持
+                runOnUiThread(() -> Toasty.error(MainActivity.this, "本机未安装QQ应用或版本不支持", Toast.LENGTH_SHORT).show());
+            }
         } else {
             Toasty.error(this, "本机未安装QQ应用", Toast.LENGTH_SHORT).show();
         }
@@ -503,15 +491,19 @@ public class MainActivity extends AppCompatActivity
         return super.onKeyDown(keyCode, event);
     }
 
-    /** Fragment跳转 */
-    public void skipToFragment(){
-        if(mFragmentSkipInterface != null){
+    /**
+     * Fragment跳转
+     */
+    public void skipToFragment() {
+        if (mFragmentSkipInterface != null) {
             mFragmentSkipInterface.gotoFragment(mViewPager);
         }
     }
 
     public interface FragmentSkipInterface {
-        /** ViewPager中子Fragment之间跳转的实现方法 */
+        /**
+         * ViewPager中子Fragment之间跳转的实现方法
+         */
         void gotoFragment(ViewPager viewPager);
     }
 }
