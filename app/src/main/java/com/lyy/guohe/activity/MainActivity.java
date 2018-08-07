@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity
 
     //初始化相应的fragment
     private void initFragment() {
-        String[] titles = new String[]{"今日", "课表", "操场"};
+        String[] titles = new String[]{"今日", "课表"};
 
         List<Fragment> fragments = new ArrayList<>();
 
@@ -225,8 +225,8 @@ public class MainActivity extends AppCompatActivity
         fragments.add(fragment1);
         KbFragment fragment2 = new KbFragment();
         fragments.add(fragment2);
-        PlayFragment fragment3 = new PlayFragment();
-        fragments.add(fragment3);
+//        PlayFragment fragment3 = new PlayFragment();
+//        fragments.add(fragment3);
 
         //设置适配器
         TitleFragmentPagerAdapter adapter = new TitleFragmentPagerAdapter(getSupportFragmentManager(), fragments, titles);

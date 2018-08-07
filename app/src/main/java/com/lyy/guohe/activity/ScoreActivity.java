@@ -237,7 +237,7 @@ public class ScoreActivity extends AppCompatActivity {
                                     //获取当前周数
                                     //获取这个学生所有的学年
                                     JSONArray jsonArray = object.getJSONArray("all_year");
-                                    all_year_list.add("请选择学年");
+                                    all_year_list.add("全部学年");
                                     for (int i = 1; i < jsonArray.length(); i++) {
                                         all_year_list.add(jsonArray.get(i).toString());
                                     }
@@ -426,7 +426,7 @@ public class ScoreActivity extends AppCompatActivity {
         spinner_year.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (int i = 1; i < count; i++) {
+                for (int i = 0; i < count; i++) {
                     if (position == i) {
                         String text = all_year_list.get(i);
                         showChooseResult(text);
@@ -444,12 +444,20 @@ public class ScoreActivity extends AppCompatActivity {
     //显示已选择学年的成绩
     private void showChooseResult(String text) {
         subjectList.clear();
-        for (int i = 0; i < gSubjectList.size(); i++) {
-            if (gSubjectList.get(i).getStart_semester().equals(text)) {
+        if (text.equals("全部学年")) {
+            for (int i = 0; i < gSubjectList.size(); i++) {
                 Subject subject = new Subject(gSubjectList.get(i).getCourse_name(), gSubjectList.get(i).getCredit(), gSubjectList.get(i).getScore());
                 subjectList.add(subject);
             }
+        } else {
+            for (int i = 0; i < gSubjectList.size(); i++) {
+                if (gSubjectList.get(i).getStart_semester().equals(text)) {
+                    Subject subject = new Subject(gSubjectList.get(i).getCourse_name(), gSubjectList.get(i).getCredit(), gSubjectList.get(i).getScore());
+                    subjectList.add(subject);
+                }
+            }
         }
+
         subjectAdapter = new SubjectAdapter(ScoreActivity.this, R.layout.item_subjects, subjectList);
         runOnUiThread(() -> listView.setAdapter(subjectAdapter));
     }
