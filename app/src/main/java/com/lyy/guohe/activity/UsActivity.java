@@ -1,30 +1,25 @@
 package com.lyy.guohe.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.flyco.dialog.listener.OnOperItemClickL;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.githang.statusbar.StatusBarCompat;
-import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.R;
+import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.utils.ImageUtil;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import es.dmoral.toasty.Toasty;
 
@@ -91,13 +86,6 @@ public class UsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

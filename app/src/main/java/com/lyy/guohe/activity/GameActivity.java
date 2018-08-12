@@ -15,7 +15,6 @@ import com.lyy.guohe.R;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -216,16 +215,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        StatService.onPause(this);
-        MobclickAgent.onPause(this);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         StatService.onResume(this);
-        MobclickAgent.onResume(this);
     }
 }

@@ -23,7 +23,6 @@ import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,7 +77,7 @@ public class BookDetail extends AppCompatActivity {
         bookDetailList.clear();
         lv_book_detail.setVisibility(View.GONE);
         String url = UrlConstant.BOOK_DETAIL;
-        if (bookUrl!= null) {
+        if (bookUrl != null) {
             RequestBody requestBody = new FormBody.Builder()
                     .add("bookUrl", bookUrl)
                     .build();
@@ -235,13 +234,6 @@ public class BookDetail extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

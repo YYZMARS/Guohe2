@@ -11,11 +11,7 @@ import com.tencent.bugly.Bugly;
 import com.tencent.mta.track.StatisticsDataAPI;
 import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.smtt.sdk.TbsListener;
-import com.umeng.commonsdk.UMConfigure;
-import com.umeng.message.IUmengRegisterCallback;
-import com.umeng.message.PushAgent;
 
-import org.android.agoo.xiaomi.MiPushRegistar;
 import org.litepal.LitePal;
 
 public class InitializeService extends IntentService {
@@ -46,8 +42,6 @@ public class InitializeService extends IntentService {
     }
 
     private void performInit() {
-        LitePal.initialize(this.getApplicationContext());
-
         initX5WebView();
 
         //腾讯MTA可视化埋点
@@ -60,12 +54,9 @@ public class InitializeService extends IntentService {
     }
 
 
-
     //初始化腾讯X5WebView内核
     private void initX5WebView() {
         //搜集本地tbs内核信息并上报服务器，服务器返回结果决定使用哪个内核。
-
-        Log.d(TAG, "initX5WebView: " + "执行");
 
         QbSdk.reset(this.getApplicationContext());
         QbSdk.setDownloadWithoutWifi(true);

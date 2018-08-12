@@ -4,17 +4,12 @@ package com.lyy.guohe.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +25,6 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.lyy.guohe.App;
 import com.lyy.guohe.R;
-import com.lyy.guohe.activity.CropViewActivity;
 import com.lyy.guohe.constant.Constant;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
@@ -63,8 +57,6 @@ import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.app.Activity.RESULT_OK;
-
 public class KbFragment extends Fragment implements View.OnClickListener {
 
     //背景颜色数组
@@ -94,8 +86,6 @@ public class KbFragment extends Fragment implements View.OnClickListener {
             R.drawable.course_info_red,
             R.drawable.course_info_teal
     };
-
-    private static final String TAG = "KbFragment";
 
     private Activity mContext;
 
@@ -237,6 +227,8 @@ public class KbFragment extends Fragment implements View.OnClickListener {
                                     sb.append(array.get(i)).append("@");
                                 }
                                 weekNum = object.getString("weekNum");
+                                if (Integer.parseInt(weekNum) > 20)
+                                    weekNum = "1";
                                 SpUtils.putString(App.getContext(), SpConstant.ALL_YEAR, sb.toString());
                                 SpUtils.putBoolean(App.getContext(), SpConstant.IS_HAVE_XIAOLI, true);
                                 SpUtils.putString(App.getContext(), SpConstant.SERVER_WEEK, weekNum);

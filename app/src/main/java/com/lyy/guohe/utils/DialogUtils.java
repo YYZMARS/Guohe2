@@ -128,7 +128,7 @@ public class DialogUtils {
 
     //选择进入哪一个校园系统
     public static void showSystemDialog(Activity activity) {
-        final String[] items = {"教务系统", "奥兰系统", "实验系统", "一站式办事大厅"};
+        final String[] items = {"教务系统", "奥兰系统", "实验系统","体育系统", "一站式办事大厅"};
         AlertDialog.Builder listDialog = new AlertDialog.Builder(activity);
         listDialog.setTitle("选择要进入的系统");
         listDialog.setItems(items, (dialog, which) -> {
@@ -138,24 +138,25 @@ public class DialogUtils {
                 case 0:
                     intent.putExtra("url", UrlConstant.JIAOWU_URL);
                     intent.putExtra("title", "强智教务");
-                    activity.startActivity(intent);
                     break;
                 case 1:
                     intent.putExtra("url", UrlConstant.AOLAN_URL);
                     intent.putExtra("title", "奥兰系统");
-                    activity.startActivity(intent);
                     break;
                 case 2:
                     intent.putExtra("url", UrlConstant.LAB_URL);
                     intent.putExtra("title", "实验系统");
-                    activity.startActivity(intent);
                     break;
                 case 3:
+                    intent.putExtra("url", UrlConstant.PE_SYSTEM_URL);
+                    intent.putExtra("title", "体育系统");
+                    break;
+                case 4:
                     intent.putExtra("url", UrlConstant.FUWU_URL);
                     intent.putExtra("title", "一站式办事大厅");
-                    activity.startActivity(intent);
                     break;
             }
+            activity.startActivity(intent);
         });
         listDialog.show();
     }

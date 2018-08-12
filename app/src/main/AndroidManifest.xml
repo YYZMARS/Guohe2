@@ -77,25 +77,13 @@
             android:exported="false" />
 
         <activity
-            android:name=".activity.AdActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme_Umeng_Push_Splash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/SplashTheme">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <!-- MTA可视化启动连接接口 -->
             <intent-filter>
                 <data android:scheme="mtaautotrack.38f581075840bc222a9e7200455e4933" />
@@ -137,10 +125,6 @@
             android:theme="@style/FullscreenTheme" />
         <activity android:name=".activity.LotteryActivity" />
         <activity android:name=".activity.FeedBackActivity" />
-        <activity
-            android:name=".activity.BBSActivity"
-            android:label="@string/title_activity_bbs"
-            android:theme="@style/AppTheme" />
 
     </application>
 

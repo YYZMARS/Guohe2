@@ -3,7 +3,6 @@ package com.lyy.guohe.activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -27,7 +26,6 @@ import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.angmarch.views.NiceSpinner;
 import org.json.JSONArray;
@@ -445,13 +443,6 @@ public class ClassRoomActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

@@ -30,7 +30,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.widget.ActionSheetDialog;
+import com.flyco.dialog.widget.MaterialDialog;
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.TitleFragmentPagerAdapter;
@@ -46,11 +48,12 @@ import com.lyy.guohe.utils.RomUtils;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.utils.StuUtils;
 import com.mob.analysdk.AnalySDK;
+import com.mob.pushsdk.MobPush;
+import com.mob.pushsdk.MobPushCustomMessage;
+import com.mob.pushsdk.MobPushNotifyMessage;
+import com.mob.pushsdk.MobPushReceiver;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
-import com.umeng.message.PushAgent;
-import com.umeng.message.inapp.InAppMessageManager;
 
 import org.litepal.LitePal;
 
@@ -71,6 +74,9 @@ public class MainActivity extends AppCompatActivity
     private Context mContext;
 
     private long exitTime = 0;
+
+    //Mob推荐接收器
+    private MobPushReceiver receiver;
 
     public TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -115,17 +121,13 @@ public class MainActivity extends AppCompatActivity
         Properties prop = new Properties();
         prop.setProperty("name", "homepage");
         StatService.trackCustomKVEvent(this, "homepage", prop);
-        //统计应用启动数据
-        PushAgent.getInstance(this).onAppStart();
-        //友盟推送插屏消息接口
-        //插屏消息关闭时，会回调该方法
-        InAppMessageManager.getInstance(this).showCardMessage(this, "main",
-                () -> Log.i(TAG, "card message close"));
-        MobclickAgent.onEvent(this, "homepage");
 
         HashMap<String, Object> eventParams = new HashMap<String, Object>();
         eventParams.put("page", "Main Page");
         AnalySDK.trackEvent("page-jump", eventParams);
+
+        //添加mob的推送接收器
+        addPushReceiver();
     }
 
     //初始化布局
@@ -217,7 +219,7 @@ public class MainActivity extends AppCompatActivity
 
     //初始化相应的fragment
     private void initFragment() {
-        String[] titles = new String[]{"今日", "课表"};
+        String[] titles = new String[]{"今日", "课表", "操场"};
 
         List<Fragment> fragments = new ArrayList<>();
 
@@ -225,8 +227,8 @@ public class MainActivity extends AppCompatActivity
         fragments.add(fragment1);
         KbFragment fragment2 = new KbFragment();
         fragments.add(fragment2);
-//        PlayFragment fragment3 = new PlayFragment();
-//        fragments.add(fragment3);
+        PlayFragment fragment3 = new PlayFragment();
+        fragments.add(fragment3);
 
         //设置适配器
         TitleFragmentPagerAdapter adapter = new TitleFragmentPagerAdapter(getSupportFragmentManager(), fragments, titles);
@@ -428,7 +430,6 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         updateWidget();
         StatService.onResume(this);
-        MobclickAgent.onResume(this);
         imageBase64 = SpUtils.getString(mContext, SpConstant.IMAGE_BASE_64);
         if (imageBase64 != null) {
             byte[] byte64 = Base64.decode(imageBase64, 0);
@@ -439,9 +440,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        removePushReceiver();
     }
 
     @Override
@@ -505,5 +507,69 @@ public class MainActivity extends AppCompatActivity
          * ViewPager中子Fragment之间跳转的实现方法
          */
         void gotoFragment(ViewPager viewPager);
+    }
+
+    //添加mob的推送接收器
+    private void addPushReceiver() {
+
+        receiver = new MobPushReceiver() {
+            @Override
+            public void onCustomMessageReceive(Context context, MobPushCustomMessage message) {
+                //接收自定义消息
+                MaterialDialogDefault(message.toString());
+                Log.d(TAG, "MessageReceive: " + message.toString());
+            }
+
+            @Override
+            public void onNotifyMessageReceive(Context context, MobPushNotifyMessage message) {
+                //接收通知消息
+                Log.d(TAG, "MessageReceive: " + message.toString());
+            }
+
+            @Override
+            public void onNotifyMessageOpenedReceive(Context context, MobPushNotifyMessage message) {
+                //接收通知消息被点击事件
+            }
+
+            @Override
+            public void onTagsCallback(Context context, String[] tags, int operation, int errorCode) {
+                //接收tags的增改删查操作
+            }
+
+            @Override
+            public void onAliasCallback(Context context, String alias, int operation, int errorCode) {
+                //接收alias的增改删查操作
+            }
+        };
+        MobPush.addPushReceiver(receiver);
+        Log.d(TAG, "addPushReceiver: ");
+    }
+
+    //关闭mob的推送接收器
+    private void removePushReceiver() {
+        MobPush.removePushReceiver(receiver);
+        Log.d(TAG, "removePushReceiver: ");
+    }
+
+    private void MaterialDialogDefault(String text) {
+        final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
+        dialog.content(text)//
+                .btnText("取消", "确定")//
+                .show();
+
+        dialog.setOnBtnClickL(
+                new OnBtnClickL() {//left btn click listener
+                    @Override
+                    public void onBtnClick() {
+                        dialog.dismiss();
+                    }
+                },
+                new OnBtnClickL() {//right btn click listener
+                    @Override
+                    public void onBtnClick() {
+                        dialog.dismiss();
+                    }
+                }
+        );
     }
 }

@@ -1,35 +1,32 @@
 package com.lyy.guohe.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.githang.statusbar.StatusBarCompat;
-import com.lyy.guohe.model.Res;
-import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.LibraryAdapter;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Library;
+import com.lyy.guohe.model.Res;
+import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.searchlibrary.searchbox.SearchFragment;
 import com.lyy.searchlibrary.searchbox.custom.IOnSearchClickListener;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -298,13 +295,6 @@ public class LibraryActivity extends AppCompatActivity implements Toolbar.OnMenu
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

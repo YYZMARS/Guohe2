@@ -30,7 +30,6 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import es.dmoral.toasty.Toasty;
 
@@ -66,7 +65,6 @@ public class LotteryActivity extends AppCompatActivity {
         mTitle.setText("果核抽奖助手");
 
         Log.d(TAG, "initView: " + mWebview.getX5WebViewExtension());
-
 
         mWebview.setWebChromeClient(new WebChromeClient() {
 
@@ -194,13 +192,6 @@ public class LotteryActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

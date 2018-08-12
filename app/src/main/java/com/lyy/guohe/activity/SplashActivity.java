@@ -9,10 +9,8 @@ import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
-import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.stat.MtaSDkException;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -55,15 +53,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onPageStart("SplashScreen"); //手动统计页面("SplashScreen"为页面名称，可自定义)
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        MobclickAgent.onPause(this);
     }
 }

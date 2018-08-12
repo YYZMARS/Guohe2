@@ -30,7 +30,6 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.view.MyListView;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.angmarch.views.NiceSpinner;
 import org.json.JSONArray;
@@ -505,13 +504,6 @@ public class ScoreActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

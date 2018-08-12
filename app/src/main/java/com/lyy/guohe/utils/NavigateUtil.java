@@ -1,7 +1,10 @@
 package com.lyy.guohe.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+
+import com.lyy.guohe.activity.BrowserActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,5 +53,14 @@ public class NavigateUtil {
             }
         }
         activity.startActivity(intent);
+    }
+
+    //跳转至不需要使用VPN的页面
+    public static void navigateToUrlWithoutVPN(Context context, String title, String url) {
+        Intent intent = new Intent(context, BrowserActivity.class);
+        intent.putExtra("title", title);
+        intent.putExtra("url", url);
+        intent.putExtra("isVpn", false);
+        context.startActivity(intent);
     }
 }

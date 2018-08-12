@@ -1,44 +1,37 @@
 package com.lyy.guohe.fragment;
 
-
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
+import android.app.Activity;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.flyco.dialog.widget.ActionSheetDialog;
 import com.lyy.guohe.R;
-import com.lyy.guohe.activity.BBSActivity;
-import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.LotteryActivity;
-import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Res;
+import com.lyy.guohe.model.Slide;
+import com.lyy.guohe.utils.GlideImageLoader;
 import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.NavigateUtil;
-import com.lyy.guohe.utils.SpUtils;
+import com.youth.banner.Banner;
+import com.youth.banner.BannerConfig;
+import com.youth.banner.listener.OnBannerListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -46,28 +39,15 @@ import okhttp3.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayFragment extends Fragment implements View.OnClickListener {
+public class PlayFragment extends Fragment implements View.OnClickListener, OnBannerListener {
 
-    private static final String TAG = "PlayFragment";
+    private Activity mContext;
 
-    private Context mContext;
+    List<Slide> slides = new ArrayList<>();
+    List<String> images = new ArrayList<>();
+    List<String> titles = new ArrayList<>();
 
-
-    private View view;
-    private CardView mCard0;
-    private CardView mCard1;
-    private CardView mCard2;
-    private CardView mCard3;
-    private CardView mCard4;
-    private CardView mCard5;
-    private ImageView mIvCard0;
-    private ImageView mIvCard1;
-    private ImageView mIvCard2;
-    private ImageView mIvCard3;
-    private ImageView mIvCard4;
-    private ImageView mIvCard5;
-
-    private String title, url, img, des;
+    private Banner banner;
 
     public PlayFragment() {
         // Required empty public constructor
@@ -80,22 +60,20 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
             mContext = getActivity();
 
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_play, container, false);
+        View view = inflater.inflate(R.layout.fragment_play, container, false);
 
         initView(view);
-        getPic();
+        getSlide();
 
         return view;
     }
 
-    //获取广告图
-    private void getPic() {
-        HttpUtil.get(UrlConstant.HEAD_PIC, new Callback() {
+    //获取轮播图
+    private void getSlide() {
+        HttpUtil.get(UrlConstant.SLIDE, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
-                }
+                mContext.runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -106,60 +84,80 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
                     if (res != null) {
                         if (res.getCode() == 200) {
                             try {
-                                JSONObject object = new JSONObject(res.getInfo());
-                                /**
-                                 * @title 广告标题
-                                 * @img 广告的图片
-                                 * @url 点击广告转到的页面
-                                 * @describe 广告的详细描述
-                                 */
-                                title = object.getString("title");
-                                img = object.getString("img");
-                                url = object.getString("url");
-                                des = object.getString("describe");
 
-                                if (getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> Glide.with(mContext).load(img).into(mIvCard0));
-                                }
+                                mContext.runOnUiThread(() -> {
+                                    try {
+                                        JSONArray array = new JSONArray(res.getInfo());
+                                        for (int i = 0; i < array.length(); i++) {
+                                            JSONObject object = array.getJSONObject(i);
+                                            Slide slide = new Slide(object.getString("describe"), object.getString("img"), object.getString("title"), object.getString("url"));
+                                            slides.add(slide);
+                                        }
+
+                                        for (int i = 0; i < slides.size(); i++) {
+                                            images.add(slides.get(i).getImg());
+                                            titles.add(slides.get(i).getDescribe());
+                                        }
+                                        initBanner();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
-                            }
+                            mContext.runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
                         }
+                    } else {
+                        mContext.runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
                     }
+                } else {
+                    mContext.runOnUiThread(() -> Toast.makeText(mContext, "出现异常，请稍后重试", Toast.LENGTH_SHORT).show());
                 }
             }
         });
     }
 
+    //初始化Banner
+    private void initBanner() {
+        banner.setBannerStyle(BannerConfig.NUM_INDICATOR_TITLE);
+        //设置图片加载器
+        banner.setImageLoader(new GlideImageLoader());
+        //设置图片集合
+        banner.setImages(images);
+        //设置标题集合
+        banner.setBannerTitles(titles);
+        //banner设置方法全部调用完毕时最后调用
+        banner.start();
+    }
+
     //初始化各控件
     private void initView(View view) {
-        mCard0 = (CardView) view.findViewById(R.id.card0);
-        mCard0.setOnClickListener(this);
-        mCard1 = (CardView) view.findViewById(R.id.card1);
+        CardView mCard1 = (CardView) view.findViewById(R.id.card1);
         mCard1.setOnClickListener(this);
-        mCard2 = (CardView) view.findViewById(R.id.card2);
+        CardView mCard2 = (CardView) view.findViewById(R.id.card2);
         mCard2.setOnClickListener(this);
-        mCard3 = (CardView) view.findViewById(R.id.card3);
+        CardView mCard3 = (CardView) view.findViewById(R.id.card3);
         mCard3.setOnClickListener(this);
-        mCard4 = (CardView) view.findViewById(R.id.card4);
+        CardView mCard4 = (CardView) view.findViewById(R.id.card4);
         mCard4.setOnClickListener(this);
-        mCard5 = (CardView) view.findViewById(R.id.card5);
+        CardView mCard5 = (CardView) view.findViewById(R.id.card5);
         mCard5.setOnClickListener(this);
-        mIvCard0 = (ImageView) view.findViewById(R.id.iv_card0);
-        mIvCard1 = (ImageView) view.findViewById(R.id.iv_card1);
-        mIvCard2 = (ImageView) view.findViewById(R.id.iv_card2);
-        mIvCard3 = (ImageView) view.findViewById(R.id.iv_card3);
-        mIvCard4 = (ImageView) view.findViewById(R.id.iv_card4);
-        mIvCard5 = (ImageView) view.findViewById(R.id.iv_card5);
+        ImageView mIvCard1 = (ImageView) view.findViewById(R.id.iv_card1);
+        ImageView mIvCard2 = (ImageView) view.findViewById(R.id.iv_card2);
+        ImageView mIvCard3 = (ImageView) view.findViewById(R.id.iv_card3);
+        ImageView mIvCard4 = (ImageView) view.findViewById(R.id.iv_card4);
+        ImageView mIvCard5 = (ImageView) view.findViewById(R.id.iv_card5);
         Glide.with(mContext).load(R.drawable.card1).into(mIvCard1);
         Glide.with(mContext).load(R.drawable.card2).into(mIvCard2);
         Glide.with(mContext).load(R.drawable.card3).into(mIvCard3);
         Glide.with(mContext).load(R.drawable.card4).into(mIvCard4);
         Glide.with(mContext).load(R.drawable.card5).into(mIvCard5);
+
+        banner = (Banner) view.findViewById(R.id.banner);
+        banner.setOnBannerListener(this);
     }
 
     @Override
@@ -167,35 +165,34 @@ public class PlayFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             default:
                 break;
-            case R.id.card0:
-                //广告位
-                Intent intent = new Intent(getActivity(), BrowserActivity.class);
-                intent.putExtra("title", des);
-                intent.putExtra("url", url);
-                intent.putExtra("isVpn", false);
-                startActivity(intent);
-                break;
             case R.id.card1:
                 //抽奖
                 NavigateUtil.navigateTo(getActivity(), LotteryActivity.class);
                 break;
             case R.id.card2:
                 //表白墙
-                Toasty.success(Objects.requireNonNull(getActivity()), "敬请期待", Toast.LENGTH_SHORT).show();
-                NavigateUtil.navigateTo(getActivity(), BBSActivity.class);
+                NavigateUtil.navigateToUrlWithoutVPN(mContext, "缘来如此", UrlConstant.BIAO_BAI);
                 break;
             case R.id.card3:
                 //二手市场
-                Toasty.success(Objects.requireNonNull(getActivity()), "敬请期待", Toast.LENGTH_SHORT).show();
+                NavigateUtil.navigateToUrlWithoutVPN(mContext, "二手交易", UrlConstant.ER_SHOU);
                 break;
             case R.id.card4:
                 //兼职信息
-                Toasty.success(Objects.requireNonNull(getActivity()), "敬请期待", Toast.LENGTH_SHORT).show();
+                NavigateUtil.navigateToUrlWithoutVPN(mContext, "兼职招聘", UrlConstant.FIND_JOB);
                 break;
             case R.id.card5:
                 //失物招领
-                Toasty.success(Objects.requireNonNull(getActivity()), "敬请期待", Toast.LENGTH_SHORT).show();
+                NavigateUtil.navigateToUrlWithoutVPN(mContext, "失物招领", UrlConstant.FIND_LOST);
                 break;
+        }
+    }
+
+    @Override
+    public void OnBannerClick(int position) {
+        //链接不为空时跳转
+        if (!slides.get(position).getUrl().equals("")) {
+            NavigateUtil.navigateToUrlWithoutVPN(mContext, slides.get(position).getTitle(), slides.get(position).getUrl());
         }
     }
 }

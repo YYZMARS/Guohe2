@@ -44,7 +44,12 @@
 
             </android.support.v7.widget.Toolbar>
 
-            <include layout="@layout/playground_header" />
+            <com.youth.banner.Banner
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_250"
+                app:image_scale_type="center_crop"
+                app:title_textcolor="@color/material_white_1000" />
 
             <include
                 layout="@layout/playground_body"

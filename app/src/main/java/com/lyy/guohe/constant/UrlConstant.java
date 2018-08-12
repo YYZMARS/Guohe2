@@ -18,7 +18,6 @@ public class UrlConstant {
     //查询所有课表的信息
     public static final String ALL_COURSE = "https://guohe3.com/api/kb";
     //查询所有课表（新接口）
-//    public static final String ALL_COURSE_NEW = "http://119.23.212.45/test.json";
     public static final String ALL_COURSE_NEW = "http://120.25.88.41/get_all_kb";
     //奥兰系统url
     public static final String AOLAN_URL = "https://vpn.just.edu.cn/,DanaInfo=202.195.195.238,Port=866+LOGIN.ASPX";
@@ -44,6 +43,8 @@ public class UrlConstant {
     public static final String BOOK_DETAIL = "http://120.25.88.41/vpnBookDetail";
     //查询体育成绩
     public static final String PE_SCORE = "https://vpn.just.edu.cn/xsgl/,DanaInfo=202.195.195.147+cjcx.asp";
+    //体育系统网址
+    public static final String PE_SYSTEM_URL = "https://vpn.just.edu.cn/,DanaInfo=202.195.195.147+login.asp";
     //查询俱乐部的刷卡时间
     public static final String CLUB_SCORE = "http://120.25.88.41/vpnSport";
     //查询早操的刷卡时间
@@ -70,4 +71,12 @@ public class UrlConstant {
     public static final String ONE = "https://api.hibai.cn/api/index/index";
     //反馈接口
     public static final String FEEDBACK = "https://guohe3.com/api/feedback";
+    //失物招领
+    public static final String FIND_LOST = "https://youhua.baidu.com/group?groupId=100100182877";
+    //二手交易
+    public static final String ER_SHOU = "https://youhua.baidu.com/group?groupId=100100109910";
+    //表白墙
+    public static final String BIAO_BAI = "https://youhua.baidu.com/group?groupId=100100173634";
+    //兼职招聘
+    public static final String FIND_JOB = "https://youhua.baidu.com/group?groupId=100100169829";
 }

@@ -67,7 +67,7 @@ import okhttp3.Response;
 
 public class TodayFragment extends Fragment implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "TodayFragment";
+    private Activity mContext;
 
     //今日没课时显示的TextView
     private TextView tvKbShow;
@@ -75,8 +75,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     private TextView tvMessage;
     //显示今日课程的ListView
     private ListView lvKbToday;
-
-    private Activity mContext;
 
     private ProgressDialog mProgressDialog;
 
@@ -94,7 +92,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mContext = getActivity();
+        if (getActivity() != null)
+            mContext = getActivity();
         View view = inflater.inflate(R.layout.fragment_today, container, false);
 
         initView(view);
@@ -123,10 +122,10 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     private void initToolBar(View view) {
         Toolbar toolbar = view.findViewById(R.id.toolbar_today);
         toolbar.setTitle("");
-        if (getActivity() != null) {
+        if (mContext != null) {
             setHasOptionsMenu(true);
-            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            ((AppCompatActivity) mContext).setSupportActionBar(toolbar);
+            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) mContext).getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_left);
@@ -163,7 +162,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         tvKb.setOnClickListener(v -> {
             final MainActivity mainActivity = (MainActivity) mContext;
             mainActivity.setFragmentSkipInterface(viewPager -> viewPager.setCurrentItem(1));
-            /** 进行跳转 */
             mainActivity.skipToFragment();
         });
         tvKbShow.setText("今天居然没有课~" + "\uD83D\uDE01");
@@ -188,8 +186,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
 
         int[] a = new int[]{0, 7, 1, 2, 3, 4, 5, 6};
 
-        if (getActivity() != null) {
-            String server_week = SpUtils.getString(getActivity(), SpConstant.SERVER_WEEK);
+        if (mContext != null) {
+            String server_week = SpUtils.getString(mContext, SpConstant.SERVER_WEEK);
             List<DBCourseNew> courseList = new ArrayList<>();
             if (server_week != null) {
                 try {
@@ -202,7 +200,6 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                     for (int i = 0; i < courseList.size(); i++) {
                         if (courseList.get(i).getDes().length() > 5 && courseList.get(i).getDay() == a[weekday]) {
                             int jieci = courseList.get(i).getJieci();
-                            Log.d(TAG, "initTodayKb: " + courseList.get(i).getDes());
                             String courseInfo[] = courseList.get(i).getDes().split("@");
                             String courseName = "";
                             String courseClassRoom = "";
@@ -220,7 +217,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                     if (courses.size() > 0) {
                         tvKbShow.setVisibility(View.GONE);
                         lvKbToday.setVisibility(View.VISIBLE);
-                        CourseAdapter courseAdapter = new CourseAdapter(getActivity(), R.layout.item_course, courses);
+                        CourseAdapter courseAdapter = new CourseAdapter(mContext, R.layout.item_course, courses);
                         lvKbToday.setAdapter(courseAdapter);
                         ListViewUtil.setListViewHeightBasedOnChildren(lvKbToday);
                     }
@@ -234,9 +231,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         HttpUtil.get(UrlConstant.GET_MSG, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
-                }
+                mContext.runOnUiThread(() -> tvMessage.setText("服务器异常"));
             }
 
             @Override
@@ -247,29 +242,21 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                     if (res != null) {
                         if (res.getCode() == 200) {
                             try {
-                                if (getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> {
-                                        String s = res.getInfo();
-                                        tvMessage.setText(s.substring(2, s.length() - 2));
-                                    });
-                                }
+                                mContext.runOnUiThread(() -> {
+                                    String s = res.getInfo();
+                                    tvMessage.setText(s.substring(2, s.length() - 2));
+                                });
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
-                            }
+                            mContext.runOnUiThread(() -> tvMessage.setText("服务器异常"));
                         }
                     } else {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
-                        }
+                        mContext.runOnUiThread(() -> tvMessage.setText("服务器异常"));
                     }
                 } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> tvMessage.setText("服务器异常"));
-                    }
+                    mContext.runOnUiThread(() -> tvMessage.setText("服务器异常"));
                 }
             }
         });
@@ -303,7 +290,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                     Toast.makeText(mContext, "哈哈哈，就快发现彩蛋了！", Toast.LENGTH_SHORT).show();
                 }
                 if (mHits[0] >= (SystemClock.uptimeMillis() - DURATION)) {
-                    DialogUtils.showEggDialog(getActivity());
+                    DialogUtils.showEggDialog(mContext);
                     index = 0;
                 }
             }
@@ -315,7 +302,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         switch (v.getId()) {
             case R.id.nav_grade:
                 //跳转至成绩查询界面
-                NavigateUtil.navigateTo(getActivity(), ScoreActivity.class);
+                NavigateUtil.navigateTo(mContext, ScoreActivity.class);
                 break;
             case R.id.nav_bus:
                 //显示即将到来的校车
@@ -367,15 +354,13 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                         String word = object.getString("word");
                         String wordFrom = object.getString("word_from");
 
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                tvOneWord.setText(word);
-                                tvOneWordFrom.setText(wordFrom);
-                                tvOneDate.setText(date);
-                                tvImgAuthor.setText(imgAuthor + " | " + imgKind);
-                                Glide.with(getActivity()).load(imgUrl).into(ivOneImg);
-                            });
-                        }
+                        mContext.runOnUiThread(() -> {
+                            tvOneWord.setText(word);
+                            tvOneWordFrom.setText(wordFrom);
+                            tvOneDate.setText(date);
+                            tvImgAuthor.setText(imgAuthor + " | " + imgKind);
+                            Glide.with(mContext).load(imgUrl).into(ivOneImg);
+                        });
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -389,12 +374,11 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     private void showPEDialog() {
         final String[] items = {"俱乐部查询", "早操出勤查询", "体育成绩查询"};
         AlertDialog.Builder listDialog =
-                new AlertDialog.Builder(getActivity());
+                new AlertDialog.Builder(mContext);
         listDialog.setTitle("选择要进入的系统");
         listDialog.setItems(items, (dialog, which) -> {
             // which 下标从0开始
-
-            Intent intent = new Intent(getActivity(), SportActivity.class);
+            Intent intent = new Intent(mContext, SportActivity.class);
             switch (which) {
                 case 0:
                     intent.putExtra("url", UrlConstant.CLUB_SCORE);
@@ -417,13 +401,13 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
     private void showPePassDialog() {
         String pePass = SpUtils.getString(mContext, SpConstant.PE_PASS);
         if (pePass == null) {
-            final EditText editText = new EditText(getActivity());
+            final EditText editText = new EditText(mContext);
             AlertDialog.Builder inputDialog =
-                    new AlertDialog.Builder(getActivity());
+                    new AlertDialog.Builder(mContext);
             inputDialog.setTitle("请输入你的体育学院密码(默认姓名首字母大写)").setView(editText);
             inputDialog.setPositiveButton("确定",
                     (dialog, which) -> {
-                        mProgressDialog = ProgressDialog.show(getActivity(), null, "密码验证中,请稍后……", true, false);
+                        mProgressDialog = ProgressDialog.show(mContext, null, "密码验证中,请稍后……", true, false);
                         mProgressDialog.setCancelable(true);
                         mProgressDialog.setCanceledOnTouchOutside(true);
                         final String username1 = SpUtils.getString(mContext, SpConstant.STU_ID);
@@ -436,8 +420,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                             HttpUtil.post(UrlConstant.CLUB_SCORE, requestBody, new Callback() {
                                 @Override
                                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                    if (getActivity() != null) {
-                                        getActivity().runOnUiThread(() -> {
+                                    if (mContext != null) {
+                                        mContext.runOnUiThread(() -> {
                                             if (mProgressDialog.isShowing())
                                                 mProgressDialog.dismiss();
                                             Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
@@ -452,30 +436,30 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                                         Res res = HttpUtil.handleResponse(data);
                                         if (res != null) {
                                             if (res.getCode() == 200 || res.getCode() == 1000) {
-                                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                                Objects.requireNonNull(mContext).runOnUiThread(() -> {
                                                     mProgressDialog.dismiss();
                                                     SpUtils.putString(mContext, SpConstant.PE_PASS, pePass1);
-                                                    Intent intent = new Intent(getActivity(), BrowserActivity.class);
+                                                    Intent intent = new Intent(mContext, BrowserActivity.class);
                                                     intent.putExtra("url", UrlConstant.PE_SCORE);
                                                     intent.putExtra("title", "体育成绩查询");
                                                     startActivity(intent);
                                                 });
                                             } else {
-                                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                                Objects.requireNonNull(mContext).runOnUiThread(() -> {
                                                     if (mProgressDialog.isShowing())
                                                         mProgressDialog.dismiss();
                                                     Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
                                                 });
                                             }
                                         } else {
-                                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                            Objects.requireNonNull(mContext).runOnUiThread(() -> {
                                                 if (mProgressDialog.isShowing())
                                                     mProgressDialog.dismiss();
                                                 Toasty.error(mContext, "发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
                                             });
                                         }
                                     } else {
-                                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                        Objects.requireNonNull(mContext).runOnUiThread(() -> {
                                             if (mProgressDialog.isShowing())
                                                 mProgressDialog.dismiss();
                                             Toasty.error(mContext, "服务器发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
@@ -484,13 +468,13 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                                 }
                             });
                         } else {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show());
+                            if (mContext != null) {
+                                mContext.runOnUiThread(() -> Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show());
                             }
                         }
                     }).show();
         } else {
-            Intent intent = new Intent(getActivity(), BrowserActivity.class);
+            Intent intent = new Intent(mContext, BrowserActivity.class);
             intent.putExtra("url", UrlConstant.PE_SCORE);
             intent.putExtra("title", "体育成绩查询");
             startActivity(intent);
@@ -511,11 +495,11 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         int id = item.getItemId();
         switch (id) {
             case R.id.action_donate:
-                DialogUtils.showDonateDialog(getActivity());
+                DialogUtils.showDonateDialog(mContext);
                 break;
             case android.R.id.home:
-                if (getActivity() != null) {
-                    MainActivity activity = (MainActivity) getActivity();
+                if (mContext != null) {
+                    MainActivity activity = (MainActivity) mContext;
                     activity.drawer.openDrawer(GravityCompat.START);
                 }
                 break;

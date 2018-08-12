@@ -22,7 +22,6 @@ import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.roger.catloadinglibrary.CatLoadingView;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONObject;
 
@@ -147,14 +146,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     LoginActivity.this.finish();
                                 });
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                runOnUiThread(() -> {
+                                    loadingView.dismiss();
+                                    Toasty.error(context, "出现异常,请稍后重试！", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         } else {
-                            runOnUiThread(() -> Toasty.error(getApplicationContext(), res.getMsg(), Toast.LENGTH_SHORT).show());
+                            runOnUiThread(() -> {
+                                loadingView.dismiss();
+                                Toasty.error(getApplicationContext(), res.getMsg(), Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
                 } else {
-                    runOnUiThread(() -> Toasty.error(context, "网络异常,请稍后重试！", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> {
+                        loadingView.dismiss();
+                        Toasty.error(context, "网络异常,请稍后重试！", Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });
@@ -164,13 +172,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
-    }
 }

@@ -12,19 +12,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.githang.statusbar.StatusBarCompat;
+import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.BookAdapter;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.model.Book;
 import com.lyy.guohe.model.Res;
 import com.lyy.guohe.utils.HttpUtil;
-import com.lyy.guohe.R;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -192,13 +190,6 @@ public class BookList extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
         StatService.onResume(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 }

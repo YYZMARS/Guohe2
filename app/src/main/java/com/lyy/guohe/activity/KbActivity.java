@@ -42,7 +42,6 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.view.CourseTableView;
 import com.tencent.stat.StatService;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,8 +63,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class KbActivity extends AppCompatActivity {
-
-//    private final String ACTION_UPDATE_ALL = "com.lyy.widget.UPDATE_ALL";
 
     private Context mContext;
 
@@ -682,7 +679,6 @@ public class KbActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -698,7 +694,6 @@ public class KbActivity extends AppCompatActivity {
         //更新课表小部件
         updateWidget();
         StatService.onResume(this);
-        MobclickAgent.onResume(this);
     }
 
     @Override

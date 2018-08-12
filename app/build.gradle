@@ -8,14 +8,29 @@ MobSDK {
     appKey "26e3cf11f8337"
     appSecret "fc73188f8d2c5395c221a9163abbf011"
 
-    BBSSDK {
-        theme 'theme1'
-    }
-
-    // BBSSDK依赖于ShareSDK和MobLink，故还需要引入这两个SDK
-    ShareSDK {}
     MobLink {}
     AnalySDK {}
+    MobPush {
+        //集成其他推送通道（可选）
+        devInfo {
+            //华为推送配置信息
+            HUAWEI{
+                appId "100260671"
+            }
+
+            //魅族推送配置信息
+            MEIZU{
+                appId "3204462"
+                appKey "f0813585928947f18cfd62311bb1c45d"
+            }
+
+            //小米推送配置信息
+            XIAOMI{
+                appId "2882303761517775126"
+                appKey "5791777593126"
+            }
+        }
+    }
 }
 
 android {
@@ -117,12 +132,8 @@ dependencies {
     implementation 'com.qq.visual:visual:3.3.1-release'
     implementation 'com.scwang.wave:MultiWaveHeader:1.0.0-alpha-1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation 'com.umeng.sdk:common:1.5.0'
-    implementation 'com.umeng.sdk:analytics:7.5.0'
-    implementation 'com.umeng.sdk:utdid:1.1.5.3'
-    implementation 'com.umeng.sdk:push:4.1.0'
-    implementation 'com.umeng.sdk:push-xiaomi:1.0.0'
     implementation 'com.gordonwong:material-sheet-fab:1.2.1'
     implementation 'com.roger.catloadinglibrary:catloadinglibrary:1.0.4'
     implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation 'com.youth.banner:banner:1.4.10'
 }
