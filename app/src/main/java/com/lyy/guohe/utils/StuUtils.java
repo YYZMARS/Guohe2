@@ -1,5 +1,7 @@
 package com.lyy.guohe.utils;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -29,11 +31,11 @@ public class StuUtils {
     private static final String TAG = "KbFragment";
 
     //获取学生的所有学年信息
-    public static void getAllYear() {
-        boolean isHaveXiaoli = SpUtils.getBoolean(App.getContext(), SpConstant.IS_HAVE_XIAOLI, false);
+    public static void getAllYear(Context context) {
+        boolean isHaveXiaoli = SpUtils.getBoolean(context, SpConstant.IS_HAVE_XIAOLI, false);
         if (!isHaveXiaoli) {
-            String stu_id = SpUtils.getString(App.getContext(), SpConstant.STU_ID);
-            String stu_pass = SpUtils.getString(App.getContext(), SpConstant.STU_PASS);
+            String stu_id = SpUtils.getString(context, SpConstant.STU_ID);
+            String stu_pass = SpUtils.getString(context, SpConstant.STU_PASS);
             RequestBody requestBody = new FormBody.Builder()
                     .add(Constant.STU_ID, stu_id)
                     .add(Constant.STU_PASS, stu_pass)
@@ -58,10 +60,11 @@ public class StuUtils {
                                         sb.append(array.get(i)).append("@");
                                     }
                                     String weekNum = object.getString("weekNum");
-                                    Log.d(TAG, "weekNum: " + weekNum);
-                                    SpUtils.putString(App.getContext(), SpConstant.ALL_YEAR, sb.toString());
-                                    SpUtils.putBoolean(App.getContext(), SpConstant.IS_HAVE_XIAOLI, true);
-                                    SpUtils.putString(App.getContext(), SpConstant.SERVER_WEEK, weekNum);
+                                    if (Integer.parseInt(weekNum) > 20)
+                                        weekNum = "1";
+                                    SpUtils.putString(context, SpConstant.ALL_YEAR, sb.toString());
+                                    SpUtils.putBoolean(context, SpConstant.IS_HAVE_XIAOLI, true);
+                                    SpUtils.putString(context, SpConstant.SERVER_WEEK, weekNum);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

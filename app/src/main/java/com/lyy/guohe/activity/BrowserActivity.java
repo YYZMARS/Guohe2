@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,7 @@ import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.SpConstant;
 import com.lyy.guohe.constant.UrlConstant;
+import com.lyy.guohe.constant.VpnConstant;
 import com.lyy.guohe.utils.SpUtils;
 import com.tencent.smtt.export.external.interfaces.JsPromptResult;
 import com.tencent.smtt.export.external.interfaces.JsResult;
@@ -37,7 +39,6 @@ import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
-import com.tencent.stat.StatService;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -77,8 +78,8 @@ public class BrowserActivity extends AppCompatActivity {
     private Headers requestHeaders;
     private String cookie;
 
-    private String[] vpn_ACC = {"172210710135", "172210708219", "172210702133", "172210703201", "172210703202", "172210710108"};  //VPN账号数组
-    private String[] vpn_Pass = {"220455", "242410", "211375", "033880", "012943", "080021"};//VPN密码数组
+    private String[] vpn_ACC = VpnConstant.vpn_ACC;  //VPN账号数组
+    private String[] vpn_Pass = VpnConstant.vpn_Pass;//VPN密码数组
 
     private String vpn_user;
     private String vpn_pwd;
@@ -462,7 +463,6 @@ public class BrowserActivity extends AppCompatActivity {
             }
         });
 
-
         WebSettings webSettings = mWebview.getSettings();
 
         // 让WebView能够执行javaScript
@@ -690,11 +690,5 @@ public class BrowserActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        StatService.onResume(this);
     }
 }

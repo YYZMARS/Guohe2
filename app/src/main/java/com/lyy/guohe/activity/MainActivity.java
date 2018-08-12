@@ -30,9 +30,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.widget.ActionSheetDialog;
-import com.flyco.dialog.widget.MaterialDialog;
 import com.githang.statusbar.StatusBarCompat;
 import com.lyy.guohe.R;
 import com.lyy.guohe.adapter.TitleFragmentPagerAdapter;
@@ -42,6 +40,8 @@ import com.lyy.guohe.fragment.KbFragment;
 import com.lyy.guohe.fragment.PlayFragment;
 import com.lyy.guohe.fragment.TodayFragment;
 import com.lyy.guohe.model.DBCourseNew;
+import com.lyy.guohe.utils.DialogUtils;
+import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ImageUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.RomUtils;
@@ -55,9 +55,12 @@ import com.mob.pushsdk.MobPushReceiver;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.stat.StatService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +68,9 @@ import java.util.Properties;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -102,17 +108,17 @@ public class MainActivity extends AppCompatActivity
         mContext = this;
 
         //获取该学生的学年信息
-        StuUtils.getAllYear();
+        StuUtils.getAllYear(mContext);
         //初始化权限
         initPermission();
         //初始化布局
         initView();
         //初始化Fragment
         initFragment();
-        //更新小部件
-        updateWidget();
         //初始化相关第三方服务
         initApp();
+        //判断云端是否有离线消息
+        getPushMessage();
     }
 
     //初始化统计
@@ -297,7 +303,8 @@ public class MainActivity extends AppCompatActivity
                 Beta.checkUpgrade();
                 break;
             case R.id.nav_updateInfo:
-                toUpdateInfo();
+                //跳转至更新说明页
+                NavigateUtil.navigateToUrlWithoutVPN(this, "更新说明", UrlConstant.UPDATE_INFO);
                 break;
             case R.id.nav_feedBack:
                 NavigateUtil.navigateTo(this, FeedBackActivity.class);
@@ -307,15 +314,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    //跳转至更新说明页
-    private void toUpdateInfo() {
-        Intent intent = new Intent(this, BrowserActivity.class);
-        intent.putExtra("url", UrlConstant.UPDATE_INFO);
-        intent.putExtra("title", "更新说明");
-        intent.putExtra("isVpn", false);
-        startActivity(intent);
     }
 
     //联系我
@@ -428,7 +426,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        updateWidget();
         StatService.onResume(this);
         imageBase64 = SpUtils.getString(mContext, SpConstant.IMAGE_BASE_64);
         if (imageBase64 != null) {
@@ -516,8 +513,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCustomMessageReceive(Context context, MobPushCustomMessage message) {
                 //接收自定义消息
-                MaterialDialogDefault(message.toString());
                 Log.d(TAG, "MessageReceive: " + message.toString());
+                DialogUtils.showPushMessDialog(MainActivity.this, message.toString(), "");
             }
 
             @Override
@@ -551,25 +548,43 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "removePushReceiver: ");
     }
 
-    private void MaterialDialogDefault(String text) {
-        final MaterialDialog dialog = new MaterialDialog(MainActivity.this);
-        dialog.content(text)//
-                .btnText("取消", "确定")//
-                .show();
+    //判断云端是否有离线消息
+    private void getPushMessage() {
+        HttpUtil.get(UrlConstant.PUSH_MESS, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
-        dialog.setOnBtnClickL(
-                new OnBtnClickL() {//left btn click listener
-                    @Override
-                    public void onBtnClick() {
-                        dialog.dismiss();
-                    }
-                },
-                new OnBtnClickL() {//right btn click listener
-                    @Override
-                    public void onBtnClick() {
-                        dialog.dismiss();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String data = response.body().string();
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject object = new JSONObject(data);
+                        int id = object.getInt("id");
+                        String url = object.getString("url");
+                        String content = object.getString("content");
+
+                        int localId = SpUtils.getInt(mContext, SpConstant.MESS_ID, 0);
+
+                        Log.d(TAG, "onResponse: " + localId + " " + id);
+
+                        if (localId < id) {
+                            SpUtils.putString(mContext, SpConstant.MESS_URL, url);
+                            SpUtils.putString(mContext, SpConstant.MESS_CONTENT, content);
+                            SpUtils.putInt(mContext, SpConstant.MESS_ID, id);
+                            runOnUiThread(() -> {
+                                DialogUtils.showPushMessDialog(MainActivity.this, content, url);
+                                SpUtils.putBoolean(mContext, SpConstant.IS_MESS_READ, true);
+                            });
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
-        );
+            }
+        });
     }
 }

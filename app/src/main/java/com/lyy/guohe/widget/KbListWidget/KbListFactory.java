@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KbListFactory implements RemoteViewsService.RemoteViewsFactory {
+
     private static final String TAG = "CourseListViewFactory";
 
     private final Context mContext;

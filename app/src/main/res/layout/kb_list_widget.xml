@@ -49,6 +49,15 @@
         android:layout_height="1dp"
         android:background="@color/material_grey_400" />
 
+    <TextView
+        android:id="@+id/tv_kb_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="@dimen/sp_20"
+        android:visibility="gone" />
+
     <ListView
         android:id="@+id/course_widget_list"
         android:layout_width="match_parent"

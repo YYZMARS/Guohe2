@@ -130,13 +130,8 @@ public class KbWidget extends AppWidgetProvider {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.kb_widget);
         remoteViews.setTextViewText(R.id.widget_week, "第" + server_week + "周");
 
-        if (isOpenKb) {
+        if (!isOpenKb) {
             List<DBCourseNew> courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourseNew.class);
-
-            //点击头部跳转到页面内
-            Intent skipIntent = new Intent(context, KbActivity.class);
-            PendingIntent pi = PendingIntent.getActivity(context, 200, skipIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.ll_kbWidget, pi);
 
             for (int i = 1; i <= 7; i++) {
                 RemoteViews nestedView = new RemoteViews(context.getPackageName(), R.layout.widget_single_layout);
@@ -146,19 +141,18 @@ public class KbWidget extends AppWidgetProvider {
                         int jieci = dbCourse.getJieci();
                         String des = "";
                         des = dbCourse.getDes();
+                        Log.d(TAG, "refreshKb: " + des);
                         String courseInfo[] = des.split("@");
                         String courseClassroom = "";
                         String courseName = "";
 
-                        if (courseInfo.length == 2) {
+                        if (courseInfo.length == 5) {
                             courseName = courseInfo[1];
+                            courseClassroom = courseInfo[4];
                         }
-                        if (courseInfo.length == 3) {
+
+                        if (courseInfo.length < 5) {
                             courseName = courseInfo[1];
-                        }
-                        if (courseInfo.length == 4) {
-                            courseName = courseInfo[1];
-                            courseClassroom = courseInfo[3];
                         }
 
                         String result = courseName + "@" + courseClassroom;

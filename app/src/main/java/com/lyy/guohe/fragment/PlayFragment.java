@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,8 @@ import okhttp3.Response;
  * A simple {@link Fragment} subclass.
  */
 public class PlayFragment extends Fragment implements View.OnClickListener, OnBannerListener {
+
+    private static final String TAG = "PlayFragment";
 
     private Activity mContext;
 
@@ -84,9 +87,11 @@ public class PlayFragment extends Fragment implements View.OnClickListener, OnBa
                     if (res != null) {
                         if (res.getCode() == 200) {
                             try {
-
                                 mContext.runOnUiThread(() -> {
                                     try {
+                                        slides.clear();
+                                        images.clear();
+                                        titles.clear();
                                         JSONArray array = new JSONArray(res.getInfo());
                                         for (int i = 0; i < array.length(); i++) {
                                             JSONObject object = array.getJSONObject(i);
@@ -103,7 +108,6 @@ public class PlayFragment extends Fragment implements View.OnClickListener, OnBa
                                         e.printStackTrace();
                                     }
                                 });
-
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -194,5 +198,11 @@ public class PlayFragment extends Fragment implements View.OnClickListener, OnBa
         if (!slides.get(position).getUrl().equals("")) {
             NavigateUtil.navigateToUrlWithoutVPN(mContext, slides.get(position).getTitle(), slides.get(position).getUrl());
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: " + slides.size());
     }
 }

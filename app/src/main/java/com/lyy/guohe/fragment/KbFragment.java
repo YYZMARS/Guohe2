@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.flyco.dialog.widget.ActionSheetDialog;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.lyy.guohe.App;
 import com.lyy.guohe.R;
 import com.lyy.guohe.constant.Constant;
 import com.lyy.guohe.constant.SpConstant;
@@ -200,8 +199,8 @@ public class KbFragment extends Fragment implements View.OnClickListener {
 
     //获取学生的所有学年信息
     public void getAllYear() {
-        String stu_id = SpUtils.getString(App.getContext(), SpConstant.STU_ID);
-        String stu_pass = SpUtils.getString(App.getContext(), SpConstant.STU_PASS);
+        String stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
+        String stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
         RequestBody requestBody = new FormBody.Builder()
                 .add(Constant.STU_ID, stu_id)
                 .add(Constant.STU_PASS, stu_pass)
@@ -229,9 +228,9 @@ public class KbFragment extends Fragment implements View.OnClickListener {
                                 weekNum = object.getString("weekNum");
                                 if (Integer.parseInt(weekNum) > 20)
                                     weekNum = "1";
-                                SpUtils.putString(App.getContext(), SpConstant.ALL_YEAR, sb.toString());
-                                SpUtils.putBoolean(App.getContext(), SpConstant.IS_HAVE_XIAOLI, true);
-                                SpUtils.putString(App.getContext(), SpConstant.SERVER_WEEK, weekNum);
+                                SpUtils.putString(mContext, SpConstant.ALL_YEAR, sb.toString());
+                                SpUtils.putBoolean(mContext, SpConstant.IS_HAVE_XIAOLI, true);
+                                SpUtils.putString(mContext, SpConstant.SERVER_WEEK, weekNum);
                                 mContext.runOnUiThread(() -> {
                                     try {
                                         getKb(array.getString(0));

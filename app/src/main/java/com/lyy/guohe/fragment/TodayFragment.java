@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,7 +54,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
@@ -402,8 +400,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
         String pePass = SpUtils.getString(mContext, SpConstant.PE_PASS);
         if (pePass == null) {
             final EditText editText = new EditText(mContext);
-            AlertDialog.Builder inputDialog =
-                    new AlertDialog.Builder(mContext);
+            AlertDialog.Builder inputDialog = new AlertDialog.Builder(mContext);
             inputDialog.setTitle("请输入你的体育学院密码(默认姓名首字母大写)").setView(editText);
             inputDialog.setPositiveButton("确定",
                     (dialog, which) -> {
@@ -420,13 +417,11 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                             HttpUtil.post(UrlConstant.CLUB_SCORE, requestBody, new Callback() {
                                 @Override
                                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                    if (mContext != null) {
-                                        mContext.runOnUiThread(() -> {
-                                            if (mProgressDialog.isShowing())
-                                                mProgressDialog.dismiss();
-                                            Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
-                                        });
-                                    }
+                                    mContext.runOnUiThread(() -> {
+                                        if (mProgressDialog.isShowing())
+                                            mProgressDialog.dismiss();
+                                        Toasty.error(mContext, "网络异常，请稍后重试", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
 
                                 @Override
@@ -436,7 +431,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                                         Res res = HttpUtil.handleResponse(data);
                                         if (res != null) {
                                             if (res.getCode() == 200 || res.getCode() == 1000) {
-                                                Objects.requireNonNull(mContext).runOnUiThread(() -> {
+                                                mContext.runOnUiThread(() -> {
                                                     mProgressDialog.dismiss();
                                                     SpUtils.putString(mContext, SpConstant.PE_PASS, pePass1);
                                                     Intent intent = new Intent(mContext, BrowserActivity.class);
@@ -445,21 +440,21 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                                                     startActivity(intent);
                                                 });
                                             } else {
-                                                Objects.requireNonNull(mContext).runOnUiThread(() -> {
+                                                mContext.runOnUiThread(() -> {
                                                     if (mProgressDialog.isShowing())
                                                         mProgressDialog.dismiss();
                                                     Toasty.error(mContext, res.getMsg(), Toast.LENGTH_SHORT).show();
                                                 });
                                             }
                                         } else {
-                                            Objects.requireNonNull(mContext).runOnUiThread(() -> {
+                                            mContext.runOnUiThread(() -> {
                                                 if (mProgressDialog.isShowing())
                                                     mProgressDialog.dismiss();
                                                 Toasty.error(mContext, "发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
                                             });
                                         }
                                     } else {
-                                        Objects.requireNonNull(mContext).runOnUiThread(() -> {
+                                        mContext.runOnUiThread(() -> {
                                             if (mProgressDialog.isShowing())
                                                 mProgressDialog.dismiss();
                                             Toasty.error(mContext, "服务器发生异常，请稍后重试", Toast.LENGTH_SHORT).show();
@@ -468,9 +463,7 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                                 }
                             });
                         } else {
-                            if (mContext != null) {
-                                mContext.runOnUiThread(() -> Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show());
-                            }
+                            mContext.runOnUiThread(() -> Toasty.warning(mContext, "输入框不可为空", Toast.LENGTH_SHORT).show());
                         }
                     }).show();
         } else {
@@ -489,22 +482,16 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
             case R.id.action_donate:
                 DialogUtils.showDonateDialog(mContext);
                 break;
             case android.R.id.home:
-                if (mContext != null) {
-                    MainActivity activity = (MainActivity) mContext;
-                    activity.drawer.openDrawer(GravityCompat.START);
-                }
+                MainActivity activity = (MainActivity) mContext;
+                activity.drawer.openDrawer(GravityCompat.START);
                 break;
         }
-
         return true;
     }
 

@@ -13,6 +13,7 @@ import com.flyco.dialog.widget.ActionSheetDialog;
 import com.flyco.dialog.widget.MaterialDialog;
 import com.lyy.guohe.activity.BrowserActivity;
 import com.lyy.guohe.activity.GameActivity;
+import com.lyy.guohe.activity.MainActivity;
 import com.lyy.guohe.constant.UrlConstant;
 import com.lyy.guohe.view.EggDialog;
 import com.lyy.guohe.view.MoreDialog;
@@ -31,9 +32,6 @@ public class DialogUtils {
                         "金钱是保持自由的一种工具，我们诚挚祈望未来与你同在。^ ^")//
                 .btnText("关闭", "支持")//
                 .show();
-
-        //left btn click listener
-        //right btn click listener
         dialog.setOnBtnClickL(
                 dialog::dismiss,
                 () -> {
@@ -128,7 +126,7 @@ public class DialogUtils {
 
     //选择进入哪一个校园系统
     public static void showSystemDialog(Activity activity) {
-        final String[] items = {"教务系统", "奥兰系统", "实验系统","体育系统", "一站式办事大厅"};
+        final String[] items = {"教务系统", "奥兰系统", "实验系统", "一站式办事大厅"};
         AlertDialog.Builder listDialog = new AlertDialog.Builder(activity);
         listDialog.setTitle("选择要进入的系统");
         listDialog.setItems(items, (dialog, which) -> {
@@ -148,10 +146,6 @@ public class DialogUtils {
                     intent.putExtra("title", "实验系统");
                     break;
                 case 3:
-                    intent.putExtra("url", UrlConstant.PE_SYSTEM_URL);
-                    intent.putExtra("title", "体育系统");
-                    break;
-                case 4:
                     intent.putExtra("url", UrlConstant.FUWU_URL);
                     intent.putExtra("title", "一站式办事大厅");
                     break;
@@ -230,5 +224,30 @@ public class DialogUtils {
         popImageDialog.show();
     }
 
+    //弹出接收到的消息的对话框
+    public static void showPushMessDialog(Activity activity, String text, String url) {
+        final MaterialDialog dialog = new MaterialDialog(activity);
+        dialog.content(text)//
+                .btnText("取消", "确定")//
+                .show();
+
+        dialog.setOnBtnClickL(
+                new OnBtnClickL() {//left btn click listener
+                    @Override
+                    public void onBtnClick() {
+                        dialog.dismiss();
+                    }
+                },
+                new OnBtnClickL() {//right btn click listener
+                    @Override
+                    public void onBtnClick() {
+                        if (!url.equals("")) {
+                            NavigateUtil.navigateToUrlWithoutVPN(activity, "果核", url);
+                        }
+                        dialog.dismiss();
+                    }
+                }
+        );
+    }
 
 }

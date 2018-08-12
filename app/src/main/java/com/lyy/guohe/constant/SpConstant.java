@@ -47,4 +47,15 @@ public class SpConstant {
     //判断是否已经有校历信息，默认false表示没有导入校历信息
     public static final String IS_HAVE_XIAOLI = "is_have_xiaoli";
 
+    //云端推送是否已读的flag
+    public static final String IS_MESS_READ = "is_mess_read";
+
+    //云端推送信息的id
+    public static final String MESS_ID = "mess_id";
+
+    //云端推送的url
+    public static final String MESS_URL = "mess_url";
+
+    //云端推送的内容content
+    public static final String MESS_CONTENT = "mess_content";
 }
