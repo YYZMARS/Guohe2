@@ -53,6 +53,11 @@ import com.mob.pushsdk.MobPushCustomMessage;
 import com.mob.pushsdk.MobPushNotifyMessage;
 import com.mob.pushsdk.MobPushReceiver;
 import com.tencent.bugly.beta.Beta;
+import com.tencent.mm.opensdk.constants.ConstantsAPI;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.stat.StatService;
 
 import org.json.JSONException;
@@ -586,5 +591,26 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    //跳转到小程序
+    private void toLite() {
+        String appId = "wx31c614cef0a3c2b1"; // 填应用AppId
+        IWXAPI api = WXAPIFactory.createWXAPI(mContext, appId);
+
+        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
+        //果核Lite gh_75a1ef8c0da
+        //校园导览 gh_dec0502dd077
+        req.userName = "gh_75a1ef8c0da5"; // 填小程序原始id
+//        req.path = path;                  //拉起小程序页面的可带参路径，不填默认拉起小程序首页
+        req.miniprogramType = WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE;// 可选打开 开发版，体验版和正式版
+        api.sendReq(req);
+    }
+
+    public void onResp(BaseResp resp) {
+        if (resp.getType() == ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM) {
+            WXLaunchMiniProgram.Resp launchMiniProResp = (WXLaunchMiniProgram.Resp) resp;
+            String extraData = launchMiniProResp.extMsg; // 对应JsApi navigateBackApplication中的extraData字段数据
+        }
     }
 }
