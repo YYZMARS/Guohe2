@@ -79,24 +79,35 @@ public class StuUtils {
     //返回学生的课程信息
     public static void handleCourseInfo(int jieci, int day, String des) {
         String[] dess = des.split("---------------------");
-        for (int i = 0; i < dess.length; i++) {
-            List<Integer> list = zhouci(dess[i]);
-            for (int j = 0; j < list.size(); j++) {
+        if (dess.length > 1) {
+            for (int i = 0; i < dess.length; i++) {
                 DBCourseNew dbCourse = new DBCourseNew();
                 dbCourse.setJieci(jieci);
                 dbCourse.setDes(dess[i]);
                 dbCourse.setDay(day);
-                dbCourse.setZhouci(list.get(j));
+                dbCourse.setZhouci(zhouci(dess[i]));
+                dbCourse.setRepeat(true);
                 dbCourse.save();
             }
+        } else {
+            DBCourseNew dbCourse = new DBCourseNew();
+            dbCourse.setJieci(jieci);
+            dbCourse.setDes(des);
+            dbCourse.setDay(day);
+            dbCourse.setZhouci(zhouci(des));
+            dbCourse.setRepeat(false);
+            dbCourse.save();
         }
     }
 
-    //返回周次的集合
-    public static List<Integer> zhouci(String s) {
-        List<Integer> list = new ArrayList<>();
-        //获取所有的周次
+    //返回周次
+    public static String zhouci(String s) {
         String zhouci = s.split("@")[3];
+        return zhouci;
+    }
+
+    //判断当前周是否在该课的周次内
+    public static boolean isInThisWeek(int week, String s) {
         /**
          * 原本的周次字符串可能为“1-6,7,8,9-13（周）”
          * 所以需要对字符串进行匹配
@@ -104,19 +115,20 @@ public class StuUtils {
          * 第二步：按照逗号分割
          * 第三步：判断是否有“-”，如果有则将“-”左右范围内的数字添加进list，如果没有直接添加数字
          */
-        String[] zhoucis = zhouci.substring(0, zhouci.length() - 3).split(",");
+        String[] zhoucis = s.substring(0, s.length() - 3).split(",");
         for (String s1 : zhoucis) {
             if (s1.contains("-")) {
                 String[] ss = s1.split("-");
                 int begin = Integer.parseInt(ss[0]);
                 int end = Integer.parseInt(ss[1]);
-                for (int i = begin; i <= end; i++) {
-                    list.add(i);
-                }
+                if (week >= begin && week <= end)
+                    return true;
             } else {
-                list.add(Integer.parseInt(s1));
+                if (week == Integer.parseInt(s1))
+                    return true;
             }
         }
-        return list;
+        return false;
+
     }
 }

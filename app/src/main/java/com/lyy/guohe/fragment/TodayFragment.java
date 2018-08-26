@@ -45,6 +45,7 @@ import com.lyy.guohe.utils.HttpUtil;
 import com.lyy.guohe.utils.ListViewUtil;
 import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.SpUtils;
+import com.lyy.guohe.utils.StuUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -189,27 +190,30 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
             List<DBCourseNew> courseList = new ArrayList<>();
             if (server_week != null) {
                 try {
-                    courseList = LitePal.where("zhouci = ? ", server_week).find(DBCourseNew.class);
+                    courseList = LitePal.findAll(DBCourseNew.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 if (courseList.size() != 0) {
-                    for (int i = 0; i < courseList.size(); i++) {
-                        if (courseList.get(i).getDes().length() > 5 && courseList.get(i).getDay() == a[weekday]) {
-                            int jieci = courseList.get(i).getJieci();
-                            String courseInfo[] = courseList.get(i).getDes().split("@");
-                            String courseName = "";
-                            String courseClassRoom = "";
-                            if (courseInfo.length > 2) {
-                                courseName = courseInfo[1];
-                                if (courseInfo.length == 5) {
-                                    courseClassRoom = courseInfo[4];
+                    for (DBCourseNew dbCourse : courseList) {
+                        boolean isInThisWeek = StuUtils.isInThisWeek(Integer.parseInt(server_week), dbCourse.getZhouci());
+                        if (isInThisWeek) {
+                            if (dbCourse.getDes().length() > 5 && dbCourse.getDay() == a[weekday]) {
+                                int jieci = dbCourse.getJieci();
+                                String courseInfo[] = dbCourse.getDes().split("@");
+                                String courseName = "";
+                                String courseClassRoom = "";
+                                if (courseInfo.length > 2) {
+                                    courseName = courseInfo[1];
+                                    if (courseInfo.length == 5) {
+                                        courseClassRoom = courseInfo[4];
+                                    }
                                 }
-                            }
 
-                            Course course = new Course(jieci, courseName, courseClassRoom);
-                            courses.add(course);
+                                Course course = new Course(jieci, courseName, courseClassRoom);
+                                courses.add(course);
+                            }
                         }
                     }
                     if (courses.size() > 0) {

@@ -1,11 +1,9 @@
 package com.lyy.guohe;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
-import com.mob.MobSDK;
 import com.tencent.bugly.Bugly;
 import com.tencent.mta.track.StatisticsDataAPI;
 import com.tencent.smtt.sdk.QbSdk;
@@ -29,8 +27,6 @@ public class App extends Application {
         StatisticsDataAPI.instance(this.getApplicationContext());
         //初始化Bugly
         Bugly.init(this.getApplicationContext(), "1f3d59d6cb", false);
-
-        MobSDK.init(this);
 
         Stetho.initializeWithDefaults(this);
     }

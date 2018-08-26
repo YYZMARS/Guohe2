@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -220,7 +221,14 @@ public class CourseTableView extends RelativeLayout {
             tv.setEllipsize(TextUtils.TruncateAt.END);
             tv.setLines(7);
             tv.setTextColor(Color.rgb(255, 255, 255));
-            tv.setBackgroundResource(c.getBg_Color());
+
+            int fillColor = c.getBg_Color();//内部填充颜色
+            int roundRadius = 15; // 8dp 圆角半径
+            GradientDrawable gd = new GradientDrawable();//创建drawable
+            gd.setCornerRadius(roundRadius);
+            gd.setColor(fillColor);
+            tv.setBackground(gd);
+
             tv.setLayoutParams(flp);
             tv.setOnClickListener(v -> {
                 if (onCourseItemClickListener != null) {

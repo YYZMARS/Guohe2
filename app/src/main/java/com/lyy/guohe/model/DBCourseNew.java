@@ -10,13 +10,23 @@ public class DBCourseNew extends LitePalSupport {
 
     private int jieci;   //课程的节次
 
-    private int zhouci; //课程的周次
+    private String zhouci; //课程的周次
 
-    public int getZhouci() {
+    private boolean isRepeat;
+
+    public boolean isRepeat() {
+        return isRepeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        isRepeat = repeat;
+    }
+
+    public String getZhouci() {
         return zhouci;
     }
 
-    public void setZhouci(int zhouci) {
+    public void setZhouci(String zhouci) {
         this.zhouci = zhouci;
     }
 

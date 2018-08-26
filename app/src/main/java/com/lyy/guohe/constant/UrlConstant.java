@@ -80,5 +80,5 @@ public class UrlConstant {
     //兼职招聘
     public static final String FIND_JOB = "https://youhua.baidu.com/group?groupId=100100169829";
     //获取云端推送的消息
-    public static final String PUSH_MESS = "http://119.23.212.45:8082/getMessage";
+    public static final String PUSH_MESS = "http://119.23.212.45:8888/getMessage";
 }

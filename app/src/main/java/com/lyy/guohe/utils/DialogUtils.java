@@ -79,6 +79,7 @@ public class DialogUtils {
         String courseClassroom = "";
         String courseName = "";
         String courseTeacher = "";
+        String zhouci = "";
         if (courseInfo.length == 1) {
             courseNum = courseInfo[0];
         }
@@ -86,15 +87,22 @@ public class DialogUtils {
             courseNum = courseInfo[0];
             courseName = courseInfo[1];
         }
-        if (courseInfo.length == 3 || courseInfo.length == 4) {
+        if (courseInfo.length == 3) {
             courseNum = courseInfo[0];
             courseName = courseInfo[1];
             courseTeacher = courseInfo[2];
+        }
+        if (courseInfo.length == 4) {
+            courseNum = courseInfo[0];
+            courseName = courseInfo[1];
+            courseTeacher = courseInfo[2];
+            zhouci = courseInfo[3];
         }
         if (courseInfo.length == 5) {
             courseNum = courseInfo[0];
             courseName = courseInfo[1];
             courseTeacher = courseInfo[2];
+            zhouci = courseInfo[3];
             courseClassroom = courseInfo[4];
         }
 
@@ -102,7 +110,7 @@ public class DialogUtils {
 
         dialog.isTitleShow(false)//
                 .btnNum(1)
-                .content("课程信息为：\n" + "课程号：\t" + courseNum + "\n课程名：\t" + courseName + "\n课程教师：\t" + courseTeacher + "\n教室：\t" + courseClassroom)
+                .content("课程信息为：\n" + "课程号：\t" + courseNum + "\n课程名：\t" + courseName + "\n课程教师：\t" + courseTeacher + "\n教室：\t" + courseClassroom + "\n周次：\t" + zhouci)
                 .btnText("确定")//
                 .showAnim(new BounceBottomEnter())
                 .show();

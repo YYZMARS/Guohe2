@@ -74,22 +74,21 @@ public class KbListFactory implements RemoteViewsService.RemoteViewsFactory {
         final RemoteViews rv = new RemoteViews(mContext.getPackageName(),
                 R.layout.item_kb_list);
 
-        Log.d(TAG, "getViewAt: " + content);
         String courseInfo[] = content.split("@");
         String jieci = "";
         String name = "";
         String classroom = "";
-        if (courseInfo.length == 4) {
+        Log.d(TAG, "getViewAt: " + content);
+        if (courseInfo.length == 5) {
             jieci = courseInfo[0];
             name = courseInfo[2];
-        } else if (courseInfo.length == 5) {
+        } else if (courseInfo.length == 6) {
             jieci = courseInfo[0];
             name = courseInfo[2];
-            classroom = courseInfo[4];
+            classroom = courseInfo[5];
         }
 
         // 设置要显示的内容
-//        rv.setTextViewText(R.id.tv_widget_course, content);
         rv.setTextViewText(R.id.now_course_jieci_1, jieci + "-" + (Integer.parseInt(jieci) + 1));
         rv.setTextViewText(R.id.widget_course_1_1, name);
         rv.setTextViewText(R.id.widget_course_1_2, classroom);

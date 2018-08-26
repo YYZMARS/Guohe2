@@ -16,4 +16,10 @@ public class Constant {
 
     //记录当前学年
     public static final String THIS_YEAR = "2018-2019-1";
+
+    //桌面课表刷新事件
+    public static final String KB_UPDATE = "com.lyy.kbwidget.update";
+
+    //桌面课表列表的刷新事件
+    public static final String KB_LIST_UPDATE = "com.lyy.kblist.update";
 }

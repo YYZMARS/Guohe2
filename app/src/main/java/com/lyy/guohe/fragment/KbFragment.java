@@ -4,8 +4,10 @@ package com.lyy.guohe.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -46,8 +48,9 @@ import org.litepal.LitePal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import es.dmoral.toasty.Toasty;
 import okhttp3.Call;
@@ -58,33 +61,9 @@ import okhttp3.Response;
 
 public class KbFragment extends Fragment implements View.OnClickListener {
 
-    //背景颜色数组
-    private int color[] = {
-            R.drawable.course_info_blue,
-            R.drawable.course_info_brown,
-            R.drawable.course_info_cyan,
-            R.drawable.course_info_deep_orange,
-            R.drawable.course_info_deep_purple,
-            R.drawable.course_info_green,
-            R.drawable.course_info_indigo,
-            R.drawable.course_info_light_blue,
-            R.drawable.course_info_light_green,
-            R.drawable.course_info_lime,
-            R.drawable.course_info_orange,
-            R.drawable.course_info_pink,
-            R.drawable.course_info_purple,
-            R.drawable.course_info_red,
-            R.drawable.course_info_teal,
-            R.drawable.course_info_yellow,
-            R.drawable.course_info_blue,
-            R.drawable.course_info_brown,
-            R.drawable.course_info_cyan,
-            R.drawable.course_info_orange,
-            R.drawable.course_info_pink,
-            R.drawable.course_info_purple,
-            R.drawable.course_info_red,
-            R.drawable.course_info_teal
-    };
+    private static final String TAG = "KbFragment";
+
+    private String[] colors = {"#85B8CF", "#90C652", "#D8AA5A", "#FC9F9D", "#0A9A84", "#61BC69", "#12AEF3", "#E29AAD"};
 
     private Activity mContext;
 
@@ -335,6 +314,62 @@ public class KbFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    //根据数据库中的dbCourse对象生成适用于课表的course对象
+    private Course makeCourse(DBCourseNew dbCourse, boolean isInThisWeek, boolean isRepeat) {
+        Course course = new Course();
+        String courseInfo[] = dbCourse.getDes().split("@");
+        String courseNum = "";
+        String courseClassroom = "";
+        String courseName = "";
+        String courseTeacher = "";
+
+        if (courseInfo.length == 1) {
+            courseNum = courseInfo[0];
+        }
+        if (courseInfo.length == 2) {
+            courseNum = courseInfo[0];
+            courseName = courseInfo[1];
+        }
+        if (courseInfo.length == 3 || courseInfo.length == 4) {
+            courseNum = courseInfo[0];
+            courseName = courseInfo[1];
+            courseTeacher = courseInfo[2];
+        }
+        if (courseInfo.length == 5) {
+            courseNum = courseInfo[0];
+            courseName = courseInfo[1];
+            courseTeacher = courseInfo[2];
+            courseClassroom = courseInfo[4];
+        }
+
+        if (dbCourse.getDes().length() > 3) {
+            if (isInThisWeek) {
+                int index = new Random().nextInt(8);
+                course.setBg_Color(Color.parseColor(colors[index]));
+                course.setDay(dbCourse.getDay());
+                course.setJieci(dbCourse.getJieci());
+                course.setDes(dbCourse.getDes());
+                course.setClassName(courseName);      //课程名
+                course.setClassRoomName(courseClassroom);  //教室
+                course.setClassTeacher(courseTeacher);   //教师
+                course.setClassTypeName(courseNum);  //课程号
+            } else {
+                if (!isRepeat) {
+                    course.setBg_Color(Color.parseColor("#D3D3D3"));
+                    course.setDay(dbCourse.getDay());
+                    course.setJieci(dbCourse.getJieci());
+                    course.setDes(dbCourse.getDes());
+                    course.setClassName(courseName);      //课程名
+                    course.setClassRoomName(courseClassroom);  //教室
+                    course.setClassTeacher(courseTeacher);   //教师
+                    course.setClassTypeName(courseNum);  //课程号
+                }
+            }
+        }
+
+        return course;
+    }
+
     //显示课表
     private void showKb(String week) {
         if (Integer.parseInt(week) > 20)
@@ -345,61 +380,20 @@ public class KbFragment extends Fragment implements View.OnClickListener {
 
         List<Course> list = new ArrayList<>();
 
-        List<DBCourseNew> courseList = LitePal.where("zhouci = ? ", week).find(DBCourseNew.class);
+        List<DBCourseNew> courseList = LitePal.findAll(DBCourseNew.class);
 
-        List<String> stringList = new ArrayList<>();
-
-        for (DBCourseNew dbCourse : courseList) {
-            String courseInfo[] = dbCourse.getDes().split("@");
-            String courseName = courseInfo[1];
-            stringList.add(courseName);
-        }
-
-        List<String> listWithoutDup = new ArrayList<>(new HashSet<>(stringList));
-        listWithoutDup.add("");     //加这句是为了防止数组越界
-
-        for (DBCourseNew dbCourse : courseList) {
-            Course course = new Course();
-            String courseInfo[] = dbCourse.getDes().split("@");
-            String courseNum = "";
-            String courseClassroom = "";
-            String courseName = "";
-            String courseTeacher = "";
-
-            if (courseInfo.length == 1) {
-                courseNum = courseInfo[0];
-            }
-            if (courseInfo.length == 2) {
-                courseNum = courseInfo[0];
-                courseName = courseInfo[1];
-            }
-            if (courseInfo.length == 3 || courseInfo.length == 4) {
-                courseNum = courseInfo[0];
-                courseName = courseInfo[1];
-                courseTeacher = courseInfo[2];
-            }
-            if (courseInfo.length == 5) {
-                courseNum = courseInfo[0];
-                courseName = courseInfo[1];
-                courseTeacher = courseInfo[2];
-                courseClassroom = courseInfo[4];
-            }
-
-            if (dbCourse.getDes().length() > 3) {
-                course.setDay(dbCourse.getDay());
-                course.setJieci(dbCourse.getJieci());
-                course.setDes(dbCourse.getDes());
-                course.setClassName(courseName);      //课程名
-                course.setClassRoomName(courseClassroom);  //教室
-                course.setClassTeacher(courseTeacher);   //教师
-                course.setClassTypeName(courseNum);  //课程号
-                course.setBg_Color(color[listWithoutDup.indexOf(courseName)]);
+        if (courseList.size() > 0) {
+            for (DBCourseNew dbCourse : courseList) {
+                boolean isInThisWeek = StuUtils.isInThisWeek(Integer.parseInt(finalWeek), dbCourse.getZhouci());
+                Course course = makeCourse(dbCourse, isInThisWeek, dbCourse.isRepeat());
                 list.add(course);
             }
-        }
 
-        courseTableView.drawFrame();
-        courseTableView.updateCourseViews(list);
+            courseTableView.drawFrame();
+            courseTableView.updateCourseViews(list);
+            SpUtils.putBoolean(mContext, SpConstant.IS_OPEN_KB, true);
+            updateWidget();
+        }
     }
 
     @Override
@@ -516,5 +510,13 @@ public class KbFragment extends Fragment implements View.OnClickListener {
             Bitmap bitmap = BitmapFactory.decodeStream(bais);
             iv_bg_kb.setImageBitmap(bitmap);
         }
+    }
+
+    //更新桌面小部件
+    private void updateWidget() {
+        Intent intent = new Intent();
+        intent.setAction(Constant.KB_UPDATE);
+        intent.setAction(Constant.KB_LIST_UPDATE);
+        mContext.sendBroadcast(intent);
     }
 }

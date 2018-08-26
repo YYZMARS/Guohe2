@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -48,28 +47,24 @@ public class UsActivity extends AppCompatActivity {
         ImageView view = findViewById(R.id.iv_us);
         Glide.with(this).load(R.drawable.bg_us).into(view);
         ImageView iv_turing = findViewById(R.id.iv_turing);
-//        Glide.with(this).load(R.drawable.img_turing).into(iv_turing);
-        iv_turing.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final String[] stringItems = {"分享", "下载到本地"};
-                final ActionSheetDialog dialog = new ActionSheetDialog(UsActivity.this, stringItems, null);
-                dialog.isTitleShow(false).show();
+        iv_turing.setOnLongClickListener(v -> {
+            final String[] stringItems = {"分享", "下载到本地"};
+            final ActionSheetDialog dialog = new ActionSheetDialog(UsActivity.this, stringItems, null);
+            dialog.isTitleShow(false).show();
 
-                dialog.setOnOperItemClickL((parent, view1, position, id) -> {
-                    switch (position) {
-                        case 0:
-                            ImageUtil.shareImg(UsActivity.this, iv_turing, "果核里的图灵", "我的主题", "我的分享内容");
-                            break;
-                        case 1:
-                            ImageUtil.saveImage(UsActivity.this, iv_turing);
-                            Toasty.success(UsActivity.this, "图片已保存至Picture文件夹", Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                    dialog.dismiss();
-                });
-                return true;
-            }
+            dialog.setOnOperItemClickL((parent, view1, position, id) -> {
+                switch (position) {
+                    case 0:
+                        ImageUtil.shareImg(UsActivity.this, iv_turing, "果核里的图灵", "我的主题", "我的分享内容");
+                        break;
+                    case 1:
+                        ImageUtil.saveImage(UsActivity.this, iv_turing);
+                        Toasty.success(UsActivity.this, "图片已保存至Picture文件夹", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                dialog.dismiss();
+            });
+            return true;
         });
     }
 

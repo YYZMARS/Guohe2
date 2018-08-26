@@ -47,11 +47,6 @@ import com.lyy.guohe.utils.NavigateUtil;
 import com.lyy.guohe.utils.RomUtils;
 import com.lyy.guohe.utils.SpUtils;
 import com.lyy.guohe.utils.StuUtils;
-import com.mob.analysdk.AnalySDK;
-import com.mob.pushsdk.MobPush;
-import com.mob.pushsdk.MobPushCustomMessage;
-import com.mob.pushsdk.MobPushNotifyMessage;
-import com.mob.pushsdk.MobPushReceiver;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -67,7 +62,6 @@ import org.litepal.LitePal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -86,8 +80,6 @@ public class MainActivity extends AppCompatActivity
 
     private long exitTime = 0;
 
-    //Mob推荐接收器
-    private MobPushReceiver receiver;
 
     public TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -132,13 +124,6 @@ public class MainActivity extends AppCompatActivity
         Properties prop = new Properties();
         prop.setProperty("name", "homepage");
         StatService.trackCustomKVEvent(this, "homepage", prop);
-
-        HashMap<String, Object> eventParams = new HashMap<String, Object>();
-        eventParams.put("page", "Main Page");
-        AnalySDK.trackEvent("page-jump", eventParams);
-
-        //添加mob的推送接收器
-        addPushReceiver();
     }
 
     //初始化布局
@@ -252,13 +237,13 @@ public class MainActivity extends AppCompatActivity
             Drawable d = null;
             switch (i) {
                 case 0:
-                    d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
+                    d = getResources().getDrawable(R.drawable.tab_menu_today);
                     break;
                 case 1:
-                    d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
+                    d = getResources().getDrawable(R.drawable.tab_menu_kb);
                     break;
                 case 2:
-                    d = getResources().getDrawable(R.drawable.tab_menu_deal_classify);
+                    d = getResources().getDrawable(R.drawable.tab_menu_playground);
                     break;
             }
             if (tab != null)
@@ -289,6 +274,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id) {
+            case R.id.nav_lite:
+                toLite();
+                break;
             case R.id.nav_aboutUs:
                 NavigateUtil.navigateTo(this, UsActivity.class);
                 break;
@@ -442,13 +430,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
-        removePushReceiver();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -511,48 +492,6 @@ public class MainActivity extends AppCompatActivity
         void gotoFragment(ViewPager viewPager);
     }
 
-    //添加mob的推送接收器
-    private void addPushReceiver() {
-
-        receiver = new MobPushReceiver() {
-            @Override
-            public void onCustomMessageReceive(Context context, MobPushCustomMessage message) {
-                //接收自定义消息
-                Log.d(TAG, "MessageReceive: " + message.toString());
-                DialogUtils.showPushMessDialog(MainActivity.this, message.toString(), "");
-            }
-
-            @Override
-            public void onNotifyMessageReceive(Context context, MobPushNotifyMessage message) {
-                //接收通知消息
-                Log.d(TAG, "MessageReceive: " + message.toString());
-            }
-
-            @Override
-            public void onNotifyMessageOpenedReceive(Context context, MobPushNotifyMessage message) {
-                //接收通知消息被点击事件
-            }
-
-            @Override
-            public void onTagsCallback(Context context, String[] tags, int operation, int errorCode) {
-                //接收tags的增改删查操作
-            }
-
-            @Override
-            public void onAliasCallback(Context context, String alias, int operation, int errorCode) {
-                //接收alias的增改删查操作
-            }
-        };
-        MobPush.addPushReceiver(receiver);
-        Log.d(TAG, "addPushReceiver: ");
-    }
-
-    //关闭mob的推送接收器
-    private void removePushReceiver() {
-        MobPush.removePushReceiver(receiver);
-        Log.d(TAG, "removePushReceiver: ");
-    }
-
     //判断云端是否有离线消息
     private void getPushMessage() {
         HttpUtil.get(UrlConstant.PUSH_MESS, new Callback() {
@@ -567,22 +506,26 @@ public class MainActivity extends AppCompatActivity
                 if (response.isSuccessful()) {
                     try {
                         JSONObject object = new JSONObject(data);
-                        int id = object.getInt("id");
-                        String url = object.getString("url");
-                        String content = object.getString("content");
+                        int id = object.optInt("id");
+                        String url = object.optString("url");
+                        String content = object.optString("content");
+                        int flag = object.optInt("flag");
 
                         int localId = SpUtils.getInt(mContext, SpConstant.MESS_ID, 0);
 
-                        Log.d(TAG, "onResponse: " + localId + " " + id);
+                        Log.d(TAG, "onResponse: " + localId + " " + id + " " + flag);
 
-                        if (localId < id) {
-                            SpUtils.putString(mContext, SpConstant.MESS_URL, url);
-                            SpUtils.putString(mContext, SpConstant.MESS_CONTENT, content);
-                            SpUtils.putInt(mContext, SpConstant.MESS_ID, id);
-                            runOnUiThread(() -> {
-                                DialogUtils.showPushMessDialog(MainActivity.this, content, url);
-                                SpUtils.putBoolean(mContext, SpConstant.IS_MESS_READ, true);
-                            });
+                        //flag为1表示云端设置该消息可见，设为0表示云端设置消息不可见
+                        if (flag == 1) {
+                            if (localId < id) {
+                                SpUtils.putString(mContext, SpConstant.MESS_URL, url);
+                                SpUtils.putString(mContext, SpConstant.MESS_CONTENT, content);
+                                SpUtils.putInt(mContext, SpConstant.MESS_ID, id);
+                                runOnUiThread(() -> {
+                                    DialogUtils.showPushMessDialog(MainActivity.this, content, url);
+                                    SpUtils.putBoolean(mContext, SpConstant.IS_MESS_READ, true);
+                                });
+                            }
                         }
 
                     } catch (JSONException e) {
