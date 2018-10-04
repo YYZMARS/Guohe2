@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,8 +61,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class KbFragment extends Fragment implements View.OnClickListener {
-
-    private static final String TAG = "KbFragment";
 
     private String[] colors = {"#85B8CF", "#90C652", "#D8AA5A", "#FC9F9D", "#0A9A84", "#61BC69", "#12AEF3", "#E29AAD"};
 
@@ -118,8 +117,52 @@ public class KbFragment extends Fragment implements View.OnClickListener {
     //初始化课表数据
     private void initKbData() {
         weekNum = SpUtils.getString(mContext, SpConstant.SERVER_WEEK, "");
-        if (!weekNum.equals("")) {
-            showKb(weekNum);
+        String stu_id = SpUtils.getString(mContext, SpConstant.STU_ID);
+        String stu_pass = SpUtils.getString(mContext, SpConstant.STU_PASS);
+        if (stu_id != null && stu_pass != null) {
+            RequestBody requestBody = new FormBody.Builder()
+                    .add(Constant.STU_ID, stu_id)
+                    .add(Constant.STU_PASS, stu_pass)
+                    .build();
+            HttpUtil.post(UrlConstant.XIAO_LI, requestBody, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    if (!weekNum.equals("")) {
+                        showKb(weekNum);
+                    }
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String data = response.body().string();
+                        Res res = HttpUtil.handleResponse(data);
+                        if (res != null) {
+                            if (res.getCode() == 200) {
+                                try {
+                                    JSONObject object = new JSONObject(res.getInfo());
+                                    JSONArray array = object.getJSONArray("all_year");
+                                    StringBuilder sb = new StringBuilder();
+                                    for (int i = 0; i < array.length(); i++) {
+                                        sb.append(array.get(i)).append("@");
+                                    }
+                                    weekNum = object.getString("weekNum");
+                                    if (Integer.parseInt(weekNum) > 20)
+                                        weekNum = "1";
+                                    SpUtils.putString(mContext, SpConstant.ALL_YEAR, sb.toString());
+                                    SpUtils.putBoolean(mContext, SpConstant.IS_HAVE_XIAOLI, true);
+                                    SpUtils.putString(mContext, SpConstant.SERVER_WEEK, weekNum);
+                                    if (!weekNum.equals("")) {
+                                        showKb(weekNum);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -372,27 +415,28 @@ public class KbFragment extends Fragment implements View.OnClickListener {
 
     //显示课表
     private void showKb(String week) {
-        if (Integer.parseInt(week) > 20)
-            week = "1";
+        if (!week.equals("")) {
+            if (Integer.parseInt(week) > 20)
+                week = "1";
+            String finalWeek = week;
+            mContext.runOnUiThread(() -> tv_kb_week.setText("第 " + finalWeek + " 周"));
 
-        String finalWeek = week;
-        mContext.runOnUiThread(() -> tv_kb_week.setText("第 " + finalWeek + " 周"));
+            List<Course> list = new ArrayList<>();
 
-        List<Course> list = new ArrayList<>();
+            List<DBCourseNew> courseList = LitePal.findAll(DBCourseNew.class);
 
-        List<DBCourseNew> courseList = LitePal.findAll(DBCourseNew.class);
+            if (courseList.size() > 0) {
+                for (DBCourseNew dbCourse : courseList) {
+                    boolean isInThisWeek = StuUtils.isInThisWeek(Integer.parseInt(finalWeek), dbCourse.getZhouci());
+                    Course course = makeCourse(dbCourse, isInThisWeek, dbCourse.isRepeat());
+                    list.add(course);
+                }
 
-        if (courseList.size() > 0) {
-            for (DBCourseNew dbCourse : courseList) {
-                boolean isInThisWeek = StuUtils.isInThisWeek(Integer.parseInt(finalWeek), dbCourse.getZhouci());
-                Course course = makeCourse(dbCourse, isInThisWeek, dbCourse.isRepeat());
-                list.add(course);
+                courseTableView.drawFrame();
+                courseTableView.updateCourseViews(list);
+                SpUtils.putBoolean(mContext, SpConstant.IS_OPEN_KB, true);
+                updateWidget();
             }
-
-            courseTableView.drawFrame();
-            courseTableView.updateCourseViews(list);
-            SpUtils.putBoolean(mContext, SpConstant.IS_OPEN_KB, true);
-            updateWidget();
         }
     }
 

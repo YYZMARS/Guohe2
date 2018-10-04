@@ -126,15 +126,17 @@ public class PlayFragment extends Fragment implements View.OnClickListener, OnBa
 
     //初始化Banner
     private void initBanner() {
-        banner.setBannerStyle(BannerConfig.NUM_INDICATOR_TITLE);
-        //设置图片加载器
-        banner.setImageLoader(new GlideImageLoader());
-        //设置图片集合
-        banner.setImages(images);
-        //设置标题集合
-        banner.setBannerTitles(titles);
-        //banner设置方法全部调用完毕时最后调用
-        banner.start();
+        if (getActivity() != null) {
+            banner.setBannerStyle(BannerConfig.NUM_INDICATOR_TITLE);
+            //设置图片加载器
+            banner.setImageLoader(new GlideImageLoader());
+            //设置图片集合
+            banner.setImages(images);
+            //设置标题集合
+            banner.setBannerTitles(titles);
+            //banner设置方法全部调用完毕时最后调用
+            banner.start();
+        }
     }
 
     //初始化各控件

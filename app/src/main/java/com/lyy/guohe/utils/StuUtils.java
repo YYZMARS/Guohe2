@@ -28,51 +28,51 @@ import okhttp3.Response;
 
 public class StuUtils {
 
-    private static final String TAG = "KbFragment";
-
     //获取学生的所有学年信息
     public static void getAllYear(Context context) {
         boolean isHaveXiaoli = SpUtils.getBoolean(context, SpConstant.IS_HAVE_XIAOLI, false);
         if (!isHaveXiaoli) {
             String stu_id = SpUtils.getString(context, SpConstant.STU_ID);
             String stu_pass = SpUtils.getString(context, SpConstant.STU_PASS);
-            RequestBody requestBody = new FormBody.Builder()
-                    .add(Constant.STU_ID, stu_id)
-                    .add(Constant.STU_PASS, stu_pass)
-                    .build();
-            HttpUtil.post(UrlConstant.XIAO_LI, requestBody, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                }
+            if (stu_id != null && stu_pass != null) {
+                RequestBody requestBody = new FormBody.Builder()
+                        .add(Constant.STU_ID, stu_id)
+                        .add(Constant.STU_PASS, stu_pass)
+                        .build();
+                HttpUtil.post(UrlConstant.XIAO_LI, requestBody, new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    }
 
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String data = response.body().string();
-                        Res res = HttpUtil.handleResponse(data);
-                        if (res != null) {
-                            if (res.getCode() == 200) {
-                                try {
-                                    JSONObject object = new JSONObject(res.getInfo());
-                                    JSONArray array = object.getJSONArray("all_year");
-                                    StringBuilder sb = new StringBuilder();
-                                    for (int i = 0; i < array.length(); i++) {
-                                        sb.append(array.get(i)).append("@");
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String data = response.body().string();
+                            Res res = HttpUtil.handleResponse(data);
+                            if (res != null) {
+                                if (res.getCode() == 200) {
+                                    try {
+                                        JSONObject object = new JSONObject(res.getInfo());
+                                        JSONArray array = object.getJSONArray("all_year");
+                                        StringBuilder sb = new StringBuilder();
+                                        for (int i = 0; i < array.length(); i++) {
+                                            sb.append(array.get(i)).append("@");
+                                        }
+                                        String weekNum = object.getString("weekNum");
+                                        if (Integer.parseInt(weekNum) > 20)
+                                            weekNum = "1";
+                                        SpUtils.putString(context, SpConstant.ALL_YEAR, sb.toString());
+                                        SpUtils.putBoolean(context, SpConstant.IS_HAVE_XIAOLI, true);
+                                        SpUtils.putString(context, SpConstant.SERVER_WEEK, weekNum);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
-                                    String weekNum = object.getString("weekNum");
-                                    if (Integer.parseInt(weekNum) > 20)
-                                        weekNum = "1";
-                                    SpUtils.putString(context, SpConstant.ALL_YEAR, sb.toString());
-                                    SpUtils.putBoolean(context, SpConstant.IS_HAVE_XIAOLI, true);
-                                    SpUtils.putString(context, SpConstant.SERVER_WEEK, weekNum);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -80,12 +80,12 @@ public class StuUtils {
     public static void handleCourseInfo(int jieci, int day, String des) {
         String[] dess = des.split("---------------------");
         if (dess.length > 1) {
-            for (int i = 0; i < dess.length; i++) {
+            for (String des1 : dess) {
                 DBCourseNew dbCourse = new DBCourseNew();
                 dbCourse.setJieci(jieci);
-                dbCourse.setDes(dess[i]);
+                dbCourse.setDes(des1);
                 dbCourse.setDay(day);
-                dbCourse.setZhouci(zhouci(dess[i]));
+                dbCourse.setZhouci(zhouci(des1));
                 dbCourse.setRepeat(true);
                 dbCourse.save();
             }
@@ -102,8 +102,7 @@ public class StuUtils {
 
     //返回周次
     public static String zhouci(String s) {
-        String zhouci = s.split("@")[3];
-        return zhouci;
+        return s.split("@")[3];
     }
 
     //判断当前周是否在该课的周次内

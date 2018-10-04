@@ -361,7 +361,8 @@ public class TodayFragment extends Fragment implements View.OnClickListener, Nav
                             tvOneWordFrom.setText(wordFrom);
                             tvOneDate.setText(date);
                             tvImgAuthor.setText(imgAuthor + " | " + imgKind);
-                            Glide.with(mContext).load(imgUrl).into(ivOneImg);
+                            if (imgUrl != null || !imgUrl.equals(""))
+                                Glide.with(mContext).load(imgUrl).into(ivOneImg);
                         });
 
                     } catch (JSONException e) {

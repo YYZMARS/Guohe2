@@ -73,6 +73,7 @@
             android:gravity="center"
             android:lineSpacingExtra="@dimen/dp_3"
             android:text="@string/default_date"
+            android:textIsSelectable="true"
             android:visibility="visible" />
 
         <TextView
